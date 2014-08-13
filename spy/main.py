@@ -6,6 +6,7 @@ import sys
 from collections.abc import Iterable, Mapping
 from clize import Parameter, run
 
+from . import fragments
 from .objects import Context, SpyFile
 
 import spy
@@ -71,60 +72,59 @@ def pretty_print(thing, expand_iterables=True, limit=None):
 
 
 def _main(*steps: Parameter.REQUIRED,
-         stream: 's' = False,
-         limit: (int, 'l') = None):
+         each_line: 'l' = False,
+         start: (int, 's') = 0,
+         end: (int, 'e') = None):
     """Run Python code.
 
     steps: At least one Python expression (or suite) to execute
 
-    stream: If specified, process lines as strings rather than all of stdin as a file
+    each_line: If specified, process lines as strings rather than all of stdin as a file
 
-    limit: Limit number of results displayed
+    start: Don't print before this result (zero-based)
+
+    end: Stop after getting this result (zero-based)
     """
     compiled_steps = []
     imports = set()
     for code in steps:
         co, is_expr = compile_(code)
         imports |= set(get_imports(co))
-        def step(context, co=co, is_expr=is_expr):
-            result = eval(co, context)
-            return result if is_expr else context[PIPE_NAME]
+        def step(ita, context, code=code, co=co, is_expr=is_expr):
+            for item in ita:
+                context[spy.PIPE_NAME] = item
+                spy._iteration_state = (item, ita)
+                result = eval(co, context)
+                result = result if is_expr else context[spy.PIPE_NAME]
+                try:
+                    del context[spy.PIPE_NAME]
+                except KeyError:
+                    pass
+                if result is spy.DROP:
+                    continue
+                elif isinstance(result, spy.many):
+                    yield from result
+                else:
+                    yield result
+        step.__name__ = code
         compiled_steps.append(step)
 
     context = make_context(imports)
     spy.context = context
 
-    def process(values, steps, expand_iterables, limit=None):
-        nonlocal context
-        count = 0
-        for v in values:
-            if limit is not None and count >= limit:
-                return count + 1
-            for n, step in enumerate(steps):
-                context[PIPE_NAME] = v
-                v = step(context)
-                if v is spy.DROP:
-                    break
-                elif isinstance(v, spy.many):
-                    limit_ = None if limit is None else limit - count
-                    count += process(v.ita, steps[n + 1:], False, limit_)
-                    v = spy.DROP
-                    break
-            if v is not spy.DROP:
-                limit_ = None if limit is None else limit - count
-                count += pretty_print(v, expand_iterables, limit_)
-        return count
+    compiled_steps.append(fragments.make_limit(start=start, end=end))
+    compiled_steps.append(fragments.print)
 
-    if stream:
-        def stream_step(context):
-            return spy.many(context[PIPE_NAME])
-        compiled_steps.insert(0, stream_step)
+    if each_line:
+        compiled_steps.insert(0, fragments.many)
 
     initial = (SpyFile(sys.stdin),)
-    count = process(initial, compiled_steps, True, limit)
+    ita = initial
+    for cs in compiled_steps:
+        ita = cs(ita, context)
 
-    if limit is not None and count > limit:
-        print('...')
+    for item in ita:
+        pass
 
 def main():
     run(_main)
