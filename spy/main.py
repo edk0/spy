@@ -72,12 +72,10 @@ def pretty_print(thing, expand_iterables=True, limit=None):
 
 def _main(*steps: Parameter.REQUIRED,
          stream: 's' = False,
-         prefilter: (str, 'b') = None,
-         postfilter: (str, 'a') = None,
          limit: (int, 'l') = None):
     """Run Python code.
 
-    code: Python to run
+    steps: At least one Python expression (or suite) to execute
 
     stream: If specified, process lines as strings rather than all of stdin as a file
 
