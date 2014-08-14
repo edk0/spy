@@ -6,5 +6,8 @@ python:
   - "pypy3"
 install:
   - "pip install ."
+  - "pip install coveralls"
 script:
   - "py.test -v"
+after_success:
+  - "coveralls"
