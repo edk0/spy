@@ -38,6 +38,16 @@ def test_chain():
     chain = spy.chain(seq, bootstrap=['foo', 'bar'])
     assert list(chain) == ['OOF', 'RAB']
 
+    output = []
+    @spy.step
+    def capture(v):
+        output.append(v)
+    seq.append(capture)
+
+    chain = spy.chain(seq, bootstrap=['foo', 'bar'])
+    chain.run_to_exhaustion()
+    assert output == ['OOF', 'RAB']
+
 
 def test_many():
     seq = [many, upper]

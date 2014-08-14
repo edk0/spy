@@ -1,6 +1,20 @@
+import pytest
+import sys
+
+from io import StringIO
+
 import spy.fragments
 
-import pytest
+
+def test_init():
+    stdin = sys.stdin
+    try:
+        sys.stdin = StringIO('these are\nsome lines')
+        f = spy.fragments.init([])
+        assert list(next(f)) == ['these are', 'some lines']
+    finally:
+        sys.stdin = stdin
+
 
 def test_many():
     input_ = [['foo', 'bar', 'baz']]
@@ -10,6 +24,23 @@ def test_many():
 
     f = spy.fragments.many(spy.fragments.many(input_))
     assert list(f) == list('foobarbaz')
+
+
+class TestPrint:
+    def test_iterable(self, capsys):
+        f = spy.fragments.print([(x for x in [1, 2, 3, 4, 5, 6])])
+        list(f)
+        assert capsys.readouterr()[0] == '<iterable [1, 2, 3, 4, 5, ...]>\n'
+
+    def test_list(self, capsys):
+        f = spy.fragments.print([[1, 2, 3]])
+        list(f)
+        assert capsys.readouterr()[0] == '[1, 2, 3]\n'
+
+    def test_str(self, capsys):
+        f = spy.fragments.print(['this is a test'])
+        list(f)
+        assert capsys.readouterr()[0] == 'this is a test\n'
 
 
 class TestLimit:
