@@ -6,6 +6,7 @@ python:
   - "pypy3"
 install:
   - "pip install ."
+  - "pip install 'sigtools>=0.1a4'"
   - "pip install -e git+https://github.com/epsy/clize.git#egg=clize"
   - "pip install pytest pytest-cov coveralls"
 script:
