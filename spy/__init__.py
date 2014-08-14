@@ -7,8 +7,14 @@ context = None
 _iteration_state = []
 
 
+class _Drop:
+    pass
+DROP = _Drop()
+
+
 def step(fn):
     def step(ita):
+        ita = iter(ita)
         for item in ita:
             _iteration_state.append((item, ita))
             result = fn(item)
@@ -23,17 +29,21 @@ def step(fn):
     return step
 
 
-def chain(seq, bootstrap=(None,)):
-    ita = bootstrap
-    for step in seq:
-        ita = step(ita)
-    for item in ita:
-        yield item
+class chain:
+    def __init__(self, seq, bootstrap=(None,)):
+        self.ita = bootstrap
+        for step in seq:
+            self.ita = step(self.ita)
 
+    def run_to_exhaustion(self):
+        for item in self.ita:
+            pass
 
-class _Drop:
-    pass
-DROP = _Drop()
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        return next(self.ita)
 
 
 class raw:
