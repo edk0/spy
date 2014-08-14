@@ -47,12 +47,12 @@ Despite its file-likeness, `pipe` has string methods that act on all the
 input at once:
 
 ```console
-$ spy 'pipe.upper()' < test.txt
-THIS
-FILE
-HAS
-FIVE
-LINES
+$ spy -l '"-%s-" % pipe' < test.txt
+-this-
+-file-
+-has-
+-five-
+-lines-
 ```
 
 Suites of statements don't yield values, but can achieve the same end by
