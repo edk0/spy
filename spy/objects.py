@@ -22,7 +22,7 @@ class Context(dict):
     @recursive_repr()
     def __repr__(self):
         d = {k: v for k, v in self.items() if not k.startswith('_')}
-        return '{}({})'.format(self.__class__.__qualname__, repr(d))
+        return '{}({})'.format(self.__class__.__name__, repr(d))
 
 
 class _ContextView:
@@ -51,7 +51,7 @@ class _ContextView:
 
     @recursive_repr()
     def __repr__(self):
-        return '{}(context={}, value={})'.format(self.__class__.__qualname__,
+        return '{}(context={}, value={})'.format(self.__class__.__name__,
                 repr(self.context), repr(self.value))
 
 
