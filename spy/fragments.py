@@ -1,5 +1,5 @@
 from builtins import print as py_print
-from collections.abc import Iterable, Mapping, Sequence
+from collections import Iterable, Mapping, Sequence
 from itertools import islice
 
 import sys
