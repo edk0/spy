@@ -48,7 +48,8 @@ class SpyFile(TextIOBase):
     def __init__(self, stream):
         self.stream = stream
         self.lines = []
-        self.buffer_ = None
+        self.row = 0
+        self.col = 0
 
     def __iter__(self):
         return _SpyFile_Iterator(self)
@@ -87,8 +88,6 @@ class SpyFile(TextIOBase):
         try:
             l = next(self.stream)
             self.lines.append(l[:-1])
-            if self.buffer_ is not None:
-                self.buffer_ += l
             return l[:-1]
         except StopIteration:
             return ''
@@ -96,29 +95,37 @@ class SpyFile(TextIOBase):
     def read(self, n=None):
         if n == 0:
             return ''
-        if self.buffer_ is None:
-            self.buffer_ = '\n'.join(self.lines)
-        while self._readline():
-            if n is not None and n >= 0 and len(self.buffer_) >= n:
-                v = self.buffer_[:n]
-                self.buffer_ = self.buffer_[n:]
-                return v
-        if n is None or n < 0:
-            v = self.buffer_[:]
-            self.buffer_ = ''
-            return v
+        buf = ''
+        try:
+            while n is None or len(buf) < n:
+                row = self[self.row]
+                start = self.col
+                if n is not None:
+                    end = start + n - len(buf)
+                    buf += row[start:end]
+                else:
+                    buf += row[start:]
+                if n is None or end >= len(row):
+                    self.row += 1
+                    self.col = 0
+                else:
+                    self.col = end
+        except IndexError:
+            pass
+        return buf
 
     def readline(self, n=-1):
-        if n < 0:
-            try:
-                return self._readline()
-            except StopIteration:
-                return ''
-        s = self.read(n)
-        if '\n' in s:
-            s, extra = s.split('\n', 1)
-            self.buffer_ = extra + self.buffer_
-            return s + '\n'
+        try:
+            row = self[self.row][self.col:]
+        except IndexError:
+            return ''
+        if len(row) >= n >= 0:
+            self.col += n
+            return row[:n]
+        else:
+            self.row += 1
+            self.col = 0
+            return row
 
     def detach(self):
         raise UnsupportedOperation
