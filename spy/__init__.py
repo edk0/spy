@@ -4,7 +4,7 @@ PIPE_NAME = 'pipe'
 
 
 context = None
-_iteration_state = None
+_iteration_state = []
 
 
 class _Drop:
@@ -29,7 +29,7 @@ class many:
 
 
 def collect():
-    init, ita = _iteration_state
+    init, ita = _iteration_state[-1]
     def collector():
         yield init
         for item in ita:

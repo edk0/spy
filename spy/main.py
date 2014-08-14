@@ -1,9 +1,9 @@
 import builtins
 import dis
 import importlib
+import itertools
 import sys
 
-from collections.abc import Iterable, Mapping
 from clize import Parameter, run
 
 from . import fragments
@@ -53,28 +53,11 @@ def make_context(imports=[]):
     return context
 
 
-def pretty_print(thing, expand_iterables=True, limit=None):
-    if isinstance(thing, str):
-        print(thing)
-        return 1
-    elif expand_iterables and isinstance(thing, Iterable) and not isinstance(thing, Mapping):
-        count = 0
-        for element in thing:
-            if limit is not None and count >= limit:
-                return count + 1
-            count += pretty_print(element, False)
-        return count
-    elif thing is None:
-        return 0
-    else:
-        sys.displayhook(thing)
-        return 1
-
-
 def _main(*steps: Parameter.REQUIRED,
          each_line: 'l' = False,
          start: (int, 's') = 0,
-         end: (int, 'e') = None):
+         end: (int, 'e') = None,
+         no_default_fragments = False):
     """Run Python code.
 
     steps: At least one Python expression (or suite) to execute
@@ -90,35 +73,33 @@ def _main(*steps: Parameter.REQUIRED,
     for code in steps:
         co, is_expr = compile_(code)
         imports |= set(get_imports(co))
-        def step(ita, context, code=code, co=co, is_expr=is_expr):
+        def step(ita, context, co=co, is_expr=is_expr):
             for item in ita:
-                context[spy.PIPE_NAME] = item
-                spy._iteration_state = (item, ita)
-                result = eval(co, context)
-                result = result if is_expr else context[spy.PIPE_NAME]
-                try:
-                    del context[spy.PIPE_NAME]
-                except KeyError:
-                    pass
+                local = context.pipe_view(item)
+                spy._iteration_state.append((item, ita))
+                result = eval(co, context, local)
+                spy._iteration_state.pop()
+                result = result if is_expr else local.value
                 if result is spy.DROP:
                     continue
                 elif isinstance(result, spy.many):
                     yield from result
                 else:
                     yield result
-        step.__name__ = code
         compiled_steps.append(step)
 
     context = make_context(imports)
     spy.context = context
 
-    compiled_steps.append(fragments.make_limit(start=start, end=end))
-    compiled_steps.append(fragments.print)
+    if not no_default_fragments:
+        compiled_steps.insert(0, fragments.init)
+        compiled_steps.append(fragments.make_limit(start=start, end=end))
+        compiled_steps.append(fragments.print)
 
-    if each_line:
-        compiled_steps.insert(0, fragments.many)
+        if each_line:
+            compiled_steps.insert(1, fragments.many)
 
-    initial = (SpyFile(sys.stdin),)
+    initial = itertools.repeat(None)
     ita = initial
     for cs in compiled_steps:
         ita = cs(ita, context)

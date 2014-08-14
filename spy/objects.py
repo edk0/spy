@@ -2,6 +2,8 @@ from collections.abc import Mapping
 from io import TextIOBase
 from reprlib import recursive_repr
 
+import spy
+
 
 class Context(dict):
     def __init__(self, *a, **kw):
@@ -14,10 +16,32 @@ class Context(dict):
         else:
             return NotImplemented
 
+    def pipe_view(self, value):
+        return _ContextView(self, value)
+
     @recursive_repr()
     def __repr__(self):
         d = {k: v for k, v in self.items() if not k.startswith('_')}
         return '{}({})'.format(self.__class__.__qualname__, repr(d))
+
+
+class _ContextView:
+    def __init__(self, context, value):
+        self.context = context
+        self.value = value
+
+    def __getitem__(self, k):
+        if k == spy.PIPE_NAME:
+            return self.value
+        return self.context[k]
+
+    def __setitem__(self, k, v):
+        if k == spy.PIPE_NAME:
+            self.value = v
+        return self.context[k]
+
+    def __repr__(self):
+        return Context.__repr__(self)
 
 
 class _SpyFile_Iterator:
