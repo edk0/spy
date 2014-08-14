@@ -52,8 +52,8 @@ def get_imports(code):
     return imp
 
 
-def make_context(imports=[]):
-    context = Context()
+def make_context(imports=[], pipe_name=PIPE_NAME):
+    context = Context(_pipe_name=pipe_name)
     for imp in imports:
         try:
             m = importlib.import_module(imp)

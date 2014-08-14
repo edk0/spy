@@ -1,7 +1,5 @@
 import traceback
 
-PIPE_NAME = 'pipe'
-
 
 context = None
 _iteration_state = []

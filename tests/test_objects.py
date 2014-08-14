@@ -16,19 +16,24 @@ of
 it'''
 
 
+@pytest.fixture
+def context():
+    return Context(_pipe_name='pipe')
+
+
 class TestContext:
-    def test_update(self):
-        c = Context()
+    def test_update(self, context):
+        c = context
         c += {'foo': 'bar'}
         assert any(item == ('foo', 'bar') for item in c.items())
 
         with pytest.raises(TypeError):
             c += 3
 
-    def test_view(self):
-        c = Context()
+    def test_view(self, context):
+        c = context
         c['test'] = 'fubar'
-        c[spy.PIPE_NAME] = 'foo'
+        c[c.pipe_name] = 'foo'
         v = c.pipe_view('bar')
 
         assert v['test'] == 'fubar'
@@ -39,16 +44,16 @@ class TestContext:
         del v['test']
         assert 'test' not in v and 'test' not in c
 
-        assert v[spy.PIPE_NAME] == 'bar'
-        v[spy.PIPE_NAME] = 'baz'
-        assert v[spy.PIPE_NAME] == 'baz'
+        assert v[c.pipe_name] == 'bar'
+        v[c.pipe_name] = 'baz'
+        assert v[c.pipe_name] == 'baz'
         with pytest.raises(TypeError):
-            del v[spy.PIPE_NAME]
+            del v[c.pipe_name]
 
-        assert c[spy.PIPE_NAME] == 'foo'
+        assert c[c.pipe_name] == 'foo'
 
-    def test_repr(self):
-        c = Context()
+    def test_repr(self, context):
+        c = context
         repr(c)
         v = c.pipe_view('test')
         repr(v)

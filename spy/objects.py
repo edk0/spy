@@ -2,11 +2,10 @@ from collections import Mapping
 from io import TextIOBase, UnsupportedOperation
 from reprlib import recursive_repr
 
-import spy
-
 
 class Context(dict):
-    def __init__(self, *a, **kw):
+    def __init__(self, *a, _pipe_name, **kw):
+        self.pipe_name = _pipe_name
         super().__init__(*a, **kw)
 
     def __iadd__(self, other):
@@ -31,21 +30,21 @@ class _ContextView:
         self.value = value
 
     def __contains__(self, k):
-        return k == spy.PIPE_NAME or k in self.context
+        return k == self.context.pipe_name or k in self.context
 
     def __getitem__(self, k):
-        if k == spy.PIPE_NAME:
+        if k == self.context.pipe_name:
             return self.value
         return self.context[k]
 
     def __setitem__(self, k, v):
-        if k == spy.PIPE_NAME:
+        if k == self.context.pipe_name:
             self.value = v
         else:
             self.context[k] = v
 
     def __delitem__(self, k):
-        if k == spy.PIPE_NAME:
+        if k == self.context.pipe_name:
             raise TypeError("can't delete pipe")
         del self.context[k]
 
