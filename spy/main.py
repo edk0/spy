@@ -5,7 +5,11 @@ import sys
 
 from clize import Parameter, run
 
-from . import dis34 as dis, fragments
+import dis
+if not hasattr(dis, 'get_instructions'):
+    from . import dis34 as dis
+
+from . import fragments
 from .objects import Context, SpyFile
 
 import spy

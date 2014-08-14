@@ -15,6 +15,11 @@ __all__ = ["code_info", "dis", "disassemble", "distb", "disco",
            "get_instructions", "Instruction", "Bytecode"] + _opcodes_all
 del _opcodes_all
 
+try:
+    hasnargs
+except NameError:
+    hasnargs = [131, 140, 141, 142]
+
 _have_code = (types.MethodType, types.FunctionType, types.CodeType, type)
 
 def _try_compile(source, name):
