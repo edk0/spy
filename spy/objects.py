@@ -87,8 +87,10 @@ class SpyFile(TextIOBase):
     def _readline(self):
         try:
             l = next(self.stream)
-            self.lines.append(l[:-1])
-            return l[:-1]
+            if l[-1] == '\n':
+                l = l[:-1]
+            self.lines.append(l)
+            return l
         except StopIteration:
             return ''
 
@@ -99,6 +101,11 @@ class SpyFile(TextIOBase):
         try:
             while n is None or len(buf) < n:
                 row = self[self.row]
+                try:
+                    self[self.row + 1]
+                    row += '\n'
+                except IndexError:
+                    pass
                 start = self.col
                 if n is not None:
                     end = start + n - len(buf)
@@ -116,7 +123,7 @@ class SpyFile(TextIOBase):
 
     def readline(self, n=-1):
         try:
-            row = self[self.row][self.col:]
+            row = self[self.row][self.col:] + '\n'
         except IndexError:
             return ''
         if len(row) >= n >= 0:
