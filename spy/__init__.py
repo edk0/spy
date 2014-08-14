@@ -7,6 +7,28 @@ context = None
 _iteration_state = []
 
 
+def step(fn):
+    def step(ita):
+        for item in ita:
+            _iteration_state.append((item, ita))
+            result = fn(item)
+            _iteration_state.pop()
+            if result is DROP:
+                continue
+            elif isinstance(result, many):
+                yield from result.ita
+            else:
+                yield result
+    return step
+
+
+def chain(seq, bootstrap=(None,)):
+    ita = bootstrap
+    for step in seq:
+        ita = step(ita)
+    yield from ita
+
+
 class _Drop:
     pass
 DROP = _Drop()

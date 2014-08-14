@@ -8,17 +8,17 @@ from .objects import SpyFile
 from spy import raw
 
 
-def init(ita, context):
+def init(ita):
     yield SpyFile(sys.stdin)
 
 
-def many(ita, context):
+def many(ita):
     for item in ita:
         yield from item
 
 
 def make_limit(*, start=0, end=None):
-    def limit(ita, context):
+    def limit(ita):
         for n, item in enumerate(ita):
             if n >= start and (end is None or n < end):
                 yield item
@@ -44,7 +44,7 @@ def pretty_print(thing):
         sys.displayhook(thing)
 
 
-def print(ita, context):
+def print(ita):
     for item in ita:
         pretty_print(item)
         yield item

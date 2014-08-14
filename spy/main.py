@@ -22,27 +22,12 @@ def compile_(code, filename='<input>'):
         return compile(code, filename, 'exec', 0, True, 0), False
 
 
-def make_callable(code, is_expr):
-    def fragment_fn(value, context):
+def make_callable(code, is_expr, context):
+    def fragment_fn(value):
         local = context.pipe_view(value)
         result = eval(code, context, local)
         return result if is_expr else local.view
     return fragment_fn
-
-
-def make_step(fn):
-    def step(ita, context):
-        for item in ita:
-            spy._iteration_state.append((item, ita))
-            result = fn(item, context)
-            spy._iteration_state.pop()
-            if result is spy.DROP:
-                continue
-            elif isinstance(result, spy.many):
-                yield from result.value
-            else:
-                yield result
-    return step
 
 
 def get_imports(code):
@@ -95,13 +80,14 @@ def _main(*steps: Parameter.REQUIRED,
     imports = set()
     for code in steps:
         co, is_expr = compile_(code, filename=code)
-        fn = make_callable(co, is_expr)
         imports |= set(get_imports(co))
-        step = make_step(fn)
-        compiled_steps.append(step)
+        compiled_steps.append((co, is_expr))
 
     context = make_context(imports)
     spy.context = context
+
+    compiled_steps = [spy.step(make_callable(co, is_expr, context))
+                      for co, is_expr in compiled_steps]
 
     if not no_default_fragments:
         compiled_steps.insert(0, fragments.init)
@@ -111,12 +97,7 @@ def _main(*steps: Parameter.REQUIRED,
         if each_line:
             compiled_steps.insert(1, fragments.many)
 
-    initial = (None,)
-    ita = initial
-    for cs in compiled_steps:
-        ita = cs(ita, context)
-
-    for item in ita:
+    for item in spy.chain(compiled_steps):
         pass
 
 def main():
