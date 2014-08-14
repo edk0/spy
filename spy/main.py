@@ -1,12 +1,11 @@
 import builtins
-import dis
 import importlib
 import itertools
 import sys
 
 from clize import Parameter, run
 
-from . import fragments
+from . import dis34 as dis, fragments
 from .objects import Context, SpyFile
 
 import spy
