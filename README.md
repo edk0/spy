@@ -4,6 +4,12 @@
 `spy` stands for “<b>s</b>tream <b>py</b>thon”. It's a CLI for python that chains
 fragments of code together.
 
+**spy is unreleased software**. You can install it if you want (at the time of
+writing, you'll need to grab development versions of clize and sigtools too),
+but please don't expect reliability or stability—I'll make a release when I have
+those things. In particular, support for Python versions older than 3.4 relies
+on a huge hack. Python 2 is not supported at all, and might never be.
+
 ## Introduction
 
 spy operates on fragments of Python code. In the simplest of invocations, just
