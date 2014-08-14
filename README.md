@@ -1,3 +1,4 @@
+[![Build Status](https://travis-ci.org/edk0/spy.svg?branch=master)](https://travis-ci.org/edk0/spy) [![Coverage Status](https://img.shields.io/coveralls/edk0/spy.svg)](https://coveralls.io/r/edk0/spy?branch=master)
 
 # spy: a Python CLI
 
