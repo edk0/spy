@@ -182,8 +182,8 @@ $ spy --no-default-fragments 'spy.objects.SpyFile(sys.stdin)' 'pipe.upper()' 'sp
 ```
 
 In order for CLI fragments to run at all, given that they expect values to
-be yielded, the first fragment in the chain is given an infinite iterator
-that spits out `None` values.
+be yielded, the first fragment in the chain is given an iterator that yields
+a single `None`.
 
 `-l` is equivalent to a fragment of `spy.many(pipe)` just before the first
 user-supplied fragment.

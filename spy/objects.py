@@ -44,22 +44,6 @@ class _ContextView:
         return Context.__repr__(self)
 
 
-class _SpyFile_Iterator:
-    def __init__(self, f):
-        self.f = f
-        self.index = 0
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        try:
-            self.index += 1
-            return self.f[self.index - 1]
-        except IndexError:
-            raise StopIteration
-
-
 class SpyFile(TextIOBase):
     def __init__(self, stream):
         self.stream = stream
@@ -138,4 +122,20 @@ class SpyFile(TextIOBase):
 
     def detach(self):
         raise UnsupportedOperation
+
+
+class _SpyFile_Iterator:
+    def __init__(self, f):
+        self.f = f
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        try:
+            self.index += 1
+            return self.f[self.index - 1]
+        except IndexError:
+            raise StopIteration
 
