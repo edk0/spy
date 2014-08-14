@@ -22,7 +22,7 @@ def step(fn):
             if result is DROP:
                 continue
             elif isinstance(result, many):
-                for result in result.ita:
+                for result in iter(result):
                     yield result
             else:
                 yield result
