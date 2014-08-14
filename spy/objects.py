@@ -1,5 +1,5 @@
 from collections import Mapping
-from io import TextIOBase
+from io import TextIOBase, UnsupportedOperation
 from reprlib import recursive_repr
 
 import spy
@@ -30,6 +30,9 @@ class _ContextView:
         self.context = context
         self.value = value
 
+    def __contains__(self, k):
+        return k == spy.PIPE_NAME or k in self.context
+
     def __getitem__(self, k):
         if k == spy.PIPE_NAME:
             return self.value
@@ -38,10 +41,18 @@ class _ContextView:
     def __setitem__(self, k, v):
         if k == spy.PIPE_NAME:
             self.value = v
-        self.context[k] = v
+        else:
+            self.context[k] = v
 
+    def __delitem__(self, k):
+        if k == spy.PIPE_NAME:
+            raise TypeError("can't delete pipe")
+        del self.context[k]
+
+    @recursive_repr()
     def __repr__(self):
-        return Context.__repr__(self)
+        return '{}(context={}, value={})'.format(self.__class__.__qualname__,
+                repr(self.context), repr(self.value))
 
 
 class SpyFile(TextIOBase):
