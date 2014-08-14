@@ -22,6 +22,29 @@ def compile_(code, filename='<input>'):
         return compile(code, filename, 'exec', 0, True, 0), False
 
 
+def make_callable(code, is_expr):
+    def fragment_fn(value, context):
+        local = context.pipe_view(value)
+        result = eval(code, context, local)
+        return result if is_expr else local.view
+    return fragment_fn
+
+
+def make_step(fn):
+    def step(ita, context):
+        for item in ita:
+            spy._iteration_state.append((item, ita))
+            result = fn(item, context)
+            spy._iteration_state.pop()
+            if result is spy.DROP:
+                continue
+            elif isinstance(result, spy.many):
+                yield from result.value
+            else:
+                yield result
+    return step
+
+
 def get_imports(code):
     imp = []
     instrs = dis.get_instructions(code)
@@ -71,21 +94,10 @@ def _main(*steps: Parameter.REQUIRED,
     compiled_steps = []
     imports = set()
     for code in steps:
-        co, is_expr = compile_(code)
+        co, is_expr = compile_(code, filename=code)
+        fn = make_callable(co, is_expr)
         imports |= set(get_imports(co))
-        def step(ita, context, co=co, is_expr=is_expr):
-            for item in ita:
-                local = context.pipe_view(item)
-                spy._iteration_state.append((item, ita))
-                result = eval(co, context, local)
-                spy._iteration_state.pop()
-                result = result if is_expr else local.value
-                if result is spy.DROP:
-                    continue
-                elif isinstance(result, spy.many):
-                    yield from result
-                else:
-                    yield result
+        step = make_step(fn)
         compiled_steps.append(step)
 
     context = make_context(imports)
@@ -99,7 +111,7 @@ def _main(*steps: Parameter.REQUIRED,
         if each_line:
             compiled_steps.insert(1, fragments.many)
 
-    initial = itertools.repeat(None)
+    initial = (None,)
     ita = initial
     for cs in compiled_steps:
         ita = cs(ita, context)
