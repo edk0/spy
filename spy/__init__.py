@@ -16,7 +16,8 @@ def step(fn):
             if result is DROP:
                 continue
             elif isinstance(result, many):
-                yield from result.ita
+                for result in result.ita:
+                    yield result
             else:
                 yield result
     return step
@@ -26,7 +27,8 @@ def chain(seq, bootstrap=(None,)):
     ita = bootstrap
     for step in seq:
         ita = step(ita)
-    yield from ita
+    for item in ita:
+        yield item
 
 
 class _Drop:

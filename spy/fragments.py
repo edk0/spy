@@ -13,8 +13,9 @@ def init(ita):
 
 
 def many(ita):
-    for item in ita:
-        yield from item
+    for thing in ita:
+        for item in thing:
+            yield item
 
 
 def make_limit(*, start=0, end=None):
