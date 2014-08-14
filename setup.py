@@ -3,6 +3,7 @@ from setuptools import setup
 setup(
     name='spy-cli',
     version='0.1',
+    description='stream python',
     packages=['spy'],
     zip_safe=True,
     entry_points={
