@@ -8,6 +8,6 @@ install:
   - "pip install ."
   - "pip install pytest pytest-cov coveralls"
 script:
-  - "py.test -v --cov-config .coveragerc --cov"
+  - "py.test -v --cov-config .coveragerc --cov spy"
 after_success:
   - "coveralls"
