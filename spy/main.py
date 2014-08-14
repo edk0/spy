@@ -29,7 +29,7 @@ def make_callable(code, is_expr, context):
     def fragment_fn(value):
         local = context.pipe_view(value)
         result = eval(code, context, local)
-        return result if is_expr else local.view
+        return result if is_expr else local.value
     return fragment_fn
 
 
