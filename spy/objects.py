@@ -38,7 +38,7 @@ class _ContextView:
     def __setitem__(self, k, v):
         if k == spy.PIPE_NAME:
             self.value = v
-        return self.context[k]
+        self.context[k] = v
 
     def __repr__(self):
         return Context.__repr__(self)
