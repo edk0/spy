@@ -8,9 +8,10 @@ decorators = []
 def decorator(*names):
     def wrapperer(dec):
         @wraps(dec)
-        def wrapper(fn):
+        def wrapper(fn, debuginfo=(None, None)):
             @wraps(fn)
             def wrapped(v):
+                _spy_debuginfo = debuginfo + (v,)
                 return dec(fn, v)
             return wrapped
         wrapper.decorator_names = names
@@ -21,7 +22,8 @@ def decorator(*names):
 
 @decorator('--callable', '-c')
 def callable(fn, v):
-    return fn(v)(v)
+    result = fn(v)
+    return result(v)
 
 
 @decorator('--filter', '-f')

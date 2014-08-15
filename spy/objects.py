@@ -28,6 +28,7 @@ class _ContextView:
     def __init__(self, context, value):
         self.context = context
         self.value = value
+        self._debuginfo = (None, None)
 
     def __contains__(self, k):
         return k == self.context.pipe_name or k in self.context
