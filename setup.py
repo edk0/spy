@@ -11,7 +11,7 @@ setup(
             'spy = spy.main:main'
         ]
     },
-    install_requires=['clize'],
+    install_requires=['clize>=3.0a1'],
     author = 'Ed Kellett',
     author_email = 'edk@kellett.im',
     url = 'https://github.com/edk0/spy/',
