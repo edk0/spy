@@ -44,7 +44,7 @@ def test_excepthook(capsys):
     try:
         spy.main._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
     except NameError:
-        spy.main.excepthook(*sys.exc_info())
+        sys.excepthook(*sys.exc_info())
         out, err = capsys.readouterr()
         for line in err.splitlines():
             assert "spy/main.py" not in line
