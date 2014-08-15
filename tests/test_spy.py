@@ -1,34 +1,34 @@
 import spy
 
 
-@spy.step
+@spy.fragment
 def noop(v):
     return v
 
 
-@spy.step
+@spy.fragment
 def upper(v):
     return v.upper()
 
 
-@spy.step
+@spy.fragment
 def reverse(v):
     return v[::-1]
 
 
-@spy.step
+@spy.fragment
 def drop_foo(v):
     if v.lower() == 'foo':
         return spy.DROP
     return v
 
 
-@spy.step
+@spy.fragment
 def many(v):
     return spy.many(v)
 
 
-@spy.step
+@spy.fragment
 def collect(v):
     return spy.collect()
 
@@ -39,7 +39,7 @@ def test_chain():
     assert list(chain) == ['OOF', 'RAB']
 
     output = []
-    @spy.step
+    @spy.fragment
     def capture(v):
         output.append(v)
     seq.append(capture)

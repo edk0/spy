@@ -10,8 +10,8 @@ class _Drop:
 DROP = _Drop()
 
 
-def step(fn):
-    def step(ita):
+def fragment(fn):
+    def fragment(ita):
         ita = iter(ita)
         for item in ita:
             _iteration_state.append((item, ita))
@@ -24,7 +24,7 @@ def step(fn):
                     yield result
             else:
                 yield result
-    return step
+    return fragment
 
 
 class chain:

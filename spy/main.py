@@ -152,7 +152,7 @@ def _main(*steps,
                 ca = fn(ca, debuginfo=debuginfo)
             except:
                 ca = fn(ca)
-        steps.append(spy.step(ca))
+        steps.append(spy.fragment(ca))
 
     if not no_default_fragments:
         steps.insert(0, fragments.init)
