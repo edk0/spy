@@ -1,3 +1,9 @@
+import io
+import subprocess
+import sys
+
+import pytest
+
 import spy.main
 from spy.objects import Context
 
@@ -32,3 +38,26 @@ def test_get_imports():
 def test_make_context():
     context = spy.main.make_context(['collections', 'i am pretty sure this module does not exist'])
     assert 'collections' in context
+
+
+def test_run(capsys):
+    input = "this is\na piece of sample input\nused to test a complete run"
+    expected = "SAMPLE PIECE THIS\nTEST USED INPUT\nRUN COMPLETE\n"
+    stdin = sys.stdin
+    argv = sys.argv
+    try:
+        sys.stdin = io.StringIO(input)
+        sys.argv = sys.argv[0:1] + [
+                '-l',
+                'spy.many(pipe.split())',
+                '-f', 'len(pipe) > 2',
+                'pipe.upper()',
+                'list(itertools.islice(spy.collect(), 3))',
+                '" ".join(reversed(pipe))']
+        with pytest.raises(SystemExit):
+            from spy import __main__
+        out, err = capsys.readouterr()
+        assert out == expected
+    finally:
+        sys.stdin = stdin
+        sys.argv = argv
