@@ -84,6 +84,24 @@ LINES
 
 With `-l`, `pipe` will be a simple `str` during each iteration.
 
+### Exception handling
+
+If your code causes an uncaught exception, spy will intercept and reformat
+the traceback, omitting the frames from spy internals and showing the
+responsible fragment as its own frame:
+
+```console
+$ spy '3 + "4"'
+Traceback (most recent call last):
+  Fragment 1, line 1
+    3 + "4"
+    input to fragment was <SpyFile stream=<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>>
+TypeError: unsupported operand type(s) for +: 'int' and 'str'
+```
+
+You can turn this off for whatever reasonwith the `--no-exception-handling`
+flag.
+
 ### Piping
 
 If you wondered why it was called `pipe`, here you go: Given multiple
@@ -133,6 +151,24 @@ predicate
 subpredicate
 unpredicated
 ```
+
+Decorated fragments are subject to spy's exception handling too, even if the
+actual exception takes place in the decorator body:
+
+```console
+$ spy -c 'None'
+Traceback (most recent call last):
+  Fragment 1
+    --callable 'None'
+    input to fragment was <SpyFile stream=<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>>
+  File "/home/edk/src/spy/spy/decorators.py", line 26, in callable
+    return result(v)
+TypeError: 'NoneType' object is not callable
+```
+
+Really, spy is lying about this frame being here, but in this case the lie is
+pretty much universally more useful than the truth. You can get the truth, of
+course, by passing `--no-exception-handling` to spy.
 
 ### Limiting output
 
