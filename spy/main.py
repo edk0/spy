@@ -115,7 +115,8 @@ def _main(*steps,
          each_line: 'l' = False,
          start: (int, 's') = 0,
          end: (int, 'e') = None,
-         no_default_fragments = False):
+         no_default_fragments = False,
+         no_exception_handling = False):
     """Run Python code.
 
     steps: At least one Python expression (or suite) to execute
@@ -161,7 +162,9 @@ def _main(*steps,
         if each_line:
             steps.insert(1, fragments.many)
 
-    sys.excepthook = excepthook
+    if not no_exception_handling:
+        sys.excepthook = excepthook
+
     for item in spy.chain(steps):
         pass
 
