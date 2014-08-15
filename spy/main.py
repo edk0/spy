@@ -131,18 +131,22 @@ def _main(*steps,
                 ca = fn(ca)
         steps.append(spy.fragment(ca))
 
+    index_offset = 0
+
     if not no_default_fragments:
         steps.insert(0, fragments.init)
         steps.append(fragments.make_limit(start=start, end=end))
         steps.append(fragments.print)
+        index_offset -= 1
 
         if each_line:
             steps.insert(1, fragments.many)
+            index_offset -= 1
 
     if not no_exception_handling:
         sys.excepthook = get_hook(delete_all=True)
 
-    for item in spy.chain(steps):
+    for item in spy.chain(steps, index_offset=index_offset):
         pass
 
 _main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names, decfn=fn) for fn in decorators))
