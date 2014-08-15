@@ -40,6 +40,17 @@ def test_make_context():
     assert 'collections' in context
 
 
+def test_excepthook(capsys):
+    try:
+        spy.main._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
+    except NameError:
+        spy.main.excepthook(*sys.exc_info())
+        out, err = capsys.readouterr()
+        for line in err.splitlines():
+            assert "spy/main.py" not in line
+        assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
+
+
 def test_run(capsys):
     input = "this is\na piece of sample input\nused to test a complete run"
     expected = "SAMPLE PIECE THIS\nTEST USED INPUT\nRUN COMPLETE\n"
