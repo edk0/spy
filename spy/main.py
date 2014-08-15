@@ -1,5 +1,6 @@
 import builtins
 import importlib
+import inspect
 import itertools
 import sys
 import traceback
@@ -12,6 +13,7 @@ if not hasattr(dis, 'get_instructions'):
     from . import dis34 as dis
 
 from . import fragments
+from .catcher import get_hook
 from .decorators import decorators
 from .objects import Context, _ContextView, SpyFile
 
@@ -31,9 +33,10 @@ def compile_(code, filename='<input>'):
 def make_callable(code, is_expr, context, debuginfo=(None, None)):
     def fragment_fn(value):
         local = context.pipe_view(value)
-        local._debuginfo = debuginfo + (value,)
+        local._spy_debuginfo = debuginfo + (value,)
         result = eval(code, context, local)
         return result if is_expr else local.value
+    fragment_fn._spy_debuginfo = debuginfo
     return fragment_fn
 
 
@@ -66,32 +69,6 @@ def make_context(imports=[], pipe_name=PIPE_NAME):
         if '.' not in imp:
             context[imp] = m
     return context
-
-
-def excepthook(typ, value, tb):
-    print('Traceback (most recent call last):', file=sys.stderr)
-    entries = []
-    while tb is not None:
-        filename, lineno, funcname, source = traceback.extract_tb(tb, limit=1)[0]
-        local = tb.tb_frame.f_locals
-        debuginfo = getattr(local, '_debuginfo', None) or local.get('_spy_debuginfo', None)
-        if debuginfo is not None:
-            del entries[:]
-            if hasattr(local, '_debuginfo'):
-                format = '  {funcname}, line {lineno}\n'
-            else:
-                # line is meaningless, exception didn't take place during  the execution
-                # of the fragment
-                format = '  {funcname}\n'
-            funcname, source, pipe_value = debuginfo
-            entries.append(format.format(**locals()))
-            entries.append('    {}\n'.format(source))
-            entries.append('    input to fragment was {!r}\n'.format(pipe_value))
-        else:
-            entries.extend(traceback.format_list([(filename, lineno, funcname, source)]))
-        tb = tb.tb_next
-    entries.extend(traceback.format_exception_only(typ, value))
-    print(''.join(entries), end='', file=sys.stderr)
 
 
 class _Decorated:
@@ -163,7 +140,7 @@ def _main(*steps,
             steps.insert(1, fragments.many)
 
     if not no_exception_handling:
-        sys.excepthook = excepthook
+        sys.excepthook = get_hook(delete_all=True)
 
     for item in spy.chain(steps):
         pass

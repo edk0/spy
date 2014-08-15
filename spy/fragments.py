@@ -4,8 +4,8 @@ from itertools import islice
 
 import sys
 
+import spy
 from .objects import SpyFile
-from spy import raw
 
 
 def init(ita):
@@ -38,7 +38,7 @@ def pretty_print(thing):
             if n < 5:
                 sliced.append(item)
             else:
-                sliced.append(raw('...'))
+                sliced.append(spy.raw('...'))
                 break
         py_print("<iterable {}>".format(repr(sliced)))
     else:

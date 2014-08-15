@@ -1,4 +1,9 @@
+import itertools
 import traceback
+
+from functools import wraps
+
+import spy.fragments
 
 
 context = None
@@ -11,9 +16,12 @@ DROP = _Drop()
 
 
 def fragment(fn):
-    def fragment(ita):
+    @wraps(fn)
+    def fragment(ita, index=None):
         ita = iter(ita)
+        _spy_fragment_index = index
         for item in ita:
+            _spy_value = item
             _iteration_state.append((item, ita))
             result = fn(item)
             _iteration_state.pop()
@@ -26,15 +34,24 @@ def fragment(fn):
                 yield result
     return fragment
 
+step = fragment
+
 
 class chain:
-    def __init__(self, seq, bootstrap=(None,)):
+    def __init__(self, seq, bootstrap=(None,), index_start=1):
         self.ita = bootstrap
-        for step in seq:
-            self.ita = step(self.ita)
+        for i, step in enumerate(seq):
+            try:
+                self.ita = step(self.ita, i)
+            except:
+                self.ita = step(self.ita)
+
+    @classmethod
+    def with_defaults(cls, seq, **kw):
+        return cls(itertools.chain([spy.fragments.init], seq, [spy.fragments.print]), index_start=0, **kw)
 
     def run_to_exhaustion(self):
-        for item in self.ita:
+        for item in self:
             pass
 
     def __iter__(self):
