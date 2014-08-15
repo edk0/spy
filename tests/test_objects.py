@@ -88,7 +88,6 @@ class TestSpyFile:
     def test_str(self, spyfile):
         assert str(spyfile) == TEST_INPUT
         assert spyfile.replace('a', '!') == TEST_INPUT.replace('a', '!')
-        assert repr(spyfile) == repr(TEST_INPUT)
 
     def test_detach(self, spyfile):
         with pytest.raises(UnsupportedOperation):

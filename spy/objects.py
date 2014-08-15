@@ -93,7 +93,7 @@ class SpyFile(TextIOBase):
         return '\n'.join(self.lines)
 
     def __repr__(self):
-        return repr(str(self))
+        return '<SpyFile stream={!r}>'.format(self.stream)
 
     def _readline(self):
         try:
