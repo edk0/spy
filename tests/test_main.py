@@ -48,6 +48,7 @@ def test_excepthook(capsys):
         out, err = capsys.readouterr()
         for line in err.splitlines():
             assert "spy/main.py" not in line
+        assert "  Fragment 1" in err.splitlines()
         assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
 
 
