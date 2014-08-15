@@ -106,6 +106,34 @@ has
 lines
 ```
 
+### Decorators
+
+Using if statements seems cumbersome and overly-verbose. Fortunately, spy
+provides a couple of function decorators that can be used to express
+common patterns more concisely. From the CLI they are available as options.
+Note that they must appear immediately before the fragment they decorate.
+
+`-c` (or `--callable`) will call the result of the following fragment:
+
+```console
+$ cat json.txt
+{"what": "a json document", "content": ["test"]}
+$ spy -c json.load 'pipe["what"]' < json.txt
+a json document
+```
+
+`-f` (or `--filter`) will tread the following fragment as a predicate by which
+to filter the stream: the value will pass through if the predicate returns any
+true value, or processing will stop if it returns a false one:
+
+```console
+$ spy -l -f '"predicate" in pipe' < /usr/share/dict/words
+appredicate
+predicate
+subpredicate
+unpredicated
+```
+
 ### Limiting output
 
 `-s` and `-e` (`--start` and `--end`) set the range of indexes of results
