@@ -38,17 +38,17 @@ step = fragment
 
 
 class chain:
-    def __init__(self, seq, bootstrap=(None,), index_start=1):
+    def __init__(self, seq, bootstrap=(None,), index_offset=0):
         self.ita = bootstrap
         for i, step in enumerate(seq):
             try:
-                self.ita = step(self.ita, i)
+                self.ita = step(self.ita, i + index_offset + 1)
             except:
                 self.ita = step(self.ita)
 
     @classmethod
     def with_defaults(cls, seq, **kw):
-        return cls(itertools.chain([spy.fragments.init], seq, [spy.fragments.print]), index_start=0, **kw)
+        return cls(itertools.chain([spy.fragments.init], seq, [spy.fragments.print]), index_offset=-1, **kw)
 
     def run_to_exhaustion(self):
         for item in self:
