@@ -26,7 +26,7 @@ def test_make_callable():
 
 def test_get_imports():
     co, is_expr = spy.main.compile_('abc.defg(foo.bar)')
-    assert set(spy.main.get_imports(co)) == {'abc', 'foo', 'foo.bar'}
+    assert set(spy.main.get_imports(co)) >= {'abc', 'foo', 'foo.bar'}
 
 
 def test_make_context():
