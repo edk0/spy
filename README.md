@@ -99,7 +99,7 @@ Traceback (most recent call last):
 TypeError: unsupported operand type(s) for +: 'int' and 'str'
 ```
 
-You can turn this off for whatever reasonwith the `--no-exception-handling`
+You can turn this off for whatever reason with the `--no-exception-handling`
 flag.
 
 ### Piping
