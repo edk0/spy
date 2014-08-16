@@ -1,6 +1,8 @@
 from functools import wraps
 
-from .core import DROP
+from .core import _call_fragment_body, DROP
+
+__all__ = ['callable', 'filter']
 
 decorators = []
 
@@ -24,11 +26,11 @@ def decorator(*names):
 
 @decorator('--callable', '-c')
 def callable(fn, v):
-    result = fn(v)
+    result = _call_fragment_body(fn, v)
     return result(v)
 
 
 @decorator('--filter', '-f')
 def filter(fn, v):
-    result = fn(v)
+    result = _call_fragment_body(fn, v)
     return v if result else DROP
