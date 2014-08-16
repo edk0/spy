@@ -8,7 +8,7 @@ setup(
     zip_safe=True,
     entry_points={
         'console_scripts': [
-            'spy = spy.main:main'
+            'spy = spy.cli:main'
         ]
     },
     install_requires=['clize>=3.0a1'],
