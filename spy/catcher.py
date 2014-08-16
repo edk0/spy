@@ -64,6 +64,13 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             frame_kind = 'decorator'
             filename, lineno, funcname, source = traceback.extract_tb(tb.tb_next, limit=1)[0]
 
+        # the next frame is the fragment body (i.e. any stuff between here and
+        if tb.tb_frame.f_code is core._call_fragment_body.__code__:
+            if delete_in is not None:
+                del entries[delete_in:]
+            delete_in = len(entries)
+            frame_kind = 'callable'
+
         # cli make_callable
         if hasattr(local, '_spy_debuginfo'):
             if delete_in is not None:
@@ -71,7 +78,7 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             fragment_debuginfo = local._spy_debuginfo
             frame_kind = 'synthetic_callable'
 
-        if frame_kind == 'fragment':
+        if frame_kind == 'fragment' or frame_kind == 'callable':
             lines.append('  Fragment {}'.format(fragment_index))
         elif frame_kind == 'decorator':
             decname = getattr(fragment_decorator, '__qualname__', fragment_decorator.__name__)

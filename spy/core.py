@@ -9,6 +9,10 @@ from . import fragments
 _iteration_state = []
 
 
+def _call_fragment_body(f, *a, **kw):
+    return f(*a, **kw)
+
+
 class _Drop:
     pass
 DROP = _Drop()
