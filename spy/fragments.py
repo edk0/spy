@@ -4,7 +4,6 @@ from itertools import islice
 
 import sys
 
-import spy
 from .objects import SpyFile
 
 
@@ -36,11 +35,11 @@ def pretty_print(thing):
         sliced = []
         for n, item in enumerate(thing):
             if n < 5:
-                sliced.append(item)
+                sliced.append(repr(item))
             else:
-                sliced.append(spy.raw('...'))
+                sliced.append('...')
                 break
-        py_print("<iterable {}>".format(repr(sliced)))
+        py_print("<iterable [{}]>".format(', '.join(sliced)))
     else:
         sys.displayhook(thing)
 

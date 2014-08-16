@@ -1,9 +1,7 @@
 import builtins
 import importlib
-import inspect
 import itertools
 import sys
-import traceback
 
 from clize import Clize, run
 from clize.parser import Parameter, NamedParameter
@@ -15,7 +13,7 @@ if not hasattr(dis, 'get_instructions'):
 from . import fragments
 from .catcher import get_hook
 from .decorators import decorators
-from .objects import Context, _ContextView, SpyFile
+from .objects import Context
 
 import spy
 

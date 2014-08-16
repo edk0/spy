@@ -4,18 +4,18 @@ import sys
 
 import pytest
 
-import spy.main
+import spy.cli
 from spy.objects import Context
 
 
 class TestCompile:
     def test_expr(self):
-        code, is_expr = spy.main.compile_('3 + 4')
+        code, is_expr = spy.cli.compile_('3 + 4')
         assert is_expr
         assert eval(code) == 7
 
     def test_exec(self):
-        code, is_expr = spy.main.compile_('x = True')
+        code, is_expr = spy.cli.compile_('x = True')
         assert not is_expr
 
         scope = {}
@@ -25,24 +25,24 @@ class TestCompile:
 
 def test_make_callable():
     context = Context(_pipe_name='pipe')
-    code, is_expr = spy.main.compile_('x = pipe.upper(); pipe = x[::-1]')
-    ca = spy.main.make_callable(code, is_expr, context)
+    code, is_expr = spy.cli.compile_('x = pipe.upper(); pipe = x[::-1]')
+    ca = spy.cli.make_callable(code, is_expr, context)
     assert ca('bar') == 'RAB'
 
 
 def test_get_imports():
-    co, is_expr = spy.main.compile_('abc.defg(foo.bar)')
-    assert set(spy.main.get_imports(co)) >= {'abc', 'foo', 'foo.bar'}
+    co, is_expr = spy.cli.compile_('abc.defg(foo.bar)')
+    assert set(spy.cli.get_imports(co)) >= {'abc', 'foo', 'foo.bar'}
 
 
 def test_make_context():
-    context = spy.main.make_context(['collections', 'i am pretty sure this module does not exist'])
+    context = spy.cli.make_context(['collections', 'i am pretty sure this module does not exist'])
     assert 'collections' in context
 
 
 def test_excepthook(capsys):
     try:
-        spy.main._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
+        spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
     except NameError:
         sys.excepthook(*sys.exc_info())
         out, err = capsys.readouterr()

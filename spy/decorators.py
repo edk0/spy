@@ -1,6 +1,6 @@
 from functools import wraps
 
-import spy
+from .core import DROP
 
 decorators = []
 
@@ -31,4 +31,4 @@ def callable(fn, v):
 @decorator('--filter', '-f')
 def filter(fn, v):
     result = fn(v)
-    return v if result else spy.DROP
+    return v if result else DROP

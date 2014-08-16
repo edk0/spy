@@ -1,9 +1,10 @@
 import contextlib
 import inspect
 import itertools
-import spy
 import sys
 import traceback
+
+from . import core
 
 
 def _hook(typ, exc, tb, *, delete_all=False):
@@ -24,7 +25,7 @@ def _hook(typ, exc, tb, *, delete_all=False):
         lines = []
 
         # cut out this part
-        if tb.tb_frame.f_code == spy.chain.run_to_exhaustion.__code__:
+        if tb.tb_frame.f_code == core.chain.run_to_exhaustion.__code__:
             delete_in = len(entries)
 
         # top level of a spy.fragment()
