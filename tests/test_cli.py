@@ -43,13 +43,15 @@ def test_make_context():
 def test_excepthook(capsys):
     try:
         spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
-    except NameError:
-        sys.excepthook(*sys.exc_info())
+    except SystemExit:
         out, err = capsys.readouterr()
         for line in err.splitlines():
             assert "spy/main.py" not in line
         assert "  Fragment 1" in err.splitlines()
         assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
+
+    with pytest.raises(NameError):
+        spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
 
 
 def test_run(capsys):
