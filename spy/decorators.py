@@ -1,6 +1,6 @@
 from functools import wraps
 
-from .core import _call_fragment_body, DROP
+from .core import _call_fragment_body, DROP, many as _many
 
 __all__ = ['callable', 'filter']
 
@@ -34,3 +34,9 @@ def callable(fn, v):
 def filter(fn, v):
     result = _call_fragment_body(fn, v)
     return v if result else DROP
+
+
+@decorator('--many', '-m')
+def many(fn, v):
+    result = _call_fragment_body(fn, v)
+    return _many(result)
