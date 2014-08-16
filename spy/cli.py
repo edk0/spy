@@ -91,6 +91,7 @@ def _main(*steps,
          each_line: 'l' = False,
          start: (int, 's') = 0,
          end: (int, 'e') = None,
+         pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
          no_default_fragments: Parameter.UNDOCUMENTED = False,
          no_exception_handling: Parameter.UNDOCUMENTED = False):
     """Run Python code.
@@ -117,7 +118,7 @@ def _main(*steps,
         imports |= set(get_imports(co))
         compiled_steps.append((co, is_expr, funcseq, (fragment_name, source)))
 
-    context = make_context(imports)
+    context = make_context(imports, pipe_name=pipe_name)
     spy.context = context
 
     steps = []
