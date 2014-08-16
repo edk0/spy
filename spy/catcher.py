@@ -33,6 +33,8 @@ def _hook(typ, exc, tb, *, delete_all=False):
             if delete_in is not None or delete_all:
                 del entries[delete_in or 0:]
             delete_in = len(entries)
+            if delete_all:
+                delete_in -= 1
             fragment_index = local['_spy_fragment_index']
             if '_spy_value' in local:
                 fragment_value = (local['_spy_value'],)
