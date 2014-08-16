@@ -7,7 +7,18 @@ import traceback
 from . import core
 
 
-def _hook(typ, exc, tb, *, delete_all=False):
+class CaughtException(Exception):
+    def __init__(self, formatted_tb):
+        self.formatted_tb = formatted_tb
+
+    def print_traceback(self):
+        _print(self.formatted_tb)
+
+    def __str__(self):
+        return ''
+
+
+def _format_exc(typ, exc, tb, *, delete_all=False):
     entries = []
     delete_in = None
     skip = 0
@@ -84,13 +95,17 @@ def _hook(typ, exc, tb, *, delete_all=False):
             entries.append(list(traceback.format_list([(filename, lineno, funcname, source)])))
         tb = tb.tb_next
     entries.append(traceback.format_exception_only(typ, exc))
-    print('Traceback (most recent call last):', file=sys.stderr)
+    entries.insert(0, ['Traceback (most recent call last):\n'])
+    return entries
+
+
+def _print(entries):
     print(''.join(itertools.chain.from_iterable(entries)), end='', file=sys.stderr)
 
 
 def get_hook(**kw):
     def excepthook(*a):
-        return _hook(*a, **kw)
+        _print(_format_exc(*a, **kw))
     return excepthook
 
 
@@ -105,8 +120,9 @@ class handler:
     def __exit__(self, typ, exc, traceback):
         if exc is None:
             return
-        _hook(typ, exc, traceback, **self.kw)
+        formatted = _format_exc(typ, exc, traceback, **self.kw)
         if self.exit:
+            _print(formatted)
             raise SystemExit(1) from exc
         else:
-            return True
+            raise CaughtException(formatted) from exc
