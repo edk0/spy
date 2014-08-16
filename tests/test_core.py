@@ -1,3 +1,7 @@
+import sys
+
+from io import StringIO
+
 import spy
 
 
@@ -47,6 +51,18 @@ def test_chain():
     chain = spy.chain(seq, bootstrap=['foo', 'bar'])
     chain.run_to_exhaustion()
     assert output == ['OOF', 'RAB']
+
+
+def test_defaults(capsys):
+    stdin = sys.stdin
+    try:
+        sys.stdin = StringIO('some\ntest\ndata')
+        chain = spy.chain.with_defaults([many])
+        chain.run_to_exhaustion()
+    finally:
+        sys.stdin = stdin
+    out, err = capsys.readouterr()
+    assert out == 'some\ntest\ndata\n'
 
 
 def test_many():
