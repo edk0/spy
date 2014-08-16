@@ -10,8 +10,7 @@ import dis
 if not hasattr(dis, 'get_instructions'):
     from . import dis34 as dis
 
-from . import fragments
-from .catcher import get_hook
+from . import catcher, fragments
 from .decorators import decorators
 from .objects import Context
 
@@ -141,11 +140,13 @@ def _main(*steps,
             steps.insert(1, fragments.many)
             index_offset -= 1
 
-    if not no_exception_handling:
-        sys.excepthook = get_hook(delete_all=True)
+    chain = spy.chain(steps, index_offset=index_offset)
 
-    for item in spy.chain(steps, index_offset=index_offset):
-        pass
+    if no_exception_handling:
+        chain.run_to_exhaustion()
+    else:
+        with catcher.handler(delete_all=True):
+            chain.run_to_exhaustion()
 
 _main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names, decfn=fn) for fn in decorators))
 
