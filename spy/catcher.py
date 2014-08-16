@@ -94,9 +94,19 @@ def get_hook(**kw):
     return excepthook
 
 
-@contextlib.contextmanager
-def hook(**kw):
-    old_hook = sys.excepthook
-    sys.excepthook = get_hook(**kw)
-    yield
-    sys.excepthook = old_hook
+class handler:
+    def __init__(self, exit=True, **kw):
+        self.exit = exit
+        self.kw = kw
+
+    def __enter__(self):
+        pass
+
+    def __exit__(self, typ, exc, traceback):
+        if exc is None:
+            return
+        _hook(typ, exc, traceback, **self.kw)
+        if self.exit:
+            raise SystemExit(1) from exc
+        else:
+            return True
