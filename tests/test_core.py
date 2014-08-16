@@ -66,3 +66,8 @@ def test_drop():
     chain = spy.chain(seq, bootstrap=['foo', 'bar', 'foo', 'test'])
     for item in chain:
         assert item.lower() != 'foo'
+
+
+def test_raw():
+    r = spy.raw('abcdef')
+    assert repr(r) == 'abcdef'
