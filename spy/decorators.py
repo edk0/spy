@@ -7,7 +7,7 @@ __all__ = ['callable', 'filter']
 decorators = []
 
 
-def decorator(*names):
+def decorator(*names, doc=None):
     def wrapperer(dec):
         @wraps(dec)
         def wrapper(fn):
@@ -19,24 +19,25 @@ def decorator(*names):
                 return dec(fn, v)
             return wrapped
         wrapper.decorator_names = names
+        wrapper.decorator_help = doc
         decorators.append(wrapper)
         return wrapper
     return wrapperer
 
 
-@decorator('--callable', '-c')
+@decorator('--callable', '-c', doc='Call the result following fragment')
 def callable(fn, v):
     result = _call_fragment_body(fn, v)
     return result(v)
 
 
-@decorator('--filter', '-f')
+@decorator('--filter', '-f', doc='Treat the fragment as a predicate to filter data')
 def filter(fn, v):
     result = _call_fragment_body(fn, v)
     return v if result else DROP
 
 
-@decorator('--many', '-m')
+@decorator('--many', '-m', doc='Return a value from this fragment for each element of an iterable')
 def many(fn, v):
     result = _call_fragment_body(fn, v)
     return _many(result)

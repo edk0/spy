@@ -77,8 +77,9 @@ class _Decorated:
 
 
 class Decorator(NamedParameter):
-    def __init__(self, *a, decfn, **kw):
+    def __init__(self, *a, description, decfn, **kw):
         super().__init__(*a, **kw)
+        self.description = description
         self.decfn = decfn
 
     def read_argument(self, ba, i):
@@ -90,8 +91,8 @@ def _main(*steps,
          each_line: 'l' = False,
          start: (int, 's') = 0,
          end: (int, 'e') = None,
-         no_default_fragments = False,
-         no_exception_handling = False):
+         no_default_fragments: Parameter.UNDOCUMENTED = False,
+         no_exception_handling: Parameter.UNDOCUMENTED = False):
     """Run Python code.
 
     steps: At least one Python expression (or suite) to execute
@@ -149,7 +150,10 @@ def _main(*steps,
         with catcher.handler(delete_all=True):
             chain.run_to_exhaustion()
 
-_main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names, decfn=fn) for fn in decorators))
+_main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names,
+                                           description=fn.decorator_help,
+                                           decfn=fn)
+                                 for fn in decorators))
 
 def main():
     run(_main)
