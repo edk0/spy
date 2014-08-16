@@ -40,6 +40,12 @@ def test_make_context():
     assert 'collections' in context
 
 
+def test_context_builtins():
+    context = spy.cli.make_context()
+    # inner scope won't have builtins unless context does
+    eval('[int(x) for x in (1, 2)]', context, context)
+
+
 def test_excepthook(capsys):
     try:
         spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')

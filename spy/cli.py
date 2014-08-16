@@ -58,6 +58,7 @@ def get_imports(code):
 
 def make_context(imports=[], pipe_name=PIPE_NAME):
     context = Context(_pipe_name=pipe_name)
+    context.update(builtins.__dict__)
     for imp in imports:
         try:
             m = importlib.import_module(imp)
