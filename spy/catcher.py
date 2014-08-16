@@ -36,16 +36,14 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
         lines = []
 
         # cut out this part
-        if tb.tb_frame.f_code == core.chain.run_to_exhaustion.__code__:
+        if tb.tb_frame.f_code is core.chain.run_to_exhaustion.__code__:
             delete_in = len(entries)
 
         # top level of a spy.fragment()
         if '_spy_fragment_index' in local:
             if delete_in is not None or delete_all:
-                del entries[delete_in or 0:]
+                del entries[0 if delete_all else delete_in:]
             delete_in = len(entries)
-            if delete_all:
-                delete_in -= 1
             fragment_index = local['_spy_fragment_index']
             if '_spy_value' in local:
                 fragment_value = (local['_spy_value'],)
