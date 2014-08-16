@@ -5,11 +5,13 @@
 `spy` stands for “<b>s</b>tream <b>py</b>thon”. It's a CLI for python that chains
 fragments of code together.
 
-**spy is unreleased software**. You can install it if you want (at the time of
-writing, you'll need to grab development versions of clize and sigtools too),
-but please don't expect reliability or stability—I'll make a release when I have
-those things. In particular, support for Python versions older than 3.4 relies
-on a huge hack. Python 2 is not supported at all, and might never be.
+**spy is unreleased software**. You can install it if you want, but please
+don't expect reliability or stability—I'll make a release when I have those
+things. In particular, support for Python versions older than 3.4 relies on
+a huge hack.
+
+spy is compatible with Python 3.2 and newer, and is currently tested on
+CPython 3.2, 3.3 and 3.4, and PyPy3 2.3.1. It is not compatible with Python 2.
 
 ## Introduction
 
@@ -54,12 +56,12 @@ Despite its file-likeness, `pipe` has string methods that act on all the
 input at once:
 
 ```console
-$ spy -l '"-%s-" % pipe' < test.txt
--this-
--file-
--has-
--five-
--lines-
+$ spy 'pipe.upper()' < test.txt
+THIS
+FILE
+HAS
+FIVE
+LINES
 ```
 
 Suites of statements don't yield values, but can achieve the same end by
@@ -74,12 +76,12 @@ Passing `-l` (or `--each-line`) to `spy` will iterate through the lines of
 input, running your code for each one:
 
 ```console
-$ spy -l 'pipe.upper()' < test.txt
-THIS
-FILE
-HAS
-FIVE
-LINES
+$ spy -l '"-%s-" % pipe' < test.txt
+-this-
+-file-
+-has-
+-five-
+-lines-
 ```
 
 With `-l`, `pipe` will be a simple `str` during each iteration.
@@ -131,7 +133,7 @@ provides a couple of function decorators that can be used to express
 common patterns more concisely. From the CLI they are available as options.
 Note that they must appear immediately before the fragment they decorate.
 
-`-c` (or `--callable`) will call the result of the following fragment:
+`-c` (`--callable`) will call the result of the following fragment:
 
 ```console
 $ cat json.txt
@@ -140,7 +142,7 @@ $ spy -c json.load 'pipe["what"]' < json.txt
 a json document
 ```
 
-`-f` (or `--filter`) will tread the following fragment as a predicate by which
+`-f` (`--filter`) will treat the following fragment as a predicate by which
 to filter the stream: the value will pass through if the predicate returns any
 true value, or processing will stop if it returns a false one:
 
@@ -158,10 +160,10 @@ actual exception takes place in the decorator body:
 ```console
 $ spy -c 'None'
 Traceback (most recent call last):
-  Fragment 1
+  Fragment 1, in decorator spy.decorators.callable
     --callable 'None'
     input to fragment was <SpyFile stream=<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>>
-  File "/home/edk/src/spy/spy/decorators.py", line 26, in callable
+  File "/home/edk/src/spy/spy/decorators.py", line 28, in callable
     return result(v)
 TypeError: 'NoneType' object is not callable
 ```
@@ -217,6 +219,13 @@ Of
 Things
 In
 It
+```
+
+`spy.many` is also available in decorator form, as `-m`/`--many`—the command
+above could have been written as:
+
+```console
+$ spy -l -m 'pipe.split()' 'pipe.title()' < test-many.txt
 ```
 
 `spy.collect` is more or less the opposite of `spy.many`, and returns an
