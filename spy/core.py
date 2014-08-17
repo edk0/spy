@@ -21,8 +21,8 @@ DROP = _Drop()
 
 
 def fragment(fn):
-    global _iteration_state
     def fragment(ita, index=None):
+        global _iteration_state
         ita = iter(ita)
         _spy_fragment_index = index
         for _spy_value in ita:
