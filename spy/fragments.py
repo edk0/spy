@@ -41,11 +41,10 @@ def pretty_print(thing):
         py_print("<iterable [{}]>".format(', '.join(sliced)))
     else:
         sys.displayhook(thing)
+    return thing
 
 
 def print(ita):
     global _write
     _write = sys.stdout.write
-    for item in ita:
-        pretty_print(item)
-        yield item
+    return map(pretty_print, ita)
