@@ -48,6 +48,8 @@ class chain:
                 self.ita = step(self.ita, i + index_offset + 1)
             except:
                 self.ita = step(self.ita)
+        self._iter = iter(self.ita)
+        self._next = self._iter.__next__
 
     @classmethod
     def with_defaults(cls, seq, **kw):
@@ -58,7 +60,10 @@ class chain:
             pass
 
     def __iter__(self):
-        return iter(self.ita)
+        return self._iter
+
+    def __next__(self):
+        return self._next()
 
 
 class raw:
