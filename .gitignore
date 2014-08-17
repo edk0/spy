@@ -1,5 +1,9 @@
+build
 __pycache__
+*.egg-info
+*.so
+
+*.sw[op]
+
 .coverage
 htmlcov
-*.egg-info
-*.sw[op]
