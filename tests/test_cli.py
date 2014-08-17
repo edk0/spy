@@ -47,17 +47,21 @@ def test_context_builtins():
 
 
 def test_excepthook(capsys):
+    stdin = sys.stdin
     try:
-        spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
-    except SystemExit:
-        out, err = capsys.readouterr()
-        for line in err.splitlines():
-            assert "spy/main.py" not in line
-        assert "  Fragment 1" in err.splitlines()
-        assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
-
-    with pytest.raises(NameError):
-        spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
+        sys.stdin = io.StringIO("")
+        try:
+            spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
+        except SystemExit:
+            out, err = capsys.readouterr()
+            for line in err.splitlines():
+                assert "spy/main.py" not in line
+            assert "  Fragment 1" in err.splitlines()
+            assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
+        with pytest.raises(NameError):
+            spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
+    finally:
+        sys.stdin = stdin
 
 
 def test_run(capsys):
