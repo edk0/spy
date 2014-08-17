@@ -66,9 +66,7 @@ class SpyFile(TextIOBase):
         return _SpyFile_Iterator(self)
 
     def __len__(self):
-        for _ in self:
-            pass
-        return len(self.lines)
+        return NotImplemented
 
     def __getitem__(self, k):
         if isinstance(k, slice):
