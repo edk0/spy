@@ -54,14 +54,11 @@ class chain:
         return cls(itertools.chain([fragments.init], seq, [fragments.print]), index_offset=-1, **kw)
 
     def run_to_exhaustion(self):
-        for item in self:
+        for item in self.ita:
             pass
 
     def __iter__(self):
-        return self
-
-    def __next__(self):
-        return next(self.ita)
+        return iter(self.ita)
 
 
 class raw:

@@ -61,9 +61,8 @@ class SpyFile(TextIOBase):
         self.lines = []
         self.row = 0
         self.col = 0
-
-    def __iter__(self):
-        return _SpyFile_Iterator(self)
+        self._append = self.lines.append
+        self._next = iter(self.stream).__next__
 
     def __len__(self):
         return NotImplemented
@@ -93,13 +92,19 @@ class SpyFile(TextIOBase):
     def __repr__(self):
         return '<SpyFile stream={!r}>'.format(self.stream)
 
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        l = self._next()
+        if l[-1] == '\n':
+            l = l[:-1]
+        self._append(l)
+        return l
+
     def _readline(self):
         try:
-            l = next(self.stream)
-            if l[-1] == '\n':
-                l = l[:-1]
-            self.lines.append(l)
-            return l
+            return next(self)
         except StopIteration:
             return ''
 
@@ -145,20 +150,3 @@ class SpyFile(TextIOBase):
 
     def detach(self):
         raise UnsupportedOperation
-
-
-class _SpyFile_Iterator:
-    def __init__(self, f):
-        self.f = f
-        self.index = 0
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        try:
-            self.index += 1
-            return self.f[self.index - 1]
-        except IndexError:
-            raise StopIteration
-

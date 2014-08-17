@@ -1,6 +1,6 @@
 from builtins import print as py_print
 from collections import Iterable, Mapping, Sequence
-from itertools import islice
+from itertools import chain, islice
 
 import sys
 
@@ -12,9 +12,7 @@ def init(ita):
 
 
 def many(ita):
-    for thing in ita:
-        for item in thing:
-            yield item
+    return chain.from_iterable(ita)
 
 
 def make_limit(*, start=0, end=None):
