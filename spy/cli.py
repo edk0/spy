@@ -28,11 +28,17 @@ def compile_(code, filename='<input>'):
 
 
 def make_callable(code, is_expr, context, debuginfo=(None, None)):
-    def fragment_fn(value):
-        local = context.pipe_view(value)
-        local._spy_debuginfo = debuginfo + (value,)
-        result = eval(code, context, local)
-        return result if is_expr else local.value
+    if is_expr:
+        def fragment_fn(value):
+            local = context.pipe_view(value)
+            local._spy_debuginfo = debuginfo
+            return eval(code, context, local)
+    else:
+        def fragment_fn(value):
+            local = context.pipe_view(value)
+            local._spy_debuginfo = debuginfo
+            eval(code, context, local)
+            return local.value
     fragment_fn._spy_debuginfo = debuginfo
     return fragment_fn
 
@@ -104,6 +110,8 @@ def _main(*steps,
 
     end: Stop after getting this result (zero-based)
     """
+    sys.setcheckinterval(10000)
+
     compiled_steps = []
     imports = set()
     for i, code in enumerate(steps):

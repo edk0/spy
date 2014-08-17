@@ -3,6 +3,7 @@ from collections import Iterable, Mapping, Sequence
 from itertools import chain, islice
 
 import sys
+py_write = sys.stdout.write
 
 from .objects import SpyFile
 
@@ -28,7 +29,8 @@ def make_limit(*, start=0, end=None):
 
 def pretty_print(thing):
     if isinstance(thing, str):
-        py_print(thing)
+        py_write(thing)
+        py_write('\n')
     elif not isinstance(thing, (Mapping, Sequence)) and isinstance(thing, Iterable):
         sliced = []
         for n, item in enumerate(thing):

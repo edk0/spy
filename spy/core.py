@@ -5,8 +5,10 @@ from functools import wraps
 
 from . import fragments
 
+import dis, sys
 
-_iteration_state = []
+
+_iteration_state = None
 
 
 def _call_fragment_body(f, *a, **kw):
@@ -19,19 +21,17 @@ DROP = _Drop()
 
 
 def fragment(fn):
-    @wraps(fn)
+    global _iteration_state
     def fragment(ita, index=None):
         ita = iter(ita)
         _spy_fragment_index = index
-        for item in ita:
-            _spy_value = item
-            _iteration_state.append((item, ita))
-            result = fn(item)
-            _iteration_state.pop()
+        for _spy_value in ita:
+            _iteration_state = (_spy_value, ita)
+            result = fn(_spy_value)
             if result is DROP:
                 continue
             elif isinstance(result, many):
-                for result in iter(result):
+                for result in result.ita:
                     yield result
             else:
                 yield result
@@ -83,5 +83,5 @@ class many:
 
 
 def collect():
-    init, ita = _iteration_state[-1]
+    init, ita = _iteration_state
     return itertools.chain([init], ita)
