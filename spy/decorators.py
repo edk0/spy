@@ -2,7 +2,7 @@ from functools import wraps
 
 from .core import _call_fragment_body, DROP, many as _many
 
-__all__ = ['callable', 'filter']
+__all__ = ['callable', 'filter', 'many']
 
 decorators = []
 
@@ -25,19 +25,19 @@ def decorator(*names, doc=None):
     return wrapperer
 
 
-@decorator('--callable', '-c', doc='Call the result following fragment')
+@decorator('--callable', '-c', doc='Call the result of this fragment')
 def callable(fn, v):
     result = _call_fragment_body(fn, v)
     return result(v)
 
 
-@decorator('--filter', '-f', doc='Treat the fragment as a predicate to filter data')
+@decorator('--filter', '-f', doc='Treat this fragment as a predicate to filter data')
 def filter(fn, v):
     result = _call_fragment_body(fn, v)
     return v if result else DROP
 
 
-@decorator('--many', '-m', doc='Return a value from this fragment for each element of an iterable')
+@decorator('--many', '-m', doc='Iterate over this fragment')
 def many(fn, v):
     result = _call_fragment_body(fn, v)
     return _many(result)
