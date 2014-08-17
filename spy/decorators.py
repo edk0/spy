@@ -1,8 +1,8 @@
 from functools import wraps
 
-from .core import _call_fragment_body, DROP, many as _many
+from .core import _call_fragment_body, collect, DROP, many as _many
 
-__all__ = ['callable', 'filter', 'many']
+__all__ = ['callable', 'filter', 'many', 'once']
 
 decorators = []
 
@@ -41,3 +41,9 @@ def filter(fn, v):
 def many(fn, v):
     result = _call_fragment_body(fn, v)
     return _many(result)
+
+
+@decorator('--once', '-o', doc='Run this fragment at most once, and ignore its result')
+def once(fn, v):
+    _call_fragment_body(fn, v)
+    return _many(collect())
