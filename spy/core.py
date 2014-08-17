@@ -84,8 +84,4 @@ class many:
 
 def collect():
     init, ita = _iteration_state[-1]
-    def collector():
-        yield init
-        for item in ita:
-            yield item
-    return collector()
+    return itertools.chain([init], ita)
