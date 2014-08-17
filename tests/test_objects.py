@@ -83,7 +83,7 @@ class TestSpyFile:
 
     def test_index(self, spyfile):
         assert spyfile[2] == 'here'
-        assert spyfile[3::2] == ['are', 'more', 'of']
+        assert list(spyfile[3::2]) == ['are', 'more', 'of']
 
     def test_str(self, spyfile):
         assert str(spyfile) == TEST_INPUT
