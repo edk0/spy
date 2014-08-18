@@ -41,8 +41,8 @@ step = fragment
 
 
 class chain:
-    def __init__(self, seq, bootstrap=(None,), index_offset=0):
-        self.ita = bootstrap
+    def __init__(self, seq, init=[None], index_offset=0):
+        self.ita = init
         for i, step in enumerate(seq):
             try:
                 self.ita = step(self.ita, i + index_offset + 1)
