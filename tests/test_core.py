@@ -39,7 +39,7 @@ def collect(v):
 
 def test_chain():
     seq = [noop, upper, noop, reverse, noop]
-    chain = spy.chain(seq, bootstrap=['foo', 'bar'])
+    chain = spy.chain(seq, init=['foo', 'bar'])
     assert list(chain) == ['OOF', 'RAB']
 
     output = []
@@ -48,7 +48,7 @@ def test_chain():
         output.append(v)
     seq.append(capture)
 
-    chain = spy.chain(seq, bootstrap=['foo', 'bar'])
+    chain = spy.chain(seq, init=['foo', 'bar'])
     chain.run_to_exhaustion()
     assert output == ['OOF', 'RAB']
 
@@ -63,19 +63,19 @@ def test_defaults(capsys):
 
 def test_many():
     seq = [many, upper]
-    chain = spy.chain(seq, bootstrap=['foo', 'bar'])
+    chain = spy.chain(seq, init=['foo', 'bar'])
     assert list(chain) == list('FOOBAR')
 
 
 def test_collect():
     seq = [collect]
-    chain = spy.chain(seq, bootstrap=['foo', 'bar'])
+    chain = spy.chain(seq, init=['foo', 'bar'])
     assert list(next(chain)) == ['foo', 'bar']
 
 
 def test_drop():
     seq = [drop_foo]
-    chain = spy.chain(seq, bootstrap=['foo', 'bar', 'foo', 'test'])
+    chain = spy.chain(seq, init=['foo', 'bar', 'foo', 'test'])
     for item in chain:
         assert item.lower() != 'foo'
 
