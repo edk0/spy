@@ -48,7 +48,7 @@ class TestLimit:
         f = spy.fragments.make_limit(end=0)([])
         assert list(f) == []
         f = spy.fragments.make_limit(end=0)(['foo'])
-        assert list(f) == ['...']
+        assert list(f) == []
 
     def test_start(self):
         f = spy.fragments.make_limit(start=2)(['foo', 'bar', 'baz'])
@@ -57,5 +57,5 @@ class TestLimit:
     def test_stops_iterating(self):
         ita = iter(['foo', 'bar', 'baz'])
         f = spy.fragments.make_limit(end=1)(ita)
-        assert list(f) == ['foo', '...']
-        assert list(ita) == ['baz']
+        assert list(f) == ['foo']
+        assert list(ita) == ['bar', 'baz']

@@ -17,12 +17,7 @@ def many(ita):
 
 def make_limit(*, start=0, end=None):
     def limit(ita):
-        for n, item in enumerate(ita):
-            if n >= start and (end is None or n < end):
-                yield item
-            elif end is not None and n >= end:
-                yield '...'
-                break
+        return islice(ita, start, end)
     return limit
 
 
