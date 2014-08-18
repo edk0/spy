@@ -54,13 +54,9 @@ def test_chain():
 
 
 def test_defaults(capsys):
-    stdin = sys.stdin
-    try:
-        sys.stdin = StringIO('some\ntest\ndata')
-        chain = spy.chain.with_defaults([many])
-        chain.run_to_exhaustion()
-    finally:
-        sys.stdin = stdin
+    stream = StringIO('some\ntest\ndata')
+    chain = spy.chain.with_defaults([many], stream=stream)
+    chain.run_to_exhaustion()
     out, err = capsys.readouterr()
     assert out == 'some\ntest\ndata\n'
 

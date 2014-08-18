@@ -52,8 +52,12 @@ class chain:
         self._next = self._iter.__next__
 
     @classmethod
-    def with_defaults(cls, seq, **kw):
-        return cls(itertools.chain([fragments.init], seq, [fragments.print]), index_offset=-1, **kw)
+    def with_defaults(cls, seq, *, stream=None, **kw):
+        start = []
+        if stream is not None:
+            start.append(fragments.init(stream))
+        return cls(itertools.chain(start, seq, [fragments.print]),
+                   index_offset=-len(start), **kw)
 
     def run_to_exhaustion(self):
         for item in self.ita:

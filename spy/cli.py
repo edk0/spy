@@ -142,7 +142,7 @@ def _main(*steps,
     index_offset = 0
 
     if not no_default_fragments:
-        steps.insert(0, fragments.init)
+        steps.insert(0, fragments.init(sys.stdin))
         steps.append(fragments.make_limit(start=start, end=end))
         steps.append(fragments.print)
         index_offset -= 1

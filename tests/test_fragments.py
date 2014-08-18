@@ -7,13 +7,9 @@ import spy.fragments
 
 
 def test_init():
-    stdin = sys.stdin
-    try:
-        sys.stdin = StringIO('these are\nsome lines')
-        f = spy.fragments.init([])
-        assert list(next(f)) == ['these are', 'some lines']
-    finally:
-        sys.stdin = stdin
+    stream = StringIO('these are\nsome lines')
+    f = spy.fragments.init(stream)([])
+    assert list(next(f)) == ['these are', 'some lines']
 
 
 def test_many():

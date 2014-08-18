@@ -7,8 +7,10 @@ import sys
 from .objects import SpyFile
 
 
-def init(ita):
-    yield SpyFile(sys.stdin)
+def init(stream):
+    def init(ita):
+        yield SpyFile(stream)
+    return init
 
 
 def many(ita):
