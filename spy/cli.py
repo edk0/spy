@@ -28,15 +28,15 @@ def compile_(code, filename='<input>'):
 
 
 def make_callable(code, is_expr, context, debuginfo=(None, None)):
+    local = context.pipe_view(None)
+    local._spy_debuginfo = debuginfo
     if is_expr:
         def fragment_fn(value):
-            local = context.pipe_view(value)
-            local._spy_debuginfo = debuginfo
+            local.value = value
             return eval(code, context, local)
     else:
         def fragment_fn(value):
-            local = context.pipe_view(value)
-            local._spy_debuginfo = debuginfo
+            local.value = value
             eval(code, context, local)
             return local.value
     fragment_fn._spy_debuginfo = debuginfo
