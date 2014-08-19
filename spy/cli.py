@@ -105,7 +105,6 @@ class Decorator(NamedParameter):
         if arg[1] == '-':
             i += 1
         while True:
-            ba.skip += 1
             if i >= len(ba.in_args):
                 raise ValueError
             narg = self.parse_one_arg(ba, i)
@@ -120,6 +119,7 @@ class Decorator(NamedParameter):
                 # bad
                 raise ValueError
             i += 1
+            ba.skip += 1
         funcseq.reverse()
         ba.args.append(_Decorated(funcseq, src, ' '.join(names)))
 
