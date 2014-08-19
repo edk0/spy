@@ -4,13 +4,7 @@ from itertools import chain, islice
 
 import sys
 
-from .objects import SpyFile
-
-
-def init(stream):
-    def init(ita):
-        yield SpyFile(stream)
-    return init
+from . import core
 
 
 def many(ita):

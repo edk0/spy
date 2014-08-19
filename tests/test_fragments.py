@@ -6,12 +6,6 @@ from io import StringIO
 import spy.fragments
 
 
-def test_init():
-    stream = StringIO('these are\nsome lines')
-    f = spy.fragments.init(stream)([])
-    assert list(next(f)) == ['these are', 'some lines']
-
-
 def test_many():
     input_ = [['foo', 'bar', 'baz']]
 

@@ -12,7 +12,7 @@ if not hasattr(dis, 'get_instructions'):
 
 from . import catcher, fragments
 from .decorators import decorators
-from .objects import Context
+from .objects import Context, SpyFile
 
 import spy
 
@@ -142,22 +142,21 @@ def _main(*steps,
     index_offset = 0
 
     if not no_default_fragments:
-        steps.insert(0, fragments.init(sys.stdin))
         steps.append(fragments.make_limit(start=start, end=end))
         steps.append(fragments.print)
-        index_offset -= 1
 
         if each_line:
-            steps.insert(1, fragments.many)
+            steps.insert(0, fragments.many)
             index_offset -= 1
 
     chain = spy.chain(steps, index_offset=index_offset)
+    data = [SpyFile(sys.stdin)]
 
     if no_exception_handling:
-        chain.run_to_exhaustion()
+        chain.run_to_exhaustion(data)
     else:
         with catcher.handler(delete_all=True):
-            chain.run_to_exhaustion()
+            chain.run_to_exhaustion(data)
 
 _main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names,
                                            description=fn.decorator_help,

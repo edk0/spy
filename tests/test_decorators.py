@@ -32,11 +32,11 @@ def test_many():
     def test(v):
         return [1, 2, 3, 4, 5]
 
-    l = spy.chain([test])
+    l = spy.chain([test]).apply([None])
     assert list(l) == [1, 2, 3, 4, 5]
 
 
-def test_once():
+def test_once(capsys):
     calls = 0
 
     @spy.fragment
@@ -46,6 +46,9 @@ def test_once():
         calls += 1
         return 'a'
 
-    spy.chain([test], ['x'] * 20).run_to_exhaustion()
+    try:
+        spy.chain([test]).run_to_exhaustion(['x'])
+    except KeyboardInterrupt:
+        assert capsys.readouterr() == ''
 
     assert calls == 1

@@ -3,9 +3,8 @@ import traceback
 
 from functools import wraps
 
-from . import fragments
 
-import dis, sys
+from .objects import SpyFile
 
 
 _iteration_state = None
@@ -15,9 +14,10 @@ def _call_fragment_body(f, *a, **kw):
     return f(*a, **kw)
 
 
-class _Drop:
+class _Constant:
     pass
-DROP = _Drop()
+
+DROP = _Constant()
 
 
 def fragment(fn):
@@ -41,26 +41,26 @@ step = fragment
 
 
 class chain:
-    def __init__(self, seq, init=[None], index_offset=0):
-        self.ita = init
-        for i, step in enumerate(seq):
-            try:
-                self.ita = step(self.ita, i + index_offset + 1)
-            except:
-                self.ita = step(self.ita)
-        self._iter = iter(self.ita)
-        self._next = self._iter.__next__
+    def __init__(self, seq, index_offset=0):
+        self.seq = seq
+        self.index_offset = index_offset
 
     @classmethod
-    def with_defaults(cls, seq, *, stream=None, **kw):
-        start = []
-        if stream is not None:
-            start.append(fragments.init(stream))
-        return cls(itertools.chain(start, seq, [fragments.print]),
-                   index_offset=-len(start), **kw)
+    def with_defaults(cls, seq, **kw):
+        from . import fragments
+        return cls(itertools.chain(seq, [fragments.print]), **kw)
 
-    def run_to_exhaustion(self):
-        for item in self.ita:
+    def apply(self, ita):
+        for i, step in enumerate(self.seq):
+            try:
+                ita = step(ita, index=i + self.index_offset + 1)
+            except TypeError:
+                ita = step(ita)
+        for item in ita:
+            yield item
+
+    def run_to_exhaustion(self, *a, **kw):
+        for item in self.apply(*a, **kw):
             pass
 
     def __iter__(self):
@@ -81,6 +81,9 @@ class raw:
 class many:
     def __init__(self, ita):
         self.ita = ita
+
+    def __iter__(self):
+        return iter(self.ita)
 
 
 def collect():

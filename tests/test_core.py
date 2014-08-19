@@ -39,8 +39,8 @@ def collect(v):
 
 def test_chain():
     seq = [noop, upper, noop, reverse, noop]
-    chain = spy.chain(seq, init=['foo', 'bar'])
-    assert list(chain) == ['OOF', 'RAB']
+    chain = spy.chain(seq)
+    assert list(chain.apply(['FOO', 'BAR'])) == ['OOF', 'RAB']
 
     output = []
     @spy.fragment
@@ -48,35 +48,34 @@ def test_chain():
         output.append(v)
     seq.append(capture)
 
-    chain = spy.chain(seq, init=['foo', 'bar'])
-    chain.run_to_exhaustion()
+    chain = spy.chain(seq)
+    chain.run_to_exhaustion(['FOO', 'BAR'])
     assert output == ['OOF', 'RAB']
 
 
 def test_defaults(capsys):
-    stream = StringIO('some\ntest\ndata')
-    chain = spy.chain.with_defaults([many], stream=stream)
-    chain.run_to_exhaustion()
+    chain = spy.chain.with_defaults([many])
+    chain.run_to_exhaustion([['some', 'test', 'data']])
     out, err = capsys.readouterr()
     assert out == 'some\ntest\ndata\n'
 
 
 def test_many():
     seq = [many, upper]
-    chain = spy.chain(seq, init=['foo', 'bar'])
-    assert list(chain) == list('FOOBAR')
+    chain = spy.chain(seq)
+    assert list(chain.apply(['foo', 'bar'])) == list('FOOBAR')
 
 
 def test_collect():
     seq = [collect]
-    chain = spy.chain(seq, init=['foo', 'bar'])
-    assert list(next(chain)) == ['foo', 'bar']
+    chain = spy.chain(seq)
+    assert list(next(chain.apply(['foo', 'bar']))) == ['foo', 'bar']
 
 
 def test_drop():
     seq = [drop_foo]
-    chain = spy.chain(seq, init=['foo', 'bar', 'foo', 'test'])
-    for item in chain:
+    chain = spy.chain(seq)
+    for item in chain.apply(['foo', 'bar', 'foo', 'test']):
         assert item.lower() != 'foo'
 
 
