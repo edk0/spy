@@ -63,12 +63,6 @@ class chain:
         for item in self.apply(*a, **kw):
             pass
 
-    def __iter__(self):
-        return self._iter
-
-    def __next__(self):
-        return self._next()
-
 
 class raw:
     def __init__(self, s):
