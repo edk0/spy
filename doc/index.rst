@@ -11,7 +11,7 @@ Contents
    :maxdepth: 2
 
    intro
+   cli-reference
    from-python
    api/index
    glossary
-   
