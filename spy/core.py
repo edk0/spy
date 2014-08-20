@@ -105,9 +105,6 @@ class many:
     def __init__(self, ita):
         self.ita = ita
 
-    def __iter__(self):
-        return iter(self.ita)
-
 
 def collect():
     init, ita = _iteration_state
