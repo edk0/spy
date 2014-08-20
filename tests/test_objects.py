@@ -70,6 +70,10 @@ class TestSpyFile:
         assert spyfile.read(0) == ''
         assert spyfile.read() == TEST_INPUT[27:]
 
+    def test_len(self, spyfile):
+        with pytest.raises(TypeError):
+            len(spyfile)
+
     def test_readline(self, spyfile):
         spyfile.read(5)
         assert spyfile.readline() == 'is a test input\n'

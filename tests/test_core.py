@@ -1,3 +1,4 @@
+import pytest
 import sys
 
 from io import StringIO
@@ -33,8 +34,8 @@ def many(v):
 
 
 @spy.fragment
-def collect(v):
-    return spy.collect()
+def collect(v, context):
+    return spy.collect(context)
 
 
 def test_chain():
@@ -51,6 +52,11 @@ def test_chain():
     chain = spy.chain(seq)
     chain.run_to_exhaustion(['FOO', 'BAR'])
     assert output == ['OOF', 'RAB']
+
+
+def test_index_offset():
+    with pytest.raises(TypeError):
+        c = spy.chain([noop], 'fubar')
 
 
 def test_format():
@@ -81,6 +87,11 @@ def test_collect():
     seq = [collect]
     chain = spy.chain(seq)
     assert list(next(chain.apply(['foo', 'bar']))) == ['foo', 'bar']
+
+
+def test_collect_nocontext():
+    with pytest.raises(ValueError):
+        spy.collect(None)
 
 
 def test_drop():

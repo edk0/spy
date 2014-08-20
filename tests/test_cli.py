@@ -46,18 +46,40 @@ def test_context_builtins():
     eval('[int(x) for x in (1, 2)]', context, context)
 
 
+def test_argument_errors():
+    test_inputs = [
+        ['-o'],
+        ['-o', '-o'],
+        ['-o', '-l'],
+        ['-o', '--once'],
+        ['--once'],
+        ['--once', '-o'],
+        ['-l', '-o']
+    ]
+    stdin = sys.stdin
+    try:
+        sys.stdin = io.StringIO("")
+        for input_ in test_inputs:
+            print(input_)
+            try:
+                spy.cli._main(sys.argv[0], *input_)
+            except ValueError as e:
+                assert 'No value found after --once' in str(e)
+    finally:
+        sys.stdin = stdin
+
+
 def test_excepthook(capsys):
     stdin = sys.stdin
     try:
         sys.stdin = io.StringIO("")
-        try:
+        with pytest.raises(SystemExit):
             spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
-        except SystemExit:
-            out, err = capsys.readouterr()
-            for line in err.splitlines():
-                assert "spy/main.py" not in line
-            assert "  Fragment 1" in err.splitlines()
-            assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
+        out, err = capsys.readouterr()
+        for line in err.splitlines():
+            assert "spy/main.py" not in line
+        assert "  Fragment 1" in err.splitlines()
+        assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
         with pytest.raises(NameError):
             spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
     finally:
@@ -81,6 +103,7 @@ def test_run(capsys):
         with pytest.raises(SystemExit):
             from spy import __main__
         out, err = capsys.readouterr()
+        assert err == ''
         assert out == expected
     finally:
         sys.stdin = stdin
