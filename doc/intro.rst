@@ -153,12 +153,32 @@ Exception handling
 If your code raises an uncaught exception, spy will try to intercept and
 reformat the traceback, omitting the frames from spy's own machinery. Special
 frames will be inserted where appropriate describing the fragment's position,
-source code, and input data at the time the exception was raised.
+source code, and input data at the time the exception was raised:
+
+.. code-block:: console
+
+   $ spy 'None + 2'
+   Traceback (most recent call last):
+     Fragment 1
+       None + 2
+       input to fragment was <SpyFile stream=<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>>
+   TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'
 
 If an exception is raised in a decorator outside the call to the fragment body,
 the fragment is mentioned anyway. This is not strictly true, given that none of
 the code in the fragment takes part in the call stack in this case, but the
-this particular lie is almost universally more useful.
+this particular lie is almost universally more useful:
+
+.. code-block:: console
+
+   $ spy -c None
+   Traceback (most recent call last):
+     Fragment 1, in decorator spy.decorators.callable
+       --callable 'None'
+       input to fragment was <SpyFile stream=<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>>
+     File "/home/edk/src/spy/spy/decorators.py", line 44, in callable
+       return result(v)
+   TypeError: 'NoneType' object is not callable
 
 The philosophy here is that what made it go wrong is more interesting than
 *exactly how* it went wrong, so that's what spy gives you by default. You can
