@@ -95,20 +95,17 @@ def test_show_fragments(capsys):
   4 | <cli> --many --many 'baz'
 '''
     stdin = sys.stdin
-    argv = sys.argv
     try:
         sys.stdin = io.StringIO('')
-        sys.argv = sys.argv[0:1] + [
+        argv = sys.argv[0:1] + [
                 '--show-fragments',
                 '-l',
                 '-fc', 'int',
                 '--once', '-o', 'asdfgfa',
                 '-m', 'test',
                 '-m', '--many', 'baz']
-        with pytest.raises(SystemExit):
-            from spy import __main__
+        spy.cli._main(*argv)
         out, err = capsys.readouterr()
         assert expected in out
     finally:
-        sys.argv = argv
         sys.stdin = stdin
