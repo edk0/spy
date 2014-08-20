@@ -35,6 +35,7 @@ def fragment(fn):
                     yield result
             else:
                 yield result
+    fragment.fragment_fn = fn
     return fragment
 
 step = fragment
@@ -62,6 +63,32 @@ class chain:
     def run_to_exhaustion(self, *a, **kw):
         for item in self.apply(*a, **kw):
             pass
+
+    def format(self):
+        l = []
+        for n, step in enumerate(self.seq):
+            i = n + self.index_offset + 1
+            if i < 1:
+                i = ''
+            if hasattr(step, 'fragment_fn') and hasattr(step.fragment_fn, '_spy_debuginfo'):
+                desc = '<cli> ' + step.fragment_fn._spy_debuginfo[1]
+            else:
+                if hasattr(step, 'fragment_fn'):
+                    step = step.fragment_fn
+                    typ = ''
+                if hasattr(step, '__qualname__'):
+                    name = step.__qualname__
+                    typ = '<internal> '
+                elif hasattr(step, '__name__'):
+                    name = step.__name__
+                    typ = '<internal> '
+                else:
+                    name = 'UNKNOWN'
+                if hasattr(step, '__module__'):
+                    name = step.__module__ + '.' + name
+                desc = typ + name
+            l.append('{:3} | {}'.format(i, desc))
+        return '\n'.join(l)
 
 
 class raw:
