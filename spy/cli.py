@@ -131,7 +131,7 @@ class Decorator(NamedParameter):
             try:
                 arg = ba.in_args[i]
             except:
-                raise MissingValue from None
+                raise MissingValue
         else:
             if len(arg) >= 3:
                 arg = '-' + arg[2:]
@@ -140,7 +140,7 @@ class Decorator(NamedParameter):
                 try:
                     arg = ba.in_args[i]
                 except:
-                    raise MissingValue from None
+                    raise MissingValue
         while True:
             narg = self.parse_one_arg(ba, arg)
             if isinstance(narg, list):
