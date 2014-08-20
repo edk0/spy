@@ -1,3 +1,4 @@
+import inspect
 import itertools
 import traceback
 
@@ -5,9 +6,6 @@ from functools import wraps
 
 
 from .objects import SpyFile
-
-
-_iteration_state = None
 
 
 def _call_fragment_body(f, *a, **kw):
@@ -20,14 +18,25 @@ class _Constant:
 DROP = _Constant()
 
 
+class _Context:
+    def __init__(self, iter_value, iter_iter):
+        self.iter_value = iter_value
+        self.iter_iter = iter_iter
+
+
 def fragment(fn):
     def fragment(ita, index=None):
-        global _iteration_state
         ita = iter(ita)
         _spy_fragment_index = index
+        argspec = inspect.getfullargspec(fn)
+        with_context = (len(argspec.args) >= 2 or argspec.varargs or
+                        argspec.varkw or 'context' in argspec.kwonlyargs)
         for _spy_value in ita:
-            _iteration_state = (_spy_value, ita)
-            result = fn(_spy_value)
+            if with_context:
+                context = _Context(_spy_value, ita)
+                result = fn(_spy_value, context)
+            else:
+                result = fn(_spy_value)
             if result is DROP:
                 continue
             elif isinstance(result, many):
@@ -106,6 +115,7 @@ class many:
         self.ita = ita
 
 
-def collect():
-    init, ita = _iteration_state
-    return itertools.chain([init], ita)
+def collect(context):
+    if context is None:
+        raise ValueError("Can't collect without a valid context (got None)")
+    return itertools.chain([context.iter_value], context.iter_iter)
