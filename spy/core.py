@@ -1,3 +1,4 @@
+import numbers
 import inspect
 import itertools
 import traceback
@@ -53,6 +54,8 @@ step = fragment
 class chain:
     def __init__(self, seq, index_offset=0):
         self.seq = seq
+        if not isinstance(index_offset, numbers.Integral):
+            raise TypeError('index_offset must be integral')
         self.index_offset = index_offset
 
     @classmethod
