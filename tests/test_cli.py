@@ -92,6 +92,7 @@ def test_show_fragments(capsys):
   1 | <cli> --filter --callable 'int'
   2 | <cli> --once --once 'asdfgfa'
   3 | <cli> --many 'test'
+  4 | <cli> --many --many 'baz'
 '''
     stdin = sys.stdin
     argv = sys.argv
@@ -102,7 +103,8 @@ def test_show_fragments(capsys):
                 '-l',
                 '-fc', 'int',
                 '--once', '-o', 'asdfgfa',
-                '-m', 'test']
+                '-m', 'test',
+                '-m', '--many', 'baz']
         with pytest.raises(SystemExit):
             from spy import __main__
         out, err = capsys.readouterr()
