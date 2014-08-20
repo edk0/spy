@@ -60,6 +60,8 @@ class chain:
         for item in ita:
             yield item
 
+    __call__ = apply
+
     def run_to_exhaustion(self, *a, **kw):
         for item in self.apply(*a, **kw):
             pass
