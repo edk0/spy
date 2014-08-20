@@ -68,7 +68,7 @@ def make_context(imports=[], pipe_name=PIPE_NAME):
     for imp in imports:
         try:
             m = importlib.import_module(imp)
-        except ImportError:
+        except (ImportError, OSError):
             continue
         if '.' not in imp:
             context[imp] = m
