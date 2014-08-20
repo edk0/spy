@@ -53,6 +53,16 @@ def test_chain():
     assert output == ['OOF', 'RAB']
 
 
+def test_format():
+    seq = [noop, upper]
+    chain = spy.chain(seq, index_offset=-1)
+    lines = chain.format().splitlines()
+    assert lines[0].strip().startswith('|')
+    assert 'test_core.noop' in lines[0]
+    assert lines[1].strip().startswith('1 |')
+    assert 'test_core.upper' in lines[1]
+
+
 def test_defaults(capsys):
     chain = spy.chain.with_defaults([many])
     chain.run_to_exhaustion([['some', 'test', 'data']])

@@ -85,3 +85,28 @@ def test_run(capsys):
     finally:
         sys.stdin = stdin
         sys.argv = argv
+
+
+def test_show_fragments(capsys):
+    expected = '''
+  1 | <cli> --filter --callable 'int'
+  2 | <cli> --once --once 'asdfgfa'
+  3 | <cli> --many 'test'
+'''
+    stdin = sys.stdin
+    argv = sys.argv
+    try:
+        sys.stdin = io.StringIO('')
+        sys.argv = sys.argv[0:1] + [
+                '--show-fragments',
+                '-l',
+                '-fc', 'int',
+                '--once', '-o', 'asdfgfa',
+                '-m', 'test']
+        with pytest.raises(SystemExit):
+            from spy import __main__
+        out, err = capsys.readouterr()
+        assert expected in out
+    finally:
+        sys.argv = argv
+        sys.stdin = stdin
