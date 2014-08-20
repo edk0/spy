@@ -42,27 +42,27 @@ Functions
    be raised. Otherwise, a :exc:`CaughtException` will be raised—you can use its
    :meth:`~CaughtException.print_traceback` method to print the traceback.
 
-.. class:: chain(seq, init=[None])
+.. class:: chain(seq)
 
-   Construct a chain of :term:`fragments <fragment>` from ``seq``. When
-   iterated, yield values from the right-hand end of the chain.
+   Construct a chain of :term:`fragments <fragment>` from ``seq``.
 
    :param seq: Fragments to chain together
    :type seq: :term:`sequence`
-   :param init: Input with which to feed the first fragment
-   :type init: :term:`iterable`
 
-   .. method:: run_to_exhaustion()
+   .. method:: __call__(data)
 
-      Iterate until the chain runs out of data.
+      Alias for :meth:`apply`.
 
-   .. classmethod:: with_defaults(seq, \*, stream=None, \*\*kwargs)
+   .. method:: apply(data)
 
-      Like the standard constructor, but with useful fragments inserted at
-      either end of ``seq``. If ``stream`` is specified, this includes a
-      fragment which yields a file-like object wrapping the given stream.
+      Feed ``data`` into the fragment chain, and return an iterator over the
+      resulting data.
 
-.. function:: collect()
+   .. method:: run_to_exhaustion(data)
+
+      Call :meth:`apply`, then iterate until the chain runs out of data.
+
+.. function:: collect(context)
 
    Return an :term:`iterator` of the elements being processed by the current
    fragment. Can be used to write a fragment that consumes multiple items.
@@ -70,7 +70,13 @@ Functions
 .. decorator:: fragment
 
    Given a :term:`callable` ``func``, return a :term:`fragment` that calls
-   ``func`` to process data. ``func`` must take one positional argument.
+   ``func`` to process data. ``func`` must take at least one positional
+   argument, a single value to process and return.
+
+   Optionally it can take another argument, called ``context``. If it does, a
+   context object will be passed to it on each invocation. This object has no
+   documented public functionality; its purpose is to be passed to spy API
+   functions that require it (namely :func:`collect`).
 
 .. function:: many(ita)
 
