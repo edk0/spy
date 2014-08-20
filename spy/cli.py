@@ -5,6 +5,7 @@ import itertools
 import sys
 
 from clize import Clize, run
+from clize.errors import ArgumentError, MissingValue
 from clize.parser import Parameter, NamedParameter
 
 import dis
@@ -127,28 +128,33 @@ class Decorator(NamedParameter):
         arg = ba.in_args[i]
         if arg[1] == '-':
             i += 1
-            arg = ba.in_args[i]
-        elif arg[0] == '-':
+            try:
+                arg = ba.in_args[i]
+            except:
+                raise MissingValue from None
+        else:
             if len(arg) >= 3:
                 arg = '-' + arg[2:]
             else:
                 i += 1
-                arg = ba.in_args[i]
+                try:
+                    arg = ba.in_args[i]
+                except:
+                    raise MissingValue from None
         while True:
-            if i >= len(ba.in_args):
-                raise ValueError
             narg = self.parse_one_arg(ba, arg)
             if isinstance(narg, list):
                 for dec in narg:
+                    if not isinstance(dec, Decorator):
+                        raise MissingValue
                     funcseq.append(dec.decfn)
                     names.append(dec.display_name)
             elif isinstance(narg, str):
                 src = narg
                 break
-            else:
-                # bad
-                raise ValueError
             i += 1
+            if i >= len(ba.in_args):
+                raise MissingValue
             arg = ba.in_args[i]
         ba.skip = i - io
         funcseq.reverse()
