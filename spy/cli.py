@@ -88,9 +88,8 @@ class Decorator(NamedParameter):
         self.description = description
         self.decfn = decfn
 
-    def parse_one_arg(self, ba, i):
-        arg = ba.in_args[i]
-        if arg[1] == '-':
+    def parse_one_arg(self, ba, arg):
+        if arg[0:2] == '--':
             return [ba.sig.aliases[arg]]
         elif arg[0] == '-':
             return [ba.sig.aliases['-' + c] for c in arg[1:]]
@@ -99,15 +98,23 @@ class Decorator(NamedParameter):
 
     def read_argument(self, ba, i):
         src = None
-        funcseq = []
-        names = []
+        io = i
+        funcseq = [self.decfn]
+        names = [self.display_name]
         arg = ba.in_args[i]
         if arg[1] == '-':
             i += 1
+            arg = ba.in_args[i]
+        elif arg[0] == '-':
+            if len(arg) >= 3:
+                arg = '-' + arg[2:]
+            else:
+                i += 1
+                arg = ba.in_args[i]
         while True:
             if i >= len(ba.in_args):
                 raise ValueError
-            narg = self.parse_one_arg(ba, i)
+            narg = self.parse_one_arg(ba, arg)
             if isinstance(narg, list):
                 for dec in narg:
                     funcseq.append(dec.decfn)
@@ -119,7 +126,8 @@ class Decorator(NamedParameter):
                 # bad
                 raise ValueError
             i += 1
-            ba.skip += 1
+            arg = ba.in_args[i]
+        ba.skip = i - io
         funcseq.reverse()
         ba.args.append(_Decorated(funcseq, src, ' '.join(names)))
 
