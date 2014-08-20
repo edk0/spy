@@ -130,7 +130,8 @@ def _main(*steps,
          end: (int, 'e') = None,
          pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
          no_default_fragments: Parameter.UNDOCUMENTED = False,
-         no_exception_handling: Parameter.UNDOCUMENTED = False):
+         no_exception_handling: Parameter.UNDOCUMENTED = False,
+         show_fragments: Parameter.UNDOCUMENTED = False):
     """Run Python code.
 
     steps: At least one Python expression (or suite) to execute
@@ -182,6 +183,10 @@ def _main(*steps,
 
     chain = spy.chain(steps, index_offset=index_offset)
     data = [SpyFile(sys.stdin)]
+
+    if show_fragments:
+        print(chain.format())
+        return
 
     if no_exception_handling:
         chain.run_to_exhaustion(data)
