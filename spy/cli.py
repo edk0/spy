@@ -1,4 +1,5 @@
 import builtins
+import functools
 import importlib
 import itertools
 import sys
@@ -20,6 +21,24 @@ import spy
 PIPE_NAME = 'pipe'
 
 
+class _ModuleProxy:
+    def __init__(self, module):
+        self._module = module
+        self._context = None
+
+    def __getattr__(self, k):
+        v = getattr(self._module, k)
+        if getattr(v, '_spy_inject_context', None) is True:
+            @functools.wraps(v)
+            def wrapper(*a, **kw):
+                if 'context' not in kw:
+                    kw['context'] = self._context
+                return v(*a, **kw)
+            return wrapper
+        else:
+            return v
+
+
 def compile_(code, filename='<input>'):
     try:
         return compile(code, filename, 'eval', 0, True, 0), True
@@ -27,17 +46,21 @@ def compile_(code, filename='<input>'):
         return compile(code, filename, 'exec', 0, True, 0), False
 
 
-def make_callable(code, is_expr, context, debuginfo=(None, None)):
-    local = context.pipe_view(None)
+def make_callable(code, is_expr, env, debuginfo=(None, None)):
+    local = env.pipe_view(None)
     local._spy_debuginfo = debuginfo
+    proxy = _ModuleProxy(spy)
+    local.overlay['spy'] = proxy
     if is_expr:
-        def fragment_fn(value):
+        def fragment_fn(value, context=None):
             local.value = value
-            return eval(code, context, local)
+            proxy._context = context
+            return eval(code, env, local)
     else:
-        def fragment_fn(value):
+        def fragment_fn(value, context=None):
             local.value = value
-            eval(code, context, local)
+            proxy._context = context
+            eval(code, env, local)
             return local.value
     fragment_fn._spy_debuginfo = debuginfo
     return fragment_fn

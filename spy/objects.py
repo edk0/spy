@@ -28,6 +28,7 @@ class _ContextView:
     def __init__(self, context, value):
         self.context = context
         self.value = value
+        self.overlay = {}
         self._debuginfo = (None, None)
 
     def __contains__(self, k):
@@ -36,6 +37,8 @@ class _ContextView:
     def __getitem__(self, k):
         if k == self.context.pipe_name:
             return self.value
+        elif k in self.overlay:
+            return self.overlay[k]
         return self.context[k]
 
     def __setitem__(self, k, v):
