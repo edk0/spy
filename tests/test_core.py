@@ -54,13 +54,14 @@ def test_chain():
 
 
 def test_format():
-    seq = [noop, upper]
+    seq = [noop, upper, 'spaghetti']
     chain = spy.chain(seq, index_offset=-1)
     lines = chain.format().splitlines()
     assert lines[0].strip().startswith('|')
     assert 'test_core.noop' in lines[0]
     assert lines[1].strip().startswith('1 |')
     assert 'test_core.upper' in lines[1]
+    assert 'UNKNOWN' in lines[2]
 
 
 def test_defaults(capsys):
