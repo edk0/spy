@@ -15,8 +15,8 @@ class Context(dict):
         else:
             return NotImplemented
 
-    def pipe_view(self, value):
-        return _ContextView(self, value)
+    def view(self):
+        return _ContextView(self)
 
     @recursive_repr()
     def __repr__(self):
@@ -25,37 +25,34 @@ class Context(dict):
 
 
 class _ContextView:
-    def __init__(self, context, value):
+    def __init__(self, context):
         self.context = context
-        self.value = value
         self.overlay = {}
         self._debuginfo = (None, None)
 
     def __contains__(self, k):
-        return k == self.context.pipe_name or k in self.context
+        return k in self.overlay or k in self.context
 
     def __getitem__(self, k):
-        if k == self.context.pipe_name:
-            return self.value
-        elif k in self.overlay:
+        if k in self.overlay:
             return self.overlay[k]
         return self.context[k]
 
     def __setitem__(self, k, v):
-        if k == self.context.pipe_name:
-            self.value = v
+        if k in self.overlay:
+            self.overlay[k] = v
         else:
             self.context[k] = v
 
     def __delitem__(self, k):
-        if k == self.context.pipe_name:
-            raise TypeError("can't delete pipe")
+        if k in self.overlay:
+            raise TypeError("can't delete: {!r}".format(k))
         del self.context[k]
 
     @recursive_repr()
     def __repr__(self):
-        return '{}(context={}, value={})'.format(self.__class__.__name__,
-                repr(self.context), repr(self.value))
+        return '{}(context={}, overlay={})'.format(self.__class__.__name__,
+                repr(self.context), repr(self.overlay))
 
 
 class SpyFile(TextIOBase):

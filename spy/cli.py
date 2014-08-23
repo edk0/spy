@@ -48,21 +48,21 @@ def compile_(code, filename='<input>'):
 
 
 def make_callable(code, is_expr, env, debuginfo=(None, None)):
-    local = env.pipe_view(None)
+    local = env.view()
     local._spy_debuginfo = debuginfo
     proxy = _ModuleProxy(spy)
     local.overlay['spy'] = proxy
     if is_expr:
         def fragment_fn(value, context=None):
-            local.value = value
+            local.overlay[PIPE_NAME] = value
             proxy._context = context
             return eval(code, env, local)
     else:
         def fragment_fn(value, context=None):
-            local.value = value
+            local.overlay[PIPE_NAME] = value
             proxy._context = context
             eval(code, env, local)
-            return local.value
+            return local[PIPE_NAME]
     fragment_fn._spy_debuginfo = debuginfo
     return fragment_fn
 

@@ -31,10 +31,13 @@ class TestContext:
             c += 3
 
     def test_view(self, context):
+        PIPE_NAME = 'pipe'
+
         c = context
         c['test'] = 'fubar'
-        c[c.pipe_name] = 'foo'
-        v = c.pipe_view('bar')
+        c[PIPE_NAME] = 'foo'
+        v = c.view()
+        v.overlay[PIPE_NAME] = 'bar'
 
         assert v['test'] == 'fubar'
         v['test'] = '123'
@@ -44,18 +47,18 @@ class TestContext:
         del v['test']
         assert 'test' not in v and 'test' not in c
 
-        assert v[c.pipe_name] == 'bar'
-        v[c.pipe_name] = 'baz'
-        assert v[c.pipe_name] == 'baz'
+        assert v[PIPE_NAME] == 'bar'
+        v[PIPE_NAME] = 'baz'
+        assert v[PIPE_NAME] == 'baz'
         with pytest.raises(TypeError):
-            del v[c.pipe_name]
+            del v[PIPE_NAME]
 
-        assert c[c.pipe_name] == 'foo'
+        assert c[PIPE_NAME] == 'foo'
 
     def test_repr(self, context):
         c = context
         repr(c)
-        v = c.pipe_view('test')
+        v = c.view()
         repr(v)
 
 
