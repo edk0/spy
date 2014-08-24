@@ -4,8 +4,7 @@ from reprlib import recursive_repr
 
 
 class Context(dict):
-    def __init__(self, *a, _pipe_name, **kw):
-        self.pipe_name = _pipe_name
+    def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
 
     def __iadd__(self, other):
