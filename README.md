@@ -14,4 +14,4 @@ spy is compatible with Python 3.2 and newer, and is currently tested on
 CPython 3.2, 3.3 and 3.4, and PyPy3 2.3.1. It is not compatible with Python 2.
 
 **The docs, including introduction, are
-(https://spy.readthedocs.org/en/latest/)[on ReadTheDocs].**
+[on ReadTheDocs](https://spy.readthedocs.org/en/latest/).**
