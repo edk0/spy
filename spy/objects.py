@@ -7,13 +7,6 @@ class Context(dict):
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
 
-    def __iadd__(self, other):
-        if isinstance(other, Mapping):
-            self.update(other)
-            return self
-        else:
-            return NotImplemented
-
     def view(self):
         return _ContextView(self)
 
