@@ -22,14 +22,6 @@ def context():
 
 
 class TestContext:
-    def test_update(self, context):
-        c = context
-        c += {'foo': 'bar'}
-        assert any(item == ('foo', 'bar') for item in c.items())
-
-        with pytest.raises(TypeError):
-            c += 3
-
     def test_view(self, context):
         PIPE_NAME = 'pipe'
 
