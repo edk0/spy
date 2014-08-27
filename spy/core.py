@@ -59,6 +59,15 @@ class chain:
         self.index_offset = index_offset
 
     @classmethod
+    def auto_fragments(cls, seq, **kw):
+        def make_fragment(f):
+            if hasattr(f, '__code__') and f.__code__.co_flags & 0x20:
+                return f
+            else:
+                return fragment(f)
+        return cls(map(make_fragment, seq), **kw)
+
+    @classmethod
     def with_defaults(cls, seq, **kw):
         from . import fragments
         return cls(itertools.chain(seq, [fragments.print]), **kw)
