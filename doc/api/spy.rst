@@ -58,6 +58,14 @@ Functions
       Feed ``data`` into the fragment chain, and return an iterator over the
       resulting data.
 
+   .. classmethod:: auto_fragments(seq)
+
+      Like the regular constructor, but for each element in ``seq``, apply
+      :func:`fragment` to it if it isn't already a fragment.
+
+      Items in seq must be either regular functions (not generators) or
+      :term:`fragments <fragment>`.
+
    .. method:: run_to_exhaustion(data)
 
       Call :meth:`apply`, then iterate until the chain runs out of data.
