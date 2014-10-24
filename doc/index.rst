@@ -14,4 +14,5 @@ Contents
    cli-reference
    from-python
    api/index
+   examples
    glossary

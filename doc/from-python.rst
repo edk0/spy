@@ -6,7 +6,11 @@ The :doc:`introduction <intro>` showed how to use spy from the command line.
 That's not the only way: spy works just as well from other Python code. The CLI
 is just a wrapper around spy's public API to make it easier to get to.
 
-:doc:`API documentation <api/index>` is available. What follows is a (very) 
+I don't think it is useful in very many cases as a Python library, but if you
+want to create an alternative command-line interface for example, this may be of
+interest.
+
+:doc:`API documentation <api/index>` is available. What follows is a (very)
 brief guide, which I hope to expand on in the future.
 
 

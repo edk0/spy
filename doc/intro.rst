@@ -166,8 +166,8 @@ source code, and input data at the time the exception was raised:
 
 If an exception is raised in a decorator outside the call to the fragment body,
 the fragment is mentioned anyway. This is not strictly true, given that none of
-the code in the fragment takes part in the call stack in this case, but the
-this particular lie is almost universally more useful:
+the code in the fragment takes part in the call stack in this case, but this
+particular lie is almost universally more useful:
 
 .. code-block:: console
 
