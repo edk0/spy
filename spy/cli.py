@@ -181,6 +181,8 @@ def _main(*steps,
     """
     sys.setcheckinterval(10000)
 
+    pipe_name = sys.intern(pipe_name)
+
     compiled_steps = []
     imports = set()
     for i, code in enumerate(steps):
