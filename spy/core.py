@@ -20,21 +20,24 @@ DROP = _Constant()
 
 
 class _Context:
+    __slots__ = ('iter_value', 'iter_iter')
     def __init__(self, iter_value, iter_iter):
         self.iter_value = iter_value
         self.iter_iter = iter_iter
 
 
 def fragment(fn):
+    argspec = inspect.getfullargspec(fn)
+    with_context = (len(argspec.args) >= 2 or argspec.varargs or
+                    argspec.varkw or 'context' in argspec.kwonlyargs)
     def fragment(ita, index=None):
         ita = iter(ita)
         _spy_fragment_index = index
-        argspec = inspect.getfullargspec(fn)
-        with_context = (len(argspec.args) >= 2 or argspec.varargs or
-                        argspec.varkw or 'context' in argspec.kwonlyargs)
+        if with_context:
+            context = _Context(None, ita)
         for _spy_value in ita:
             if with_context:
-                context = _Context(_spy_value, ita)
+                context.iter_value = _spy_value
                 result = fn(_spy_value, context)
             else:
                 result = fn(_spy_value)

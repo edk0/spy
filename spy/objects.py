@@ -4,6 +4,8 @@ from reprlib import recursive_repr
 
 
 class Context(dict):
+    __slots__ = ()
+
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
 
@@ -17,10 +19,11 @@ class Context(dict):
 
 
 class _ContextView:
+    __slots__ = ('context', 'overlay', '_spy_debuginfo')
+
     def __init__(self, context):
         self.context = context
         self.overlay = {}
-        self._debuginfo = (None, None)
 
     def __contains__(self, k):
         return k in self.overlay or k in self.context
