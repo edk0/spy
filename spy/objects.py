@@ -51,6 +51,8 @@ class _ContextView:
 
 
 class SpyFile(TextIOBase):
+    __slots__ = ('stream', 'lines', 'row', 'col', '_append', '_next')
+
     def __init__(self, stream):
         self.stream = stream
         self.lines = []
