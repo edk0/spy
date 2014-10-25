@@ -8,13 +8,9 @@ from clize import Clize, run
 from clize.errors import ArgumentError, MissingValue
 from clize.parser import Parameter, NamedParameter
 
-import dis
-if not hasattr(dis, 'get_instructions'):
-    from . import dis34 as dis
-
 from . import catcher, fragments
 from .decorators import decorators
-from .objects import Context, SpyFile
+from .objects import Context, SpyFile, _ContextInjector
 
 import spy
 
@@ -29,24 +25,6 @@ class NullContext:
         pass
 
 
-class _ModuleProxy:
-    def __init__(self, module):
-        self._module = module
-        self._context = None
-
-    def __getattr__(self, k):
-        v = getattr(self._module, k)
-        if getattr(v, '_spy_inject_context', None) is True:
-            @functools.wraps(v)
-            def wrapper(*a, **kw):
-                if 'context' not in kw:
-                    kw['context'] = self._context
-                return v(*a, **kw)
-            return wrapper
-        else:
-            return v
-
-
 def compile_(code, filename='<input>'):
     try:
         return compile(code, filename, 'eval', 0, True, 0), True
@@ -54,55 +32,28 @@ def compile_(code, filename='<input>'):
         return compile(code, filename, 'exec', 0, True, 0), False
 
 
-def make_callable(code, is_expr, env, debuginfo=(None, None)):
+def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
     local = env.view()
     local._spy_debuginfo = debuginfo
-    proxy = _ModuleProxy(spy)
-    local.overlay['spy'] = proxy
+    proxy = local.overlay['spy'] = _ContextInjector(spy)
     if is_expr:
         def fragment_fn(value, context=None):
-            local.overlay[PIPE_NAME] = value
-            proxy._context = context
+            local.overlay[pipe_name] = value
+            proxy._ContextInjector__context = context
             return eval(code, env, local)
     else:
         def fragment_fn(value, context=None):
-            local.overlay[PIPE_NAME] = value
-            proxy._context = context
+            local.overlay[pipe_name] = value
+            proxy._ContextInjector__context = context
             eval(code, env, local)
-            return local[PIPE_NAME]
+            return local[pipe_name]
     fragment_fn._spy_debuginfo = debuginfo
     return fragment_fn
 
 
-def get_imports(code):
-    imp = []
-    instrs = dis.get_instructions(code)
-    for instr in instrs:
-        if instr.opname in ('LOAD_GLOBAL', 'LOAD_NAME'):
-            name = code.co_names[instr.arg]
-            imp.append(name)
-            for instr_ in instrs:
-                if instr_.opname == 'LOAD_ATTR':
-                    name += '.' + code.co_names[instr_.arg]
-                    imp.append(name)
-                elif instr_.opname in ('LOAD_GLOBAL', 'LOAD_NAME'):
-                    name = code.co_names[instr_.arg]
-                    imp.append(name)
-                else:
-                    break
-    return imp
-
-
-def make_context(imports=[], pipe_name=PIPE_NAME):
+def make_context():
     context = Context()
     context.update(builtins.__dict__)
-    for imp in imports:
-        try:
-            m = importlib.import_module(imp)
-        except (ImportError, OSError):
-            continue
-        if '.' not in imp:
-            context[imp] = m
     return context
 
 
@@ -190,9 +141,11 @@ def _main(*steps,
 
     pipe_name = sys.intern(pipe_name)
 
-    compiled_steps = []
-    imports = set()
-    for i, code in enumerate(steps):
+    spy.context = context = make_context()
+
+    step_src = steps
+    steps = []
+    for i, code in enumerate(step_src):
         fragment_name = 'Fragment {}'.format(i + 1)
         source = code
         if isinstance(code, _Decorated):
@@ -201,19 +154,12 @@ def _main(*steps,
         else:
             funcseq = ()
         co, is_expr = compile_(code, filename=fragment_name)
-        imports |= set(get_imports(co))
-        compiled_steps.append((co, is_expr, funcseq, (fragment_name, source)))
-
-    context = make_context(imports, pipe_name=pipe_name)
-    spy.context = context
-
-    steps = []
-    for co, is_expr, funcseq, debuginfo in compiled_steps:
-        ca = make_callable(co, is_expr, context, debuginfo)
+        debuginfo = (fragment_name, source)
+        ca = make_callable(co, is_expr, context, pipe_name, debuginfo)
         for fn in funcseq:
             try:
                 ca = fn(ca, debuginfo=debuginfo)
-            except:
+            except TypeError:
                 ca = fn(ca)
         steps.append(spy.fragment(ca))
 
