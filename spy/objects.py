@@ -66,10 +66,10 @@ class SpyFile(TextIOBase):
 
     def __getitem__(self, k):
         if isinstance(k, slice):
-            for _ in self:
+            while self._read_one():
                 pass
             return self.lines[k]
-        for _ in self:
+        while self._read_one():
             if len(self.lines) > k:
                 break
         if len(self.lines) > k:
@@ -82,7 +82,7 @@ class SpyFile(TextIOBase):
         raise AttributeError(k)
 
     def __str__(self):
-        for _ in self:
+        while self._read_one():
             pass
         return '\n'.join(self.lines)
 
@@ -90,14 +90,15 @@ class SpyFile(TextIOBase):
         return '<SpyFile stream={!r}>'.format(self.stream)
 
     def __iter__(self):
-        return self
+        return (l.rstrip('\n') for l in self.stream)
 
-    def __next__(self):
-        l = self._next()
-        if l[-1] == '\n':
-            l = l[:-1]
-        self._append(l)
-        return l
+    def _read_one(self):
+        try:
+            l = self._next().rstrip('\n')
+            self._append(l)
+            return True
+        except StopIteration:
+            return False
 
     def read(self, n=None):
         if n == 0:
