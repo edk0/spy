@@ -9,6 +9,11 @@ from functools import wraps
 from .objects import SpyFile
 
 
+def _accepts_context(fn):
+    argspec = inspect.getfullargspec(fn)
+    return (len(argspec.args) >= 2 or argspec.varargs)
+
+
 def _call_fragment_body(f, *a, **kw):
     return f(*a, **kw)
 
@@ -27,9 +32,7 @@ class _Context:
 
 
 def fragment(fn):
-    argspec = inspect.getfullargspec(fn)
-    with_context = (len(argspec.args) >= 2 or argspec.varargs or
-                    argspec.varkw or 'context' in argspec.kwonlyargs)
+    with_context = _accepts_context(fn)
     def fragment(ita, index=None):
         ita = iter(ita)
         _spy_fragment_index = index

@@ -1,8 +1,7 @@
 from functools import partial, wraps
-import inspect
 import sys
 
-from .core import _call_fragment_body, collect, DROP, many as _many
+from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 
 __all__ = ['callable', 'filter', 'many', 'once']
 
@@ -13,10 +12,7 @@ def decorator(*names, doc=None):
     def wrapperer(_spy_decorator):
         @wraps(_spy_decorator)
         def wrapper(fn):
-            argspec = inspect.getfullargspec(fn)
-            with_context = (len(argspec.args) >= 2 or
-                argspec.varargs or argspec.varkw or 'context' in argspec.kwonlyargs)
-            if with_context:
+            if _accepts_context(fn):
                 xfn = partial(_call_fragment_body, fn)
             else:
                 xfn = partial(_drop_context, fn)
