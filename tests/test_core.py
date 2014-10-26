@@ -54,6 +54,20 @@ def test_chain():
     assert output == ['OOF', 'RAB']
 
 
+def test_auto_fragments():
+    @spy.fragment
+    def already_a_fragment(v):
+        v[0] = 'x'
+        return v
+
+    def not_a_fragment(v):
+        v[1] = 'y'
+        return v
+
+    chain = spy.chain.auto_fragments([already_a_fragment, not_a_fragment])
+    assert next(chain([['a', 'a']])) == ['x', 'y']
+
+
 def test_index_offset():
     with pytest.raises(TypeError):
         c = spy.chain([noop], 'fubar')
