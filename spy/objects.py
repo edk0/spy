@@ -61,9 +61,6 @@ class SpyFile(TextIOBase):
         self._append = self.lines.append
         self._next = iter(self.stream).__next__
 
-    def __len__(self):
-        return NotImplemented
-
     def __getitem__(self, k):
         if isinstance(k, slice):
             while self._read_one():
@@ -77,7 +74,7 @@ class SpyFile(TextIOBase):
         raise IndexError(k)
 
     def __getattr__(self, k):
-        if hasattr(str, k):
+        if hasattr(str, k) and not k.startswith('__'):
             return getattr(str(self), k)
         raise AttributeError(k)
 
