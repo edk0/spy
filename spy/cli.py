@@ -1,5 +1,4 @@
 import builtins
-import contextlib
 import functools
 import importlib
 import itertools
@@ -21,6 +20,13 @@ import spy
 
 
 PIPE_NAME = 'pipe'
+
+
+class NullContext:
+    def __enter__(self):
+        pass
+    def __exit__(self, typ, value, traceback):
+        pass
 
 
 class _ModuleProxy:
@@ -229,7 +235,7 @@ def _main(*steps,
         return
 
     if no_exception_handling:
-        context = contextlib.ExitStack()
+        context = NullContext()
     else:
         context = catcher.handler(delete_all=True)
 
