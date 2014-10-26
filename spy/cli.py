@@ -1,4 +1,5 @@
 import builtins
+import contextlib
 import functools
 import importlib
 import itertools
@@ -228,10 +229,12 @@ def _main(*steps,
         return
 
     if no_exception_handling:
-        chain.run_to_exhaustion(data)
+        context = contextlib.ExitStack()
     else:
-        with catcher.handler(delete_all=True):
-            chain.run_to_exhaustion(data)
+        context = catcher.handler(delete_all=True)
+
+    with context:
+        chain.run_to_exhaustion(data)
 
 _main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names,
                                            description=fn.decorator_help,
