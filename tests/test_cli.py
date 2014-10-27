@@ -73,8 +73,11 @@ def test_excepthook(capsys):
     stdin = sys.stdin
     try:
         sys.stdin = io.StringIO("")
-        with pytest.raises(SystemExit):
+        try:
             spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
+            pytest.fail("didn't raise an exception")
+        except Exception:
+            sys.excepthook(*sys.exc_info())
         out, err = capsys.readouterr()
         for line in err.splitlines():
             assert "spy/main.py" not in line
