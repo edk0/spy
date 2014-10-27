@@ -249,4 +249,3 @@ _main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names,
 
 def main():
     run(_main)
-

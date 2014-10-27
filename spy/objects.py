@@ -84,7 +84,8 @@ class SpyFile(TextIOBase):
         return '\n'.join(self.lines)
 
     def __repr__(self):
-        return '<SpyFile stream={!r}>'.format(self.stream)
+        name = getattr(self.stream, 'name', self.stream)
+        return '<SpyFile stream={!r}>'.format(name)
 
     def __iter__(self):
         return (l.rstrip('\n') for l in self.stream)
