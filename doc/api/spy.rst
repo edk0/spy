@@ -33,14 +33,14 @@ Exceptions
 Functions
 ---------
 
-.. class:: catch(exit=True)
+.. class:: catch()
 
    A :term:`context manager`. Exceptions raised in the context will be subject
-   to spy's traceback formatting.
-
-   If ``exit`` is true, the traceback will be printed and :exc:`SystemExit` will
-   be raised. Otherwise, a :exc:`CaughtException` will be raised—you can use its
-   :meth:`~CaughtException.print_traceback` method to print the traceback.
+   to spy's traceback formatting and wrapped in a :exc:`CaughtException`.  If
+   these are not caught, spy uses an exception hook to force them to be
+   formatted properly. If you opt to catch :exc:`CaughtException` instead, you
+   can use its :meth:`~CaughtException.print_traceback` method to print the
+   formatted traceback without exiting.
 
 .. class:: chain(seq)
 
