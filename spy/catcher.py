@@ -108,26 +108,32 @@ def _print(entries):
     print(''.join(itertools.chain.from_iterable(entries)), end='', file=sys.stderr)
 
 
-def get_hook(**kw):
-    def excepthook(*a):
-        _print(_format_exc(*a, **kw))
-    return excepthook
+_old_excepthook = sys.__excepthook__
+
+def _excepthook(typ, exc, tb):
+    if isinstance(exc, CaughtException):
+        exc.print_traceback()
+    else:
+        _old_excepthook(typ, exc, tb)
+
+
+def _install_excepthook():
+    global _old_excepthook
+    if sys.excepthook is _excepthook:
+        return
+    _old_excepthook = sys.excepthook
+    sys.excepthook = _excepthook
 
 
 class handler:
-    def __init__(self, exit=True, **kw):
-        self.exit = exit
+    def __init__(self, **kw):
         self.kw = kw
 
     def __enter__(self):
-        pass
+        _install_excepthook()
 
     def __exit__(self, typ, exc, traceback):
         if exc is None:
             return
         formatted = _format_exc(typ, exc, traceback, **self.kw)
-        if self.exit:
-            _print(formatted)
-            raise SystemExit(1) from exc
-        else:
-            raise CaughtException(formatted) from exc
+        raise CaughtException(formatted) from exc
