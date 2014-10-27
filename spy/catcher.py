@@ -64,7 +64,7 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             frame_kind = 'decorator'
             filename, lineno, funcname, source = traceback.extract_tb(tb.tb_next, limit=1)[0]
 
-        # the next frame is the fragment body (i.e. any stuff between here and
+        # the next frame is the fragment body
         if tb.tb_frame.f_code is core._call_fragment_body.__code__:
             if delete_in is not None:
                 del entries[delete_in:]
