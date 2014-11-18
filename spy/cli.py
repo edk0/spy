@@ -120,7 +120,7 @@ class Decorator(NamedParameter):
 
 
 def _main(*steps,
-         whole_input: 'w' = False,
+         each_line: 'l' = False,
          start: (int, 's') = 0,
          end: (int, 'e') = None,
          pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
@@ -169,12 +169,12 @@ def _main(*steps,
         steps.append(fragments.make_limit(start=start, end=end))
         steps.append(fragments.print)
 
-    chain = spy.chain(steps, index_offset=index_offset)
+        if each_line:
+            steps.insert(0, fragments.many)
+            index_offset -= 1
 
-    if whole_input:
-        data = [SpyFile(sys.stdin)]
-    else:
-        data = SpyFile(sys.stdin)
+    chain = spy.chain(steps, index_offset=index_offset)
+    data = [SpyFile(sys.stdin)]
 
     if show_fragments:
         print(chain.format())
