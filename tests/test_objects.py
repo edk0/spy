@@ -2,8 +2,8 @@ import pytest
 
 from io import StringIO, UnsupportedOperation
 
-import spy
-from spy.objects import Context, SpyFile
+import spy, spy.core
+from spy.objects import Context, SpyFile, _ModuleProxy
 
 TEST_INPUT = '''this is a test input
 for use by a SpyFile
@@ -14,6 +14,28 @@ more
 lines
 of
 it'''
+
+
+def test_module_proxy():
+    mp = _ModuleProxy(spy)
+    spy._test_ = []
+    spy.core._test_ = []
+    assert mp._test_ is spy._test_
+
+    spy_core = spy.core
+    del spy.core
+    assert mp.core._test_ is spy_core._test_
+    spy.core = spy_core
+
+    mp._test_ = []
+    assert spy._test_ is mp._test_
+
+    del mp._test_
+    with pytest.raises(AttributeError):
+        spy._test_
+
+    assert dir(mp) == dir(spy)
+    assert repr(mp) == repr(spy)
 
 
 @pytest.fixture
@@ -52,6 +74,10 @@ class TestContext:
         repr(c)
         v = c.view()
         repr(v)
+
+    def test_auto_import(self, context):
+        spy._test_ = []
+        assert context['spy']._test_ is spy._test_
 
 
 @pytest.fixture

@@ -129,4 +129,4 @@ def collect(context):
     if context is None:
         raise ValueError("Can't collect without a valid context (got None)")
     return itertools.chain([context.iter_value], context.iter_iter)
-collect._spy_inject_context = True
+collect._spy_inject_context_ = True

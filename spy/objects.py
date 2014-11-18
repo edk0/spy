@@ -1,6 +1,61 @@
 from collections import Mapping
+from functools import wraps
+from importlib import import_module
 from io import TextIOBase, UnsupportedOperation
 from reprlib import recursive_repr
+from types import ModuleType
+
+
+class _ModuleProxy:
+    __slots__ = ('_ModuleProxy__module',)
+
+    def __init__(self, module):
+        self.__module = module
+
+    def __getattr__(self, k):
+        try:
+            v = getattr(self.__module, k)
+        except AttributeError:
+            v = import_module('.' + k, self.__module.__name__)
+        if isinstance(v, ModuleType):
+            return self.__class__(v)
+        else:
+            return v
+
+    def __setattr__(self, k, v):
+        if '__' in k and k.split('__', 1)[0].startswith('_'):
+            object.__setattr__(self, k, v)
+        else:
+            setattr(self.__module, k, v)
+
+    def __delattr__(self, k):
+        delattr(self.__module, k)
+
+    def __dir__(self):
+        return dir(self.__module)
+
+    def __repr__(self):
+        return repr(self.__module)
+
+
+class _ContextInjector(_ModuleProxy):
+    __slots__ = ('_ContextInjector__context',)
+
+    def __init__(self, module):
+        super().__init__(module)
+        self.__context = None
+
+    def __getattr__(self, k):
+        v = super().__getattr__(k)
+        if getattr(v, '_spy_inject_context_', None) is True:
+            @wraps(v)
+            def wrapper(*a, **kw):
+                if 'context' not in kw:
+                    kw['context'] = self.__context
+                return v(*a, **kw)
+            return wrapper
+        else:
+            return v
 
 
 class Context(dict):
@@ -8,6 +63,13 @@ class Context(dict):
 
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
+
+    def __missing__(self, k):
+        try:
+            module = self[k] = _ModuleProxy(import_module(k))
+            return module
+        except ImportError:
+            raise KeyError
 
     def view(self):
         return _ContextView(self)

@@ -24,20 +24,10 @@ class TestCompile:
 
 
 def test_make_callable():
-    context = Context(_pipe_name='pipe')
+    context = Context()
     code, is_expr = spy.cli.compile_('x = pipe.upper(); pipe = x[::-1]')
-    ca = spy.cli.make_callable(code, is_expr, context)
+    ca = spy.cli.make_callable(code, is_expr, context, 'pipe')
     assert ca('bar') == 'RAB'
-
-
-def test_get_imports():
-    co, is_expr = spy.cli.compile_('abc.defg(foo.bar)')
-    assert set(spy.cli.get_imports(co)) >= {'abc', 'foo', 'foo.bar'}
-
-
-def test_make_context():
-    context = spy.cli.make_context(['collections', 'i am pretty sure this module does not exist'])
-    assert 'collections' in context
 
 
 def test_context_builtins():
