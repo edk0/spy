@@ -1,3 +1,2 @@
 [run]
-omit = spy/dis34.py
 source = spy
