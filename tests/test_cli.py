@@ -40,11 +40,11 @@ def test_argument_errors():
     test_inputs = [
         ['-o'],
         ['-o', '-o'],
-        ['-o', '-l'],
+        ['-o', '-w'],
         ['-o', '--once'],
         ['--once'],
         ['--once', '-o'],
-        ['-l', '-o']
+        ['-w', '-o']
     ]
     stdin = sys.stdin
     try:
@@ -64,7 +64,7 @@ def test_excepthook(capsys):
     try:
         sys.stdin = io.StringIO("")
         try:
-            spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
+            spy.cli._main(sys.argv[0], '-w', '-f', 'this_name_does_not_exist_either')
             pytest.fail("didn't raise an exception")
         except Exception:
             sys.excepthook(*sys.exc_info())
@@ -74,7 +74,7 @@ def test_excepthook(capsys):
         assert "  Fragment 1" in err.splitlines()
         assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
         with pytest.raises(NameError):
-            spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
+            spy.cli._main(sys.argv[0], '-w', '--no-exception-handling', 'still_broken_i_hope')
     finally:
         sys.stdin = stdin
 
@@ -87,7 +87,6 @@ def test_run(capsys):
     try:
         sys.stdin = io.StringIO(input)
         sys.argv = sys.argv[0:1] + [
-                '-l',
                 'spy.many(pipe.split())',
                 '-f', 'len(pipe) > 2',
                 'pipe.upper()',
@@ -104,8 +103,7 @@ def test_run(capsys):
 
 
 def test_show_fragments(capsys):
-    expected = '''
-  1 | <cli> --filter --callable 'int'
+    expected = '''1 | <cli> --filter --callable 'int'
   2 | <cli> --once --once 'asdfgfa'
   3 | <cli> --many 'test'
   4 | <cli> --many --many 'baz'
@@ -115,7 +113,6 @@ def test_show_fragments(capsys):
         sys.stdin = io.StringIO('')
         argv = sys.argv[0:1] + [
                 '--show-fragments',
-                '-l',
                 '-fc', 'int',
                 '--once', '-o', 'asdfgfa',
                 '-m', 'test',
