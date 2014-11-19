@@ -135,11 +135,6 @@ class SpyFile(TextIOBase):
             return self.lines[k]
         raise IndexError(k)
 
-    def __getattr__(self, k):
-        if hasattr(str, k) and not k.startswith('__'):
-            return getattr(str(self), k)
-        raise AttributeError(k)
-
     def __str__(self):
         while self._read_one():
             pass

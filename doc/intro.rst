@@ -35,8 +35,8 @@ Standard input is exposed as a file-like object called ``pipe``:
    $ spy 'pipe.readline()' < test.txt
    this
 
-It's a full-featured :class:`io.TextIOBase`, but is extended with other
-useful features: indexing (even slicing) and string methods:
+It's a :class:`io.TextIOBase`, with a couple of extra features: You can index
+into it, or convert all of stdin into a string with :func:`str`.
 
 .. code-block:: console
 
@@ -44,7 +44,7 @@ useful features: indexing (even slicing) and string methods:
    file
    $ spy 'pipe[1::2]' < test.txt
    ['file', 'five']
-   $ spy 'pipe.replace("\n", " ")' < test.txt
+   $ spy 'str(pipe).replace("\n", " ")' < test.txt
    this file has five lines
 
 Passing ``-l`` (or ``--each-line``) to spy will iterate through stdin instead,
@@ -58,6 +58,8 @@ so your expressions will run once per line of input:
    -has-
    -five-
    -lines-
+
+spy helpfully removes the terminating newlines from these strings.
 
 
 Piping
