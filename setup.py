@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='spy-cli',
-    version='0.1a2',
+    version='0.1a3',
     description='stream processing Python CLI',
     packages=['spy'],
     zip_safe=True,
@@ -13,7 +13,7 @@ setup(
     },
     install_requires=['clize>=3.0a1'],
     author='Ed Kellett',
-    author_email='edk@kellett.im',
+    author_email='e@kellett.im',
     url='https://github.com/edk0/spy/',
     long_description='See https://github.com/edk0/spy/blob/master/README.md',
     classifiers=[
@@ -26,8 +26,6 @@ setup(
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
-        'Programming Language :: Python :: Implementation :: CPython',
-        'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Utilities'
     ]
 )
