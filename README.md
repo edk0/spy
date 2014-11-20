@@ -9,12 +9,13 @@ chains fragments of code together. It's inspired by
 [pythonpy](https://github.com/Russell91/pythonpy), and is intended to fill a
 similar role to that of `sed`.
 
-I built spy primarily because I wanted a more pure than either of the above
-offer; I'd like to think I succeeded, but I'm sure it can be improved upon, so
-please let me know if you find anything wrong with it.
+I built spy primarily because I wanted a more pure interface than either of the
+above offer; I'd like to think I succeeded, but I'm sure it can be improved
+upon, so please let me know if you find anything wrong with it.
 
-**spy is unreleased software**. You can install it if you want, but please don't
-expect reliability or stability—I'll make a release when I have those things.
+**spy is unreleased software**. You can install it if you want, but please
+don't expect reliability or stability—I'll make a release when I have those
+things. If that's okay, `pip install 'spy-cli>0a0'`.
 
 spy is compatible with Python 3.2 and newer, and is currently tested on CPython
 3.2, 3.3 and 3.4, and PyPy3 2.3.1. It is not compatible with Python 2.
