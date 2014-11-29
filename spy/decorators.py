@@ -3,7 +3,7 @@ import sys
 
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 
-__all__ = ['callable', 'filter', 'many', 'once']
+__all__ = ['accumulate', 'callable', 'filter', 'many']
 
 decorators = []
 
@@ -33,6 +33,11 @@ def _drop_context(fn, v, context):
     return _call_fragment_body(fn, v)
 
 
+@decorator('--accumulate', '-a', doc='Pass an iterator of yielded values to this fragment')
+def accumulate(fn, v, context):
+    return fn(collect(context), context)
+
+
 @decorator('--callable', '-c', doc='Call the result of this fragment')
 def callable(fn, v, context):
     result = fn(v, context)
@@ -49,9 +54,3 @@ def filter(fn, v, context):
 def many(fn, v, context):
     result = fn(v, context)
     return _many(result)
-
-
-@decorator('--once', '-o', doc='Run this fragment at most once, and ignore its result')
-def once(fn, v, context):
-    fn(v, context)
-    return _many(collect(context))

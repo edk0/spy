@@ -127,6 +127,10 @@ fragment are boilerplate. spy provides some function decorators to avoid
 repeating this and a few other common constructs—they're available as flags from
 the CLI:
 
+.. option:: --accumulate <fragment>, -c <fragment>
+
+   passes the the result of :func:`spy.collect` to the fragment.
+
 .. option:: --callable <fragment>, -c <fragment>
 
    calls whatever the following fragment returns, with a single argument: the
@@ -140,13 +144,8 @@ the CLI:
 
 .. option:: --many <fragment>, -m <fragment>
 
-   calls :py:func:`spy.many` with the return value of the fragment (which must
+   calls :func:`spy.many` with the return value of the fragment (which must
    be :term:`iterable`).
-
-.. option:: --once <fragment>, -o <fragment>
-
-   executes its fragment at most once. Its return value is completely ignored;
-   any data going in is passed through unchanged.
 
 
 Exception handling

@@ -6,6 +6,18 @@ This module contains various function decorators for use in spy fragments.
 
 .. module:: spy.decorators
 
+.. decorator:: accumulate
+
+   .. option:: --accumulate, -a
+
+   Accumulate values into an iterator by calling :func:`spy.collect`, and pass
+   that to the fragment.
+
+   This can be used to write a fragment which executes at most once while
+   passing data through:
+
+   ``-ma 'x = y;'``
+
 .. decorator:: callable
 
    .. option:: --callable, -c
@@ -24,10 +36,3 @@ This module contains various function decorators for use in spy fragments.
    .. option:: --many, -m
 
    Call :func:`spy.many` with the result of the fragment.
-
-.. decorator:: once
-
-   .. option:: --once, -o
-
-   Run the fragment body at most once; ignore its return value. All data are
-   passed through the fragment untouched.
