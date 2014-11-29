@@ -38,13 +38,13 @@ def test_context_builtins():
 
 def test_argument_errors():
     test_inputs = [
-        ['-o'],
-        ['-o', '-o'],
-        ['-o', '-l'],
-        ['-o', '--once'],
-        ['--once'],
-        ['--once', '-o'],
-        ['-l', '-o']
+        ['-a'],
+        ['-a', '-a'],
+        ['-a', '-l'],
+        ['-a', '--accumulate'],
+        ['--accumulate'],
+        ['--accumulate', '-a'],
+        ['-l', '-a']
     ]
     stdin = sys.stdin
     try:
@@ -54,7 +54,7 @@ def test_argument_errors():
             try:
                 spy.cli._main(sys.argv[0], *input_)
             except ValueError as e:
-                assert 'No value found after --once' in str(e)
+                assert 'No value found after --accumulate' in str(e)
     finally:
         sys.stdin = stdin
 
@@ -106,7 +106,7 @@ def test_run(capsys):
 def test_show_fragments(capsys):
     expected = '''
   1 | <cli> --filter --callable 'int'
-  2 | <cli> --once --once 'asdfgfa'
+  2 | <cli> --accumulate --accumulate 'asdfgfa'
   3 | <cli> --many 'test'
   4 | <cli> --many --many 'baz'
 '''
@@ -117,7 +117,7 @@ def test_show_fragments(capsys):
                 '--show-fragments',
                 '-l',
                 '-fc', 'int',
-                '--once', '-o', 'asdfgfa',
+                '--accumulate', '-a', 'asdfgfa',
                 '-m', 'test',
                 '-m', '--many', 'baz']
         spy.cli._main(*argv)

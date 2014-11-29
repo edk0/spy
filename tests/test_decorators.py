@@ -2,6 +2,24 @@ import spy
 from spy import decorators
 
 
+def test_accumulate(capsys):
+    calls = 0
+
+    @spy.fragment
+    @decorators.accumulate
+    def test(v):
+        nonlocal calls
+        calls += 1
+        return v
+
+    try:
+        spy.chain([test]).run_to_exhaustion(['x'])
+    except KeyboardInterrupt:
+        assert capsys.readouterr() == ''
+
+    assert calls == 1
+
+
 def test_callable():
     called = False
     def target(v):
@@ -34,21 +52,3 @@ def test_many():
 
     l = spy.chain([test]).apply([None])
     assert list(l) == [1, 2, 3, 4, 5]
-
-
-def test_once(capsys):
-    calls = 0
-
-    @spy.fragment
-    @decorators.once
-    def test(v):
-        nonlocal calls
-        calls += 1
-        return 'a'
-
-    try:
-        spy.chain([test]).run_to_exhaustion(['x'])
-    except KeyboardInterrupt:
-        assert capsys.readouterr() == ''
-
-    assert calls == 1
