@@ -123,13 +123,13 @@ class Decorator(NamedParameter):
 
 
 def _main(*steps,
-         each_line: 'l' = False,
-         start: (int, 's') = 0,
-         end: (int, 'e') = None,
-         pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
-         no_default_fragments: Parameter.UNDOCUMENTED = False,
-         no_exception_handling: Parameter.UNDOCUMENTED = False,
-         show_fragments: Parameter.UNDOCUMENTED = False):
+          each_line: 'l' = False,
+          start: (int, 's') = 0,
+          end: (int, 'e') = None,
+          pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
+          no_default_fragments: Parameter.UNDOCUMENTED = False,
+          no_exception_handling: Parameter.UNDOCUMENTED = False,
+          show_fragments: Parameter.UNDOCUMENTED = False):
     """Run Python code.
 
     steps: At least one Python expression (or suite) to execute
