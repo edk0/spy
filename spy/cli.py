@@ -5,7 +5,7 @@ import itertools
 import sys
 
 from clize import Clize, run
-from clize.errors import ArgumentError, MissingValue
+from clize.errors import MissingValue, UnknownOption
 from clize.parser import Parameter, NamedParameter
 
 from . import catcher, fragments
@@ -71,12 +71,15 @@ class Decorator(NamedParameter):
         self.decfn = decfn
 
     def parse_one_arg(self, ba, arg):
-        if arg[0:2] == '--':
-            return [ba.sig.aliases[arg]]
-        elif arg[0] == '-':
-            return [ba.sig.aliases['-' + c] for c in arg[1:]]
-        else:
-            return arg
+        try:
+            if arg[0:2] == '--':
+                return [ba.sig.aliases[arg]]
+            elif arg[0] == '-':
+                return [ba.sig.aliases['-' + c] for c in arg[1:]]
+            else:
+                return arg
+        except KeyError as e:
+            raise UnknownOption(e.args[0])
 
     def read_argument(self, ba, i):
         src = None

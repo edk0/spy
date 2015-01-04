@@ -50,11 +50,22 @@ def test_argument_errors():
     try:
         sys.stdin = io.StringIO("")
         for input_ in test_inputs:
-            print(input_)
             try:
                 spy.cli._main(sys.argv[0], *input_)
             except ValueError as e:
                 assert 'No value found after --accumulate' in str(e)
+    finally:
+        sys.stdin = stdin
+
+
+def test_unknown_option():
+    stdin = sys.stdin
+    try:
+        sys.stdin = io.StringIO("")
+        try:
+            spy.cli._main(sys.argv[0], '-a!')
+        except ValueError as e:
+            assert 'Unknown option' in str(e)
     finally:
         sys.stdin = stdin
 
