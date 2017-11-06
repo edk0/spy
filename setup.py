@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='spy-cli',
-    version='0.1a4',
+    version='0.2',
     description='stream processing Python CLI',
     packages=['spy'],
     zip_safe=True,
@@ -11,7 +11,7 @@ setup(
             'spy = spy.cli:main'
         ]
     },
-    install_requires=['clize>=3.0a1'],
+    install_requires=['clize>=3.0'],
     author='Ed Kellett',
     author_email='e@kellett.im',
     url='https://github.com/edk0/spy/',
