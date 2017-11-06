@@ -127,7 +127,7 @@ fragment are boilerplate. spy provides some function decorators to avoid
 repeating this and a few other common constructs—they're available as flags from
 the CLI:
 
-.. option:: --accumulate <fragment>, -c <fragment>
+.. option:: --accumulate <fragment>, -a <fragment>
 
    passes the the result of :func:`spy.collect` to the fragment.
 
