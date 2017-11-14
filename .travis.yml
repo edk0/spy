@@ -9,7 +9,7 @@ python:
   - "pypy3.5-5.7.1-beta"
   - "pypy3.5-5.8.0"
 install:
-  - "pip install --upgrade pip setuptools"
+  - "pip install --upgrade pip setuptools coveralls"
   - "pip install .[test]"
 script:
   - "py.test -v --cov-config .coveragerc --cov spy"
