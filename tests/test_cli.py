@@ -54,6 +54,13 @@ def test_argument_errors(monkeypatch):
             assert 'No value found after --accumulate' in str(e)
 
 
+def test_argument_chain(monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    spy.cli._main(sys.argv[0], '1+', '2+', '3')
+    with pytest.raises(SyntaxError):
+        spy.cli._main(sys.argv[0], '1+', '2+')
+
+
 def test_unknown_option(monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     try:

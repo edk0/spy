@@ -6,7 +6,7 @@ import sys
 
 from clize import Clize, run
 from clize.errors import MissingValue, UnknownOption
-from clize.parser import Parameter, NamedParameter
+from clize.parser import use_mixin, Parameter, NamedParameter
 
 from . import catcher, fragments
 from .decorators import decorators
@@ -29,7 +29,10 @@ def compile_(code, filename='<input>'):
     try:
         return compile(code, filename, 'eval', 0, True, 0), True
     except SyntaxError:
-        return compile(code, filename, 'exec', 0, True, 0), False
+        try:
+            return compile(code, filename, 'exec', 0, True, 0), False
+        except Exception as e:
+            raise e from None
 
 
 def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
@@ -55,6 +58,28 @@ def make_context():
     context = Context()
     context.update(builtins.__dict__)
     return context
+
+
+class StepList:
+    @staticmethod
+    def _read(ba, i):
+        arg = ba.in_args[i]
+        while True:
+            try:
+                compile_(arg, 'test')
+                break
+            except SyntaxError:
+                i += 1
+                if i >= len(ba.in_args):
+                    break
+                arg += ' ' + ba.in_args[i]
+        return i, arg
+
+    def read_argument(self, ba, i):
+        io = i
+        i, arg = self._read(ba, i)
+        ba.skip = i - io
+        ba.args.append(arg)
 
 
 class _Decorated:
@@ -111,7 +136,7 @@ class Decorator(NamedParameter):
                     funcseq.append(dec.decfn)
                     names.append(dec.display_name)
             elif isinstance(narg, str):
-                src = narg
+                i, src = StepList._read(ba, i)
                 break
             i += 1
             if i >= len(ba.in_args):
@@ -122,7 +147,7 @@ class Decorator(NamedParameter):
         ba.args.append(_Decorated(funcseq, src, ' '.join(names)))
 
 
-def _main(*steps,
+def _main(*steps: use_mixin(StepList),
           each_line: 'l' = False,
           start: (int, 's') = 0,
           end: (int, 'e') = None,
