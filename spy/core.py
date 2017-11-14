@@ -47,8 +47,7 @@ def fragment(fn):
             if result is DROP:
                 continue
             elif isinstance(result, many):
-                for result in result.ita:
-                    yield result
+                yield from result.ita
             else:
                 yield result
     fragment.fragment_fn = fn
@@ -84,8 +83,7 @@ class chain:
                 ita = step(ita, index=i + self.index_offset + 1)
             except TypeError:
                 ita = step(ita)
-        for item in ita:
-            yield item
+        yield from ita
 
     __call__ = apply
 
