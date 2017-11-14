@@ -21,6 +21,9 @@ class TestPrint:
         f = spy.fragments.print([(x for x in [1, 2, 3, 4, 5, 6])])
         list(f)
         assert capsys.readouterr()[0] == '<iterable [1, 2, 3, 4, 5, ...]>\n'
+        f = spy.fragments.print([(x for x in [1, 2, 3])])
+        list(f)
+        assert capsys.readouterr()[0] == '<iterable [1, 2, 3]>\n'
 
     def test_list(self, capsys):
         f = spy.fragments.print([[1, 2, 3]])

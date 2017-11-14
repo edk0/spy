@@ -78,6 +78,20 @@ def test_excepthook(capsys, monkeypatch):
         spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
 
 
+def test_collect_context(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    try:
+        spy.cli._main(sys.argv[0], 'spy.collect(context=None)')
+        pytest.fail("didn't raise an exception")
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+    out, err = capsys.readouterr()
+    for line in err.splitlines():
+        assert "spy/main.py" not in line
+    assert "  Fragment 1" in err.splitlines()
+    assert "ValueError: Can't collect without a valid context (got None)" in err.splitlines()
+
+
 def test_run(capsys, monkeypatch):
     input = "this is\na piece of sample input\nused to test a complete run"
     expected = "SAMPLE PIECE THIS\nTEST USED INPUT\nRUN COMPLETE\n"
