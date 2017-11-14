@@ -11,7 +11,16 @@ setup(
             'spy = spy.cli:main'
         ]
     },
-    install_requires=['clize>=3.0'],
+    install_requires=[
+        'clize>=3.0',
+    ],
+    extras_require={
+        'test': [
+            'pytest',
+            'pytest-cov',
+            'coverage',
+        ]
+    },
     author='Ed Kellett',
     author_email='e@kellett.im',
     url='https://github.com/edk0/spy/',

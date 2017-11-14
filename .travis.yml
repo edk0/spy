@@ -1,12 +1,14 @@
 language: python
 python:
-  - "3.2"
   - "3.3"
   - "3.4"
+  - "3.5"
+  - "3.6"
   - "pypy3"
+  - "pypy3.5-5.7.1-beta"
 install:
-  - "pip install ."
-  - "pip install pytest pytest-cov coveralls"
+  - "pip install --upgrade pip setuptools"
+  - "pip install .[test]"
 script:
   - "py.test -v --cov-config .coveragerc --cov spy"
 after_success:
