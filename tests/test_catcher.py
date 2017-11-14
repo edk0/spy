@@ -40,3 +40,17 @@ def test_in_decorator(capsys):
 def test_caughtexception():
     c = catcher.CaughtException([])
     assert str(c) == ''
+
+
+def test_excepthook_forwards():
+    ok = [False]
+    def excepthook(typ, value, traceback):
+        ok[0] = True
+    sys.excepthook = excepthook
+    try:
+        with catcher.handler():
+            pass
+        raise Exception
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+    assert ok[0]
