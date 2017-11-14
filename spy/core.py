@@ -108,9 +108,6 @@ class chain:
                 if hasattr(step, '__qualname__'):
                     name = step.__qualname__
                     typ = '<internal> '
-                elif hasattr(step, '__name__'):
-                    name = step.__name__
-                    typ = '<internal> '
                 else:
                     name = 'UNKNOWN'
                 if hasattr(step, '__module__'):

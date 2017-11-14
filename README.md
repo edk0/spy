@@ -17,8 +17,7 @@ upon, so please let me know if you find anything wrong with it.
 don't expect reliability or stability—I'll make a release when I have those
 things. If that's okay, `pip install 'spy-cli>0a0'`.
 
-spy is compatible with Python 3.2 and newer, and is currently tested on CPython
-3.2, 3.3 and 3.4, and PyPy3 2.3.1. It is not compatible with Python 2.
+spy is compatible with Python 3.3 and newer.
 
 **The docs, including introduction, are available
 [on ReadTheDocs](https://spy.readthedocs.org/en/latest/).**
