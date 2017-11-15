@@ -118,6 +118,20 @@ def test_run(capsys, monkeypatch):
     assert out == expected
 
 
+def test_no_defaults(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    monkeypatch.setattr(sys, 'argv',
+        sys.argv[0:1] + [
+            '--no-default-fragments',
+            '"abcdef"',
+            '--callable', 'print'])
+    with pytest.raises(SystemExit):
+        from spy import __main__
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == 'abcdef\n'
+
+
 def test_show_fragments(capsys, monkeypatch):
     expected = '''
   1 | <cli> --filter --callable 'int'
