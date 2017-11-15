@@ -6,6 +6,10 @@ from reprlib import recursive_repr
 from types import ModuleType
 
 
+class _ForcedError(Exception):
+    pass
+
+
 class _ModuleProxy:
     __slots__ = ('_ModuleProxy__module',)
 
@@ -15,8 +19,11 @@ class _ModuleProxy:
     def __getattr__(self, k):
         try:
             v = getattr(self.__module, k)
-        except AttributeError:
-            v = import_module('.' + k, self.__module.__name__)
+        except AttributeError as e:
+            try:
+                v = import_module('.' + k, self.__module.__name__)
+            except ImportError:
+                raise _ForcedError from e
         if isinstance(v, ModuleType):
             return self.__class__(v)
         else:

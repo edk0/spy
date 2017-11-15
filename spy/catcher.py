@@ -5,6 +5,7 @@ import sys
 import traceback
 
 from . import core
+from .objects import _ForcedError
 
 
 class CaughtException(Exception):
@@ -19,8 +20,14 @@ class CaughtException(Exception):
 
 
 def _format_exc(typ, exc, tb, *, delete_all=False):
+    hide_below_user = False
+    if isinstance(exc, _ForcedError):
+        hide_below_user = True
+        exc = exc.__cause__
+        typ = exc.__class__
     entries = []
     delete_in = None
+    delete_from = None
     skip = 0
     fragment_index = None
     fragment_value = None
@@ -92,14 +99,16 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
         elif frame_kind == 'synthetic_callable':
             lines.append('  Fragment {}'.format(fragment_index))
             lines.append('    ' + fragment_debuginfo[1])
-
         if frame_kind != 'normal':
             if fragment_value:
                 lines.append('    input to fragment was {!r}'.format(fragment_value[0]))
             entries.append(list(l + '\n' for l in lines))
+            delete_from = len(entries)
         else:
             entries.append(list(traceback.format_list([(filename, lineno, funcname, source)])))
         tb = tb.tb_next
+    if hide_below_user and delete_from is not None:
+        del entries[delete_from:]
     entries.append(traceback.format_exception_only(typ, exc))
     entries.insert(0, ['Traceback (most recent call last):\n'])
     return entries
