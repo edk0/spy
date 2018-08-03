@@ -18,7 +18,7 @@ spy is compatible with Python 3.4 and newer.
 **The docs, including introduction, are available
 [on ReadTheDocs](https://spy.readthedocs.org/en/latest/).**
 
-If you have any suggestions or feedback or anything, I'll probably be in`#spy`
+If you have any suggestions or feedback or anything, I'll probably be in `#spy`
 on `irc.freenode.net`.
 
 # Example ([more here](https://spy.readthedocs.org/en/latest/examples.html))
