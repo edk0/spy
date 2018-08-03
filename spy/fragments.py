@@ -5,6 +5,11 @@ from itertools import chain, islice
 import sys
 
 from . import core
+from .objects import SpyFile
+
+
+def stdin(ita):
+    yield SpyFile(sys.stdin)
 
 
 def many(ita):

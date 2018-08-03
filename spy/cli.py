@@ -201,8 +201,11 @@ def _main(*steps: use_mixin(StepList),
             steps.insert(0, fragments.many)
             index_offset -= 1
 
+        steps.insert(0, fragments.stdin)
+        index_offset -= 1
+
     chain = spy.chain(steps, index_offset=index_offset)
-    data = [SpyFile(sys.stdin)]
+    data = [None]
 
     if show_fragments:
         print(chain.format())
