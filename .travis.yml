@@ -8,7 +8,7 @@ python:
   - "pypy3.5-5.8.0"
 install:
   - "pip install --upgrade pip setuptools coveralls"
-  - "pip install .[test]"
+  - "pip install -e .[test]"
 script:
   - "py.test -v --cov-config .coveragerc --cov spy"
   - 'if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then pip install flake8; flake8 spy; fi'
