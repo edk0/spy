@@ -6,6 +6,7 @@ import sys
 
 from clize import Clize, run
 from clize.errors import MissingValue, UnknownOption
+from clize.parameters import multi
 from clize.parser import use_mixin, Parameter, NamedParameter
 
 from . import catcher, fragments
@@ -151,6 +152,7 @@ def _main(*steps: use_mixin(StepList),
           each_line: 'l' = False,
           start: (int, 's') = 0,
           end: (int, 'e') = None,
+          prelude: (multi(), 'n') = '',
           pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
           no_default_fragments: Parameter.UNDOCUMENTED = False,
           no_exception_handling: Parameter.UNDOCUMENTED = False,
@@ -161,12 +163,16 @@ def _main(*steps: use_mixin(StepList),
     :param each_line: If specified, process lines as strings rather than all of stdin as a file
     :param start: Don't print before this result (zero-based)
     :param end: Stop after getting this result (zero-based)
+    :param prelude: Execute this statement before running any steps
     """
     sys.setcheckinterval(10000)
 
     pipe_name = sys.intern(pipe_name)
 
     spy.context = context = make_context()
+
+    for stmt in prelude:
+        exec(stmt, context, context.view())
 
     step_src = steps
     steps = []
