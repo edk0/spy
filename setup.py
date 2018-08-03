@@ -24,6 +24,9 @@ setup(
     author='Ed Kellett',
     author_email='e@kellett.im',
     url='https://github.com/edk0/spy/',
+    project_urls={
+        'Documentation': 'https://spy.readthedocs.io/',
+    },
     long_description='See https://github.com/edk0/spy/blob/master/README.md',
     classifiers=[
         'Development Status :: 3 - Alpha',
@@ -32,9 +35,10 @@ setup(
         'License :: Public Domain',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7',
         'Topic :: Utilities'
     ]
 )
