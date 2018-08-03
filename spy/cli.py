@@ -99,8 +99,7 @@ class Decorator(NamedParameter):
     def prepare_help(self, helper):
         helper.sections.setdefault("Decorators", {})
         helper.sections["Decorators"][self.display_name] = (self, '')
-        if "Options" in helper.sections and self.display_name in helper.sections["Options"]:
-            del helper.sections["Options"][self.display_name]
+        del helper.sections["Options"][self.display_name]
 
     def parse_one_arg(self, ba, arg):
         try:
@@ -142,7 +141,7 @@ class Decorator(NamedParameter):
                         raise MissingValue
                     funcseq.append(dec.decfn)
                     names.append(dec.display_name)
-            elif isinstance(narg, str):
+            else:
                 i, src = StepList._read(ba, i)
                 break
             i += 1
