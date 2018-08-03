@@ -61,6 +61,13 @@ def test_argument_chain(monkeypatch):
         spy.cli._main(sys.argv[0], '1+', '2+')
 
 
+def test_prelude(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    spy.cli._main(sys.argv[0], '--prelude', 'x = 123', 'x')
+    out, err = capsys.readouterr()
+    assert out.strip() == '123'
+
+
 def test_unknown_option(monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     try:
