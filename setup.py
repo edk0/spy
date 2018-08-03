@@ -10,7 +10,7 @@ with open(readme) as f:
 
 setup(
     name='spy-cli',
-    version='0.3.1',
+    version='0.3.2',
     description='stream processing Python CLI',
     packages=['spy'],
     zip_safe=True,
