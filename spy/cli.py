@@ -37,15 +37,16 @@ def compile_(code, filename='<input>'):
 def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
     local = env.view()
     local._spy_debuginfo = debuginfo
-    proxy = local.overlay['spy'] = _ContextInjector(spy)
+    overlay = local.overlay
+    proxy = overlay['spy'] = _ContextInjector(spy)
     if is_expr:
         def fragment_fn(value, context=None):
-            local.overlay[pipe_name] = value
+            overlay[pipe_name] = value
             proxy._ContextInjector__context = context
             return eval(code, env, local)
     else:
         def fragment_fn(value, context=None):
-            local.overlay[pipe_name] = value
+            overlay[pipe_name] = value
             proxy._ContextInjector__context = context
             eval(code, env, local)
             return local[pipe_name]
