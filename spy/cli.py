@@ -96,6 +96,12 @@ class Decorator(NamedParameter):
         self.description = description
         self.decfn = decfn
 
+    def prepare_help(self, helper):
+        helper.sections.setdefault("Decorators", {})
+        helper.sections["Decorators"][self.display_name] = (self, '')
+        if "Options" in helper.sections and self.display_name in helper.sections["Options"]:
+            del helper.sections["Options"][self.display_name]
+
     def parse_one_arg(self, ba, arg):
         try:
             if arg[0:2] == '--':
