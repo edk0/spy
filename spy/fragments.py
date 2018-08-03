@@ -27,8 +27,7 @@ def make_limit(*, start=0, end=None):
 
 def pretty_print(thing):
     if isinstance(thing, str):
-        _write(thing)
-        _write('\n')
+        py_print(thing)
     elif not isinstance(thing, (Mapping, Sequence)) and isinstance(thing, Iterable):
         sliced = []
         for n, item in enumerate(thing):
@@ -44,6 +43,4 @@ def pretty_print(thing):
 
 
 def print(ita):
-    global _write
-    _write = sys.stdout.write
     return map(pretty_print, ita)
