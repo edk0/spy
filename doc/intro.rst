@@ -47,8 +47,8 @@ into it, or convert all of stdin into a string with :func:`str`.
    $ spy 'str(pipe).replace("\n", " ")' < test.txt
    this file has five lines
 
-Passing ``-l`` (or ``--each-line``) to spy will iterate through stdin instead,
-so your expressions will run once per line of input:
+Passing :option:`-l` (or :option:`--each-line`) to spy will iterate through
+stdin instead, so your expressions will run once per line of input:
 
 .. code-block:: console
 
@@ -59,7 +59,18 @@ so your expressions will run once per line of input:
    -five-
    -lines-
 
-spy helpfully removes the terminating newlines from these strings.
+spy helpfully removes the terminating newlines from these strings. If you don't
+want that, you can pass :option:`--raw` to get :data:`~sys.stdin`
+unadulterated.
+
+.. code-block:: console
+
+   $ spy -lrc repr < test.txt
+   'this\n'
+   'file\n'
+   'has\n'
+   'five\n'
+   'lines\n'
 
 
 Piping

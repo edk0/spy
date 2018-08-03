@@ -44,6 +44,14 @@ spy -lf 0 < test.txt | wc -l
 ! spy -c 0
 ! spy -m 0
 
+# documented as equivalent
+printf '1\n2\n' | spy -lc repr
+> '1'
+> '2'
+printf '1\n2\n' | spy -l 'spy.many(pipe)' -c repr
+> '1'
+> '2'
+
 # the examples from doc/examples
 spy -mc sorted < test.txt
 > file

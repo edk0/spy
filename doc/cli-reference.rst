@@ -12,9 +12,7 @@ Regular options
 
    Process each line as its own string (rather than stdin as a file at once).
 
-.. option:: --prelude=<statement>, -p <statement>
-
-   Run some Python before processing starts.
+   Equivalent to starting with a fragment of ``spy.many(pipe)``
 
 .. option:: --no-default-fragments
 
@@ -29,6 +27,14 @@ Regular options
 .. option:: --pipe-name=<name>
 
    Name the magic pipe variable ``<name>`` instead of ``pipe``.
+
+.. option:: --prelude=<statement>, -p <statement>
+
+   Run some Python before processing starts.
+
+.. option:: --raw, -r
+
+   Don't wrap :data:`~sys.stdin` before passing it to the first fragment.
 
 
 Output limiting options
