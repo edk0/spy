@@ -46,12 +46,12 @@ of input data.
 Differences from the CLI
 ------------------------
 
-As documented, :func:`collect` takes a ``context`` argument. It can be omitted
-when using the CLI because it's automatically filled in (it has to be, since
-there's no way to access the context object from CLI fragments). There is no
-equivalent mechanism outside the CLI, so if you want to use :func:`collect`, you
-must provide ``context``. You can get the context object by accepting a
-``context`` argument in your fragment function::
+As documented, :func:`~spy.collect` takes a ``context`` argument. It can be
+omitted when using the CLI because it's automatically filled in (it has to be,
+since there's no way to access the context object from CLI fragments). There is
+no equivalent mechanism outside the CLI, so if you want to use
+:func:`~spy.collect`, you must provide ``context``. You can get the context
+object by accepting a ``context`` argument in your fragment function::
 
    @spy.fragment
    def foo(v, context):
