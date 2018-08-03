@@ -4,7 +4,6 @@ import sys
 import traceback
 
 from . import core
-from .objects import _ForcedError
 
 
 class CaughtException(Exception):
@@ -20,7 +19,7 @@ class CaughtException(Exception):
 
 def _format_exc(typ, exc, tb, *, delete_all=False):
     hide_below_user = False
-    if isinstance(exc, _ForcedError):
+    if getattr(exc, '_forced_', False):
         hide_below_user = True
         exc = exc.__cause__
         typ = exc.__class__

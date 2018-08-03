@@ -34,7 +34,7 @@ def test_module_proxy():
     with pytest.raises(AttributeError):
         spy._test_
 
-    with pytest.raises(Exception):
+    with pytest.raises(AttributeError):
         mp._test_
 
     assert dir(mp) == dir(spy)
