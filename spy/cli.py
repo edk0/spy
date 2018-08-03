@@ -1,7 +1,4 @@
 import builtins
-import functools
-import importlib
-import itertools
 import sys
 
 from clize import Clize, run
@@ -11,7 +8,7 @@ from clize.parser import use_mixin, Parameter, NamedParameter
 
 from . import catcher, fragments
 from .decorators import decorators
-from .objects import Context, SpyFile, _ContextInjector
+from .objects import Context, _ContextInjector
 
 import spy
 
@@ -22,6 +19,7 @@ PIPE_NAME = 'pipe'
 class NullContext:
     def __enter__(self):
         pass
+
     def __exit__(self, typ, value, traceback):
         pass
 
@@ -122,7 +120,7 @@ class Decorator(NamedParameter):
             i += 1
             try:
                 arg = ba.in_args[i]
-            except:
+            except LookupError:
                 raise MissingValue
         else:
             if len(arg) >= 3:
@@ -131,7 +129,7 @@ class Decorator(NamedParameter):
                 i += 1
                 try:
                     arg = ba.in_args[i]
-                except:
+                except LookupError:
                     raise MissingValue
         while True:
             narg = self.parse_one_arg(ba, arg)
@@ -227,10 +225,12 @@ def _main(*steps: use_mixin(StepList),
     with context:
         chain.run_to_exhaustion(data)
 
+
 _main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names,
                                            description=fn.decorator_help,
                                            decfn=fn)
                                  for fn in decorators))
+
 
 def main():
     run(_main)

@@ -1,12 +1,6 @@
 import numbers
 import inspect
 import itertools
-import traceback
-
-from functools import wraps
-
-
-from .objects import SpyFile
 
 
 def _accepts_context(fn):
@@ -21,11 +15,13 @@ def _call_fragment_body(f, *a, **kw):
 class _Constant:
     pass
 
+
 DROP = _Constant()
 
 
 class _Context:
     __slots__ = ('iter_value', 'iter_iter')
+
     def __init__(self, iter_value, iter_iter):
         self.iter_value = iter_value
         self.iter_iter = iter_iter
@@ -33,9 +29,10 @@ class _Context:
 
 def fragment(fn):
     with_context = _accepts_context(fn)
+
     def fragment(ita, index=None):
         ita = iter(ita)
-        _spy_fragment_index = index
+        _spy_fragment_index = index  # noqa: F841
         if with_context:
             context = _Context(None, ita)
         for _spy_value in ita:
@@ -52,6 +49,7 @@ def fragment(fn):
                 yield result
     fragment.fragment_fn = fn
     return fragment
+
 
 step = fragment
 
@@ -124,4 +122,6 @@ def collect(context):
     if context is None:
         raise ValueError("Can't collect without a valid context (got None)")
     return itertools.chain([context.iter_value], context.iter_iter)
+
+
 collect._spy_inject_context_ = True

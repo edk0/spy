@@ -1,4 +1,3 @@
-import contextlib
 import inspect
 import itertools
 import sys
@@ -28,23 +27,20 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
     entries = []
     delete_in = None
     delete_from = None
-    skip = 0
     fragment_index = None
     fragment_value = None
     fragment_decorator = None
-    fragment_decorator_value = None
     fragment_debuginfo = None
-    frame_kind = last_kind = ''
+    frame_kind = ''
     while tb is not None:
         filename, lineno, funcname, source = traceback.extract_tb(tb, limit=1)[0]
-        last_kind = frame_kind
         frame_kind = 'normal'
         local = tb.tb_frame.f_locals
         lines = []
 
         # cut out this part
         if (tb.tb_frame.f_code is core.chain.run_to_exhaustion.__code__ or
-            tb.tb_frame.f_code is core.chain.apply.__code__):
+                tb.tb_frame.f_code is core.chain.apply.__code__):
             delete_in = len(entries)
 
         # top level of a spy.fragment()
@@ -63,8 +59,6 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
                 del entries[delete_in:]
             delete_in = len(entries)
             fragment_decorator = local['_spy_decorator']
-            if '_spy_value' in local:
-                fragment_decorator_value = local['_spy_value']
             if '_spy_callable' in local:
                 callable_ = local['_spy_callable']
                 if hasattr(callable_, '_spy_debuginfo'):
@@ -119,6 +113,7 @@ def _print(entries):
 
 
 _old_excepthook = sys.__excepthook__
+
 
 def _excepthook(typ, exc, tb):
     if isinstance(exc, CaughtException):

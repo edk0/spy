@@ -1,4 +1,3 @@
-from collections import Mapping
 from functools import wraps
 from importlib import import_module
 from io import TextIOBase, UnsupportedOperation
@@ -115,8 +114,8 @@ class _ContextView:
 
     @recursive_repr()
     def __repr__(self):
-        return '{}(context={}, overlay={})'.format(self.__class__.__name__,
-                repr(self.context), repr(self.overlay))
+        return '{}(context={}, overlay={})'.format(
+            self.__class__.__name__, repr(self.context), repr(self.overlay))
 
 
 class SpyFile(TextIOBase):

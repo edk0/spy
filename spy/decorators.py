@@ -1,5 +1,4 @@
 from functools import partial, wraps
-import sys
 
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 
@@ -16,12 +15,14 @@ def decorator(*names, doc=None):
                 xfn = partial(_call_fragment_body, fn)
             else:
                 xfn = partial(_drop_context, fn)
+
             @wraps(fn)
             def wrapped(v, context=None):
-                _spy_callable = fn
-                _spy_value = v
+                _spy_callable = fn  # noqa: F841
+                _spy_value = v  # noqa: F841
                 return _spy_decorator(xfn, v, context)
             return wrapped
+
         wrapper.decorator_names = names
         wrapper.decorator_help = doc
         decorators.append(wrapper)
