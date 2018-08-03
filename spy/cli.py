@@ -157,13 +157,10 @@ def _main(*steps: use_mixin(StepList),
           show_fragments: Parameter.UNDOCUMENTED = False):
     """Run Python code.
 
-    steps: At least one Python expression (or suite) to execute
-
-    each_line: If specified, process lines as strings rather than all of stdin as a file
-
-    start: Don't print before this result (zero-based)
-
-    end: Stop after getting this result (zero-based)
+    :param steps: At least one Python expression (or suite) to execute
+    :param each_line: If specified, process lines as strings rather than all of stdin as a file
+    :param start: Don't print before this result (zero-based)
+    :param end: Stop after getting this result (zero-based)
     """
     sys.setcheckinterval(10000)
 
