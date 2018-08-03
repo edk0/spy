@@ -34,11 +34,11 @@ Naively:
 .. code-block:: console
 
    $ spy -m "['{}: {}'.format(n, v) for n, v in enumerate(pipe, 1)]" < test.txt
-   0: this
-   1: file
-   2: has
-   3: five
-   4: lines
+   1: this
+   2: file
+   3: has
+   4: five
+   5: lines
 
 Taking advantage of spy piping:
 
