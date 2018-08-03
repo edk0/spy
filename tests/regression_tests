@@ -29,6 +29,10 @@ spy --pipe-name=apple "'hello'" apple
 > hello
 echo 'x' | spy -l
 > x
+printf '1\n2\n3\n' | spy -c list
+> ['1', '2', '3']
+printf '1\n2\n3\n' | spy -rc list
+> ['1\n', '2\n', '3\n']
 
 # make sure 12345 is blamed
 spy --callable 12345 2>&1 | grep 12345

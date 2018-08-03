@@ -154,6 +154,7 @@ class Decorator(NamedParameter):
 
 def _main(*steps: use_mixin(StepList),
           each_line: 'l' = False,
+          raw: 'r' = False,
           start: (int, 's') = 0,
           end: (int, 'e') = None,
           prelude: (multi(), 'p') = 'pass',
@@ -168,6 +169,7 @@ def _main(*steps: use_mixin(StepList),
     :param start: Don't print before this result (zero-based)
     :param end: Stop after getting this result (zero-based)
     :param prelude: Execute this statement before running any steps. Can be specified more than once.
+    :param raw: Don't add helper functionality to stdin
     """
     sys.setcheckinterval(10000)
 
@@ -208,7 +210,10 @@ def _main(*steps: use_mixin(StepList),
             steps.insert(0, fragments.many)
             index_offset -= 1
 
-        steps.insert(0, fragments.stdin)
+        if raw:
+            steps.insert(0, fragments.raw_stdin)
+        else:
+            steps.insert(0, fragments.stdin)
         index_offset -= 1
 
     chain = spy.chain(steps, index_offset=index_offset)

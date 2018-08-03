@@ -11,6 +11,10 @@ def stdin(ita):
     yield SpyFile(sys.stdin)
 
 
+def raw_stdin(ita):
+    yield sys.stdin
+
+
 def many(ita):
     return chain.from_iterable(ita)
 
