@@ -1,4 +1,12 @@
+import os.path
+
 from setuptools import setup
+
+
+readme = os.path.join(os.path.dirname(__file__), 'README.md')
+with open(readme) as f:
+    long_description = f.read()
+
 
 setup(
     name='spy-cli',
@@ -27,7 +35,8 @@ setup(
     project_urls={
         'Documentation': 'https://spy.readthedocs.io/',
     },
-    long_description='See https://github.com/edk0/spy/blob/master/README.md',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Environment :: Console',
