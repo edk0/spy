@@ -90,6 +90,7 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             lines.append('  Fragment {}, in decorator {}'.format(fragment_index, decname))
             if fragment_debuginfo:
                 lines.append('    ' + fragment_debuginfo[1])
+            hide_below_user = True
         elif frame_kind == 'synthetic_callable':
             lines.append('  Fragment {}'.format(fragment_index))
             lines.append('    ' + fragment_debuginfo[1])
