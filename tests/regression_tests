@@ -1,0 +1,64 @@
+# syntax of this file:
+# lines starting with # (or empty) are comments
+# regular lines are shell commands
+# if a shell command is followed with lines starting '> '
+# they contain output the preceding command must match
+
+spy 1
+spy --help
+spy --show-fragments 0
+spy -l 0
+spy --each-line 0
+spy --start 2 0
+spy -s 2 0
+spy --end 2 0
+spy -e 2 0
+spy spy
+spy spy.catcher
+spy 1+ 2+ 3
+> 6
+spy '1 + 2'
+> 3
+spy --prelude x=3 x
+> 3
+spy -n x=3 x
+> 3
+spy --pipe-name=apple "'hello'" apple
+> hello
+echo 'x' | spy -l
+> x
+
+# make sure 12345 is blamed
+spy --callable 12345 2>&1 | grep 12345
+
+spy -lf 0 < test.txt | wc -l
+> 0
+
+# things that should not work
+! spy -c 0
+! spy -m 0
+
+# the examples from doc/examples
+spy -mc sorted < test.txt
+> file
+> five
+> has
+> lines
+> this
+spy -l -f 'len(pipe) == 4' < test.txt
+> this
+> file
+> five
+spy -m "['{}: {}'.format(n, v) for n, v in enumerate(pipe, 1)]" < test.txt
+> 1: this
+> 2: file
+> 3: has
+> 4: five
+> 5: lines
+spy -m 'enumerate(pipe, 1)' "'{}: {}'.format(*pipe)" < test.txt
+> 1: this
+> 2: file
+> 3: has
+> 4: five
+> 5: lines
+spy -c csv.DictReader -c list -c json.dumps < test.csv
