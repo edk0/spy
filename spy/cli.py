@@ -156,7 +156,7 @@ def _main(*steps: use_mixin(StepList),
           each_line: 'l' = False,
           start: (int, 's') = 0,
           end: (int, 'e') = None,
-          prelude: (multi(), 'n') = '',
+          prelude: (multi(), 'n') = 'pass',
           pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
           no_default_fragments: Parameter.UNDOCUMENTED = False,
           no_exception_handling: Parameter.UNDOCUMENTED = False,
@@ -167,7 +167,7 @@ def _main(*steps: use_mixin(StepList),
     :param each_line: If specified, process lines as strings rather than all of stdin as a file
     :param start: Don't print before this result (zero-based)
     :param end: Stop after getting this result (zero-based)
-    :param prelude: Execute this statement before running any steps
+    :param prelude: Execute this statement before running any steps. Can be specified more than once.
     """
     sys.setcheckinterval(10000)
 
