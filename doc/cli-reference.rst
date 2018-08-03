@@ -10,7 +10,11 @@ Regular options
 
 .. option:: --each-line, -l
 
-   Process each line as its own string (rather than stdin as a file at once)
+   Process each line as its own string (rather than stdin as a file at once).
+
+.. option:: --prelude=<statement>, -p <statement>
+
+   Run some Python before processing starts.
 
 .. option:: --no-default-fragments
 
