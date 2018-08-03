@@ -23,7 +23,7 @@ spy --prelude x=3 x
 > 3
 spy --prelude x=3 x+=1 x
 > 4
-spy -n x=3 x
+spy -p x=3 x
 > 3
 spy --pipe-name=apple "'hello'" apple
 > hello
