@@ -33,6 +33,15 @@ printf '1\n2\n3\n' | spy -c list
 > ['1', '2', '3']
 printf '1\n2\n3\n' | spy -rc list
 > ['1\n', '2\n', '3\n']
+printf '1\n2\n' | spy -l -c int 'pipe += 1'
+> 2
+> 3
+printf '1\n2\n' | spy -l -ma x=3 -c int pipe+x
+> 4
+> 5
+printf '5\n5\n' | spy -l -p x=3 -ma x+=3 -c int pipe+x
+> 11
+> 11
 
 # make sure 12345 is blamed
 spy --callable 12345 2>&1 | grep 12345
@@ -51,6 +60,9 @@ printf '1\n2\n' | spy -lc repr
 printf '1\n2\n' | spy -l 'spy.many(pipe)' -c repr
 > '1'
 > '2'
+
+printf '1\n2\n3\n4\n5' | spy 'pipe[2]'
+> 3
 
 # the examples from doc/examples
 spy -mc sorted < test.txt
