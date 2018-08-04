@@ -7,11 +7,18 @@ python:
   - "3.7-dev"
   - "pypy3"
   - "pypy3.5-5.8.0"
+env:
+  - PYTEST_SELECTION=test
+matrix:
+  include:
+    - name: "Python 3.6 without regression tests"
+      python: "3.6"
+      env: PYTEST_SELECTION="not regression"
 install:
   - "pip install --upgrade pip setuptools coveralls"
   - "pip install -e .[test]"
 script:
-  - "py.test -v --cov-config .coveragerc --cov spy"
+  - 'py.test -v -k "$PYTEST_SELECTION" --cov-config .coveragerc --cov spy'
   - 'if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then pip install flake8; flake8 spy; fi'
 after_success:
   - "coveralls"
