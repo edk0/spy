@@ -14,6 +14,17 @@ Sort
    lines
    this
 
+Similarly:
+
+.. code-block:: console
+
+   $ spy -c list -mc reversed < test.txt
+   lines
+   five
+   has
+   file
+   this
+
 
 Filter
 ======

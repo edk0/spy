@@ -116,11 +116,11 @@ processed.
 Data flow
 =========
 
-Before I explain this, a brief discourse into how data moves around in spy: Each
-fragment in spy tries to consume data from the fragment to its left. It
-processes it, then yields to the fragment to its right, which will do the same
-thing. To run the program, spy just tries to pump as much data out of the
-rightmost fragment as it can—everything else is handled by the fragment
+Before we construct anything more complex, a brief discourse into how data moves
+around in spy: Each fragment in spy tries to consume data from the fragment to
+its left. It processes it, then yields to the fragment to its right, which will
+do the same thing. To run the program, spy just tries to pump as much data out
+of the rightmost fragment as it can—everything else is handled by the fragment
 mechanic.
 
 In the examples I've given above, each fragment has consumed and yielded data on
@@ -159,6 +159,30 @@ the CLI:
    be :term:`iterable`).
 
 
+Doing stuff
+===========
+
+Nothing here is particularly useful in isolation. Let's throw it all together by
+pretending we're ``jq``:
+
+.. code-block:: console
+
+   $ spy -lc json.loads -f 'pipe["state"] == "Outbreak"' 'pipe["name"]' -e 10 < stations.jsonl
+   Burbank Gateway
+   Stefanyshyn-Piper Port
+   Cheli Station
+   Buckell Ring
+   Bolotov Port
+   Schumacher Hub
+   Huss Station
+   Wilhelm von Struve Port
+   Wedge Terminal
+   Orsini Mining Platform
+
+Note how :option:`-l` trivially gives us newline-delimited JSON, a job which was
+previously so hard it required its own top-2000 PyPI package!
+
+
 Exception handling
 ==================
 
@@ -173,7 +197,7 @@ source code, and input data at the time the exception was raised:
    Traceback (most recent call last):
      Fragment 1
        None + 2
-       input to fragment was <SpyFile stream=<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>>
+       input to fragment was <SpyFile stream='<stdin>'>
    TypeError: unsupported operand type(s) for +: 'NoneType' and 'int'
 
 If an exception is raised in a decorator outside the call to the fragment body,
