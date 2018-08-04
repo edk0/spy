@@ -125,6 +125,18 @@ def test_run(capsys, monkeypatch):
     assert out == expected
 
 
+def test_raw(capsys, monkeypatch):
+    input = "this is a string\nwhich i expect\0to get back exactly\v\r\nas it was put in"
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(input))
+    monkeypatch.setattr(sys, 'argv',
+        sys.argv[0:1] + ['--raw', '--each-line', '-c', 'sys.stdout.write', 'None'])
+    with pytest.raises(SystemExit):
+        from spy import __main__
+    out, err = capsys.readouterr()
+    assert err == ''
+    assert out == input
+
+
 def test_no_defaults(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     monkeypatch.setattr(sys, 'argv',
