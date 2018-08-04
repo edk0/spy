@@ -54,12 +54,12 @@ spy -lf 0 < test.txt | wc -l
 ! spy -m 0
 
 # documented as equivalent
-printf '1\n2\n' | spy -lc repr
-> '1'
-> '2'
-printf '1\n2\n' | spy -l 'spy.many(pipe)' -c repr
-> '1'
-> '2'
+printf '10\n20\n' | spy -lc repr
+> '10'
+> '20'
+printf '10\n20\n' | spy 'spy.many(pipe)' -c repr
+> '10'
+> '20'
 
 printf '1\n2\n3\n4\n5' | spy 'pipe[2]'
 > 3
