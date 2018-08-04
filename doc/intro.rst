@@ -187,11 +187,9 @@ particular lie is almost universally more useful:
    Traceback (most recent call last):
      Fragment 1, in decorator spy.decorators.callable
        --callable 'None'
-       input to fragment was <SpyFile stream=<_io.TextIOWrapper name='<stdin>' mode='r' encoding='UTF-8'>>
-     File "/home/edk/src/spy/spy/decorators.py", line 44, in callable
-       return result(v)
+       input to fragment was <SpyFile stream='<stdin>'>
    TypeError: 'NoneType' object is not callable
 
 The philosophy here is that what made it go wrong is more interesting than
 *exactly how* it went wrong, so that's what spy gives you by default. You can
-get the real traceback by passing ``--no-exception-handling`` to spy.
+get the real traceback by passing :option:`--no-exception-handling` to spy.
