@@ -12,7 +12,9 @@ Regular options
 
    Process each line as its own string (rather than stdin as a file at once).
 
-   Equivalent to starting with a fragment of ``spy.many(pipe)``
+   Equivalent to starting with a fragment of ``spy.many(pipe)``, but more
+   efficient since we don't need save the contents of the input stream
+   for indexing.
 
 .. option:: --no-default-fragments
 
