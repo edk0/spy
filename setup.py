@@ -16,7 +16,8 @@ setup(
     zip_safe=True,
     entry_points={
         'console_scripts': [
-            'spy = spy.cli:main'
+            'spy = spy.cli:main',
+            'spc = spy.client:main',
         ]
     },
     install_requires=[
