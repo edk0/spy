@@ -1,9 +1,7 @@
 import array
-import codecs
 import os
 import json
 import os.path
-from socket import socket, socketpair, CMSG_SPACE, SOL_SOCKET, SCM_RIGHTS, AF_UNIX, SOCK_STREAM, SHUT_RDWR, SHUT_WR
 import socket
 import sys
 
