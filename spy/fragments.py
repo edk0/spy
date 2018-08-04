@@ -1,6 +1,6 @@
 from builtins import print as py_print
 from collections import Iterable, Mapping, Sequence
-from itertools import chain, islice
+from itertools import islice
 
 import sys
 
@@ -16,7 +16,11 @@ def raw_stdin(ita):
 
 
 def foreach(ita):
-    return chain.from_iterable(ita)
+    for elem in ita:
+        if isinstance(elem, SpyFile):
+            yield from elem._line_iter()
+        else:
+            yield from elem
 
 
 def make_limit(*, start=0, end=None):
