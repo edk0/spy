@@ -1,5 +1,6 @@
 import pytest
 
+import io
 from io import StringIO, UnsupportedOperation
 
 import spy, spy.core
@@ -95,8 +96,7 @@ class TestSpyFile:
         assert spyfile.read() == TEST_INPUT[27:]
 
     def test_len(self, spyfile):
-        with pytest.raises(TypeError):
-            len(spyfile)
+        assert len(spyfile) == len(TEST_INPUT.splitlines())
 
     def test_readline(self, spyfile):
         spyfile.read(5)
@@ -119,3 +119,14 @@ class TestSpyFile:
     def test_detach(self, spyfile):
         with pytest.raises(UnsupportedOperation):
             spyfile.detach()
+
+    def test_positioning(self):
+        f = SpyFile(StringIO("foobar\n123456789\nhello\nasdfasdfasdfasdfcheese"))
+        assert f.read(3) == 'foo'
+        assert f.readline() == 'bar\n'
+        assert f.seek(10, io.SEEK_CUR) == 17
+        assert f.readline() == 'hello\n'
+        assert f.seek(-7, io.SEEK_END) == 39
+        assert f.read() == 'cheese'
+        assert f.seek(0) == 0
+        assert f.readline() == 'foobar\n'

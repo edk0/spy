@@ -1,5 +1,7 @@
+from bisect import bisect_left
 from functools import wraps
 from importlib import import_module
+import io
 from io import TextIOBase, UnsupportedOperation
 from reprlib import recursive_repr
 from types import ModuleType
@@ -116,13 +118,13 @@ class _ContextView:
 
 
 class SpyFile(TextIOBase):
-    __slots__ = ('stream', 'lines', 'row', 'col', '_append', '_next')
-
     def __init__(self, stream):
         self.stream = stream
         self.lines = []
         self.row = 0
         self.col = 0
+        self.rowoff = [0]
+        self.offset = 0
         self._append = self.lines.append
         self._next = iter(self.stream).__next__
 
@@ -138,6 +140,11 @@ class SpyFile(TextIOBase):
             return self.lines[k]
         raise IndexError(k)
 
+    def __len__(self):
+        while self._read_one():
+            pass
+        return len(self.lines)
+
     def __str__(self):
         while self._read_one():
             pass
@@ -148,15 +155,44 @@ class SpyFile(TextIOBase):
         return '<SpyFile stream={!r}>'.format(name)
 
     def __iter__(self):
+        return SpyFileReader(self)
+
+    def _line_iter(self):
         return (l.rstrip('\n') for l in self.stream)
 
     def _read_one(self):
         try:
             l = self._next().rstrip('\n')
+            self.rowoff.append(self.rowoff[-1] + len(l) + 1)
             self._append(l)
             return True
         except StopIteration:
             return False
+
+    def seek(self, offset, whence=io.SEEK_SET):
+        if whence == io.SEEK_SET:
+            pass
+        elif whence == io.SEEK_CUR:
+            offset += self.offset
+        elif whence == io.SEEK_END:
+            while self._read_one():
+                pass
+            offset += self.rowoff[-1]
+        else:
+            raise ValueError
+        if offset < 0:
+            offset = 0
+        while self.rowoff[-1] < offset and self._read_one():
+            pass
+        if offset > self.rowoff[-1]:
+            offset = self.rowoff[-1]
+        row = bisect_left(self.rowoff, offset)
+        ro = self.rowoff[row]
+        if offset < ro:
+            row -= 1
+        self.row = row
+        self.col = offset - self.rowoff[row]
+        return offset
 
     def read(self, n=None):
         if n == 0:
@@ -183,6 +219,7 @@ class SpyFile(TextIOBase):
                     self.col = end
         except IndexError:
             pass
+        self.offset += len(buf)
         return buf
 
     def readline(self, n=-1):
@@ -192,11 +229,30 @@ class SpyFile(TextIOBase):
             return ''
         if len(row) >= n >= 0:
             self.col += n
+            self.offset += n
             return row[:n]
         else:
             self.row += 1
             self.col = 0
+            self.offset += len(row)
             return row
 
     def detach(self):
         raise UnsupportedOperation
+
+
+class SpyFileReader:
+    def __init__(self, spyfile):
+        self._spyfile = spyfile
+        self._row = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        row = self._row
+        self._row += 1
+        try:
+            return self._spyfile[row]
+        except IndexError:
+            raise StopIteration
