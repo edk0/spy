@@ -207,7 +207,7 @@ def _main(*steps: use_mixin(StepList),
         steps.append(fragments.print)
 
         if each_line:
-            steps.insert(0, fragments.many)
+            steps.insert(0, fragments.foreach)
             index_offset -= 1
 
         if raw:

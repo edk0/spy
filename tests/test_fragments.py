@@ -6,13 +6,13 @@ from io import StringIO
 import spy.fragments
 
 
-def test_many():
+def test_foreach():
     input_ = [['foo', 'bar', 'baz']]
 
-    f = spy.fragments.many(input_)
+    f = spy.fragments.foreach(input_)
     assert list(f) == ['foo', 'bar', 'baz']
 
-    f = spy.fragments.many(spy.fragments.many(input_))
+    f = spy.fragments.foreach(spy.fragments.foreach(input_))
     assert list(f) == list('foobarbaz')
 
 

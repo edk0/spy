@@ -15,7 +15,7 @@ def raw_stdin(ita):
     yield sys.stdin
 
 
-def many(ita):
+def foreach(ita):
     return chain.from_iterable(ita)
 
 
