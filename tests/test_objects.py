@@ -130,3 +130,17 @@ class TestSpyFile:
         assert f.read() == 'cheese'
         assert f.seek(0) == 0
         assert f.readline() == 'foobar\n'
+
+        f = SpyFile(StringIO("foobar\n123456789\nhello\nasdfasdfasdfasdfcheese"))
+        assert f.seek(17) == 17
+        assert f.readline() == 'hello\n'
+
+        f = SpyFile(StringIO("foobar\n123456789\nhello\nasdfasdfasdfasdfcheese"))
+        assert f.seek(-7, io.SEEK_END) == 39
+        assert f.read() == 'cheese'
+
+        with pytest.raises(ValueError):
+            f.seek(0, -10)
+
+        assert f.seek(-1000) == 0
+        assert f.seek(1000) == 46
