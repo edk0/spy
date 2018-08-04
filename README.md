@@ -16,12 +16,12 @@ upon, so please let me know if you find anything wrong with it.
 spy is compatible with Python 3.4 and newer.
 
 **The docs, including introduction, are available
-[on ReadTheDocs](https://spy.readthedocs.org/en/latest/).**
+[on ReadTheDocs](https://spy.readthedocs.org/en/stable/).**
 
 If you have any suggestions or feedback or anything, I'll probably be in `#spy`
 on `irc.freenode.net`.
 
-# Example ([more here](https://spy.readthedocs.org/en/latest/examples.html))
+# Example ([more here](https://spy.readthedocs.org/en/stable/examples.html))
 
 ```console
 $ spy -l -f 'len(pipe) == 4' < /usr/share/dict/words
