@@ -18,7 +18,7 @@ Similarly:
 
 .. code-block:: console
 
-   $ spy -c list -mc reversed < test.txt
+   $ spy -mc reversed < test.txt
    lines
    five
    has

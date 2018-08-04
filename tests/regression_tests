@@ -71,6 +71,12 @@ spy -mc sorted < test.txt
 > has
 > lines
 > this
+spy -mc reversed < test.txt
+> lines
+> five
+> has
+> file
+> this
 spy -l -f 'len(pipe) == 4' < test.txt
 > this
 > file
