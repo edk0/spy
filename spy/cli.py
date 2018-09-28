@@ -171,8 +171,6 @@ def _main(*steps: use_mixin(StepList),
     :param prelude: Execute this statement before running any steps. Can be specified more than once.
     :param raw: Don't add helper functionality to stdin
     """
-    sys.setcheckinterval(10000)
-
     pipe_name = sys.intern(pipe_name)
 
     spy.context = context = make_context()
