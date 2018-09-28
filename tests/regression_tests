@@ -42,6 +42,16 @@ printf '1\n2\n' | spy -l -ma x=3 -c int pipe+x
 printf '5\n5\n' | spy -l -p x=3 -ma x+=3 -c int pipe+x
 > 11
 > 11
+spy -m '[1,2,3]' -m '[4,5,6]'
+> 4
+> 5
+> 6
+> 4
+> 5
+> 6
+> 4
+> 5
+> 6
 
 # make sure 12345 is blamed
 spy --callable 12345 2>&1 | grep 12345
