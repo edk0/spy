@@ -24,6 +24,15 @@ class NullContext:
         pass
 
 
+def debugger():
+    try:
+        import bpdb
+        bpdb.set_trace()
+    except ImportError:
+        import pdb
+        pdb.set_trace()
+
+
 def compile_(code, filename='<input>'):
     try:
         return compile(code, filename, 'eval', 0, True, 0), True
@@ -170,7 +179,8 @@ def _main(*steps: use_mixin(StepList),
           pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
           no_default_fragments: Parameter.UNDOCUMENTED = False,
           no_exception_handling: Parameter.UNDOCUMENTED = False,
-          show_fragments: Parameter.UNDOCUMENTED = False):
+          show_fragments: Parameter.UNDOCUMENTED = False,
+          break_: Parameter.UNDOCUMENTED = False,):
     """Run Python code.
 
     :param steps: At least one Python expression (or suite) to execute
@@ -201,6 +211,8 @@ def _main(*steps: use_mixin(StepList),
             co, is_expr = compile_(code, filename=fragment_name)
         except SyntaxError as e:
             pretty_syntax_error(code, e)
+            if break_:
+                debugger()
             sys.exit(1)
         debuginfo = (fragment_name, source)
         ca = make_callable(co, is_expr, context, pipe_name, debuginfo)
