@@ -32,6 +32,17 @@ def compile_(code, filename='<input>'):
     return compile(code, filename, 'exec', 0, True, 0), False
 
 
+def pretty_syntax_error(line, err):
+    print('Error compiling %s' % err.filename, file=sys.stderr)
+    print('  %s' % line, file=sys.stderr)
+    if err.lineno > 0 and err.offset > 0:
+        if err.text is None:
+            print('  %s^' % (' ' * err.offset), file=sys.stderr)
+        else:
+            print('  %s^' % (' ' * (err.offset - 1)), file=sys.stderr)
+    print('%s: %s' % (type(err).__name__, err.msg), file=sys.stderr)
+
+
 def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
     local = env.view()
     local._spy_debuginfo = debuginfo
@@ -186,7 +197,11 @@ def _main(*steps: use_mixin(StepList),
             code, funcseq = code.value, code.funcseq
         else:
             funcseq = ()
-        co, is_expr = compile_(code, filename=fragment_name)
+        try:
+            co, is_expr = compile_(code, filename=fragment_name)
+        except SyntaxError as e:
+            pretty_syntax_error(code, e)
+            sys.exit(1)
         debuginfo = (fragment_name, source)
         ca = make_callable(co, is_expr, context, pipe_name, debuginfo)
         for fn in funcseq:
