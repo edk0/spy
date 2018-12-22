@@ -38,8 +38,8 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
         lines = []
 
         # cut out this part
-        if (tb.tb_frame.f_code is core.chain.run_to_exhaustion.__code__ or
-                tb.tb_frame.f_code is core.chain.apply.__code__):
+        if (tb.tb_frame.f_code is core.chain.run_to_exhaustion.__code__
+                or tb.tb_frame.f_code is core.chain.apply.__code__):
             delete_in = len(entries)
 
         # top level of a spy.fragment()
