@@ -57,7 +57,7 @@ def test_argument_errors(monkeypatch):
 def test_argument_chain(monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     spy.cli._main(sys.argv[0], '1+', '2+', '3')
-    with pytest.raises(SyntaxError):
+    with pytest.raises(SystemExit):
         spy.cli._main(sys.argv[0], '1+', '2+')
 
 
