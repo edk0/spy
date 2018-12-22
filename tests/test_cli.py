@@ -61,6 +61,21 @@ def test_argument_chain(monkeypatch):
         spy.cli._main(sys.argv[0], '1+', '2+')
 
 
+def test_syntax_error(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    with pytest.raises(SystemExit):
+        spy.cli._main(sys.argv[0], 'x = * 1')
+    out, err = capsys.readouterr()
+    lines = iter(err.splitlines())
+    for line in lines:
+        if 'x = * 1' in line:
+            pointer = next(lines)
+            break
+    else:
+        assert False, "missing error source output"
+    assert line.find('*') == pointer.find('^')
+
+
 def test_prelude(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     spy.cli._main(sys.argv[0], '--prelude', 'x = 123', 'x')
