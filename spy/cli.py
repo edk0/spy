@@ -180,7 +180,7 @@ def _main(*steps: use_mixin(StepList),
           no_default_fragments: Parameter.UNDOCUMENTED = False,
           no_exception_handling: Parameter.UNDOCUMENTED = False,
           show_fragments: Parameter.UNDOCUMENTED = False,
-          break_: Parameter.UNDOCUMENTED = False,):
+          break_: Parameter.UNDOCUMENTED = False):
     """Run Python code.
 
     :param steps: At least one Python expression (or suite) to execute
