@@ -24,7 +24,7 @@ class NullContext:
         pass
 
 
-def debugger():
+def debugger():  # pragma: no cover
     try:
         import bpdb
         bpdb.set_trace()
