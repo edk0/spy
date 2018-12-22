@@ -79,19 +79,24 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             fragment_debuginfo = local._spy_debuginfo
             frame_kind = 'synthetic_callable'
 
+        if fragment_debuginfo:
+            fragment_name = fragment_debuginfo[0]
+        else:
+            fragment_name = 'Fragment {}'.format(fragment_index)
+
         if frame_kind == 'fragment' or frame_kind == 'callable':
-            lines.append('  Fragment {}'.format(fragment_index))
+            lines.append('  ' + fragment_name)
         elif frame_kind == 'decorator':
             decname = getattr(fragment_decorator, '__qualname__', fragment_decorator.__name__)
             decmod = inspect.getmodule(fragment_decorator)
             if decmod:
                 decname = '{}.{}'.format(decmod.__name__, decname)
-            lines.append('  Fragment {}, in decorator {}'.format(fragment_index, decname))
+            lines.append('  {}, in decorator {}'.format(fragment_name, decname))
             if fragment_debuginfo:
                 lines.append('    ' + fragment_debuginfo[1])
             hide_below_user = True
         elif frame_kind == 'synthetic_callable':
-            lines.append('  Fragment {}'.format(fragment_index))
+            lines.append('  ' + fragment_name)
             lines.append('    ' + fragment_debuginfo[1])
         if frame_kind != 'normal':
             if fragment_value:
