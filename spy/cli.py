@@ -28,10 +28,8 @@ def compile_(code, filename='<input>'):
     try:
         return compile(code, filename, 'eval', 0, True, 0), True
     except SyntaxError:
-        try:
-            return compile(code, filename, 'exec', 0, True, 0), False
-        except Exception as e:
-            raise e from None
+        pass
+    return compile(code, filename, 'exec', 0, True, 0), False
 
 
 def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
