@@ -171,8 +171,8 @@ class Decorator(NamedParameter):
 
 
 def _main(*steps: use_mixin(StepList),
-          each_line: 'l' = False,
-          raw: 'r' = False,
+          each_line: 'l' = False,  # noqa: F821
+          raw: 'r' = False,  # noqa: F821
           start: (int, 's') = 0,
           end: (int, 'e') = None,
           prelude: (multi(), 'p') = 'pass',
