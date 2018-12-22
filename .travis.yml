@@ -19,6 +19,5 @@ install:
   - "pip install -e .[test]"
 script:
   - 'py.test -v -k "$PYTEST_SELECTION" --cov-config .coveragerc --cov spy'
-  - 'if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then pip install flake8; flake8 spy; fi'
 after_success:
   - "coveralls"
