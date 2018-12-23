@@ -104,3 +104,17 @@ spy -m 'enumerate(pipe, 1)' "'{}: {}'.format(*pipe)" < test.txt
 > 4: five
 > 5: lines
 spy -c csv.DictReader -c list -c json.dumps < test.csv
+
+# error handling
+! spy 3 -c None
+> Traceback (most recent call last):
+>   Fragment 2, in decorator spy.decorators.callable
+>     --callable 'None'
+>     input to fragment was 3
+> TypeError: 'NoneType' object is not callable
+! spy 3 idonotexist
+> Traceback (most recent call last):
+>   Fragment 2
+>     idonotexist
+>     input to fragment was 3
+> NameError: name 'idonotexist' is not defined

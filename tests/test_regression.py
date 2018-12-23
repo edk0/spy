@@ -30,7 +30,8 @@ def test_regression(test_line, expected_output):
     encoding = locale.getpreferredencoding(False)
     output = subprocess.check_output(test_line,
                                      cwd=where,
-                                     shell=True)
+                                     shell=True,
+                                     stderr=subprocess.STDOUT)
     output = output.decode(encoding)
     if expected_output:
         assert output == expected_output
