@@ -1,5 +1,6 @@
 import builtins
 import sys
+from contextlib import ExitStack
 
 from clize import Clize, run
 from clize.errors import MissingValue, UnknownOption
@@ -16,15 +17,10 @@ import spy
 PIPE_NAME = 'pipe'
 
 
-class NullContext:
+class DebuggerContext:
     def __enter__(self):
         pass
 
-    def __exit__(self, typ, value, traceback):
-        pass
-
-
-class DebuggerContext(NullContext):
     def __exit__(self, typ, value, traceback):
         if traceback is not None:
             debugger(traceback)
@@ -252,14 +248,11 @@ def _main(*steps: use_mixin(StepList),
         print(chain.format())
         return
 
-    if break_:
-        context = DebuggerContext()
-    elif no_exception_handling:
-        context = NullContext()
-    else:
-        context = catcher.handler(delete_all=True)
-
-    with context:
+    with ExitStack() as stack:
+        if not no_exception_handling:
+            stack.enter_context(catcher.handler(delete_all=True))
+        if break_:
+            stack.enter_context(DebuggerContext())
         chain.run_to_exhaustion(data)
 
 
