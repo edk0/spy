@@ -17,7 +17,7 @@ import spy
 PIPE_NAME = 'pipe'
 
 
-class DebuggerContext:
+class DebuggerContext:  # pragma: no cover
     def __enter__(self):
         pass
 
@@ -213,7 +213,7 @@ def _main(*steps: use_mixin(StepList),
             co, is_expr = compile_(code, filename=fragment_name)
         except SyntaxError as e:
             pretty_syntax_error(code, e)
-            if break_:
+            if break_:  # pragma: no cover
                 debugger()
             sys.exit(1)
         debuginfo = (fragment_name, source)
@@ -251,7 +251,7 @@ def _main(*steps: use_mixin(StepList),
     with ExitStack() as stack:
         if not no_exception_handling:
             stack.enter_context(catcher.handler(delete_all=True))
-        if break_:
+        if break_:  # pragma: no cover
             stack.enter_context(DebuggerContext())
         chain.run_to_exhaustion(data)
 
