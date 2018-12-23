@@ -24,13 +24,19 @@ class NullContext:
         pass
 
 
-def debugger():  # pragma: no cover
+class DebuggerContext(NullContext):
+    def __exit__(self, typ, value, traceback):
+        if traceback is not None:
+            debugger(traceback)
+
+
+def debugger(tb=None):  # pragma: no cover
     try:
         import bpdb
-        bpdb.set_trace()
+        bpdb.post_mortem(tb)
     except ImportError:
         import pdb
-        pdb.set_trace()
+        pdb.post_mortem(tb)
 
 
 def compile_(code, filename='<input>'):
@@ -246,7 +252,9 @@ def _main(*steps: use_mixin(StepList),
         print(chain.format())
         return
 
-    if no_exception_handling:
+    if break_:
+        context = DebuggerContext()
+    elif no_exception_handling:
         context = NullContext()
     else:
         context = catcher.handler(delete_all=True)
