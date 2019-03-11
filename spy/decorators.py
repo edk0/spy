@@ -1,4 +1,5 @@
 from functools import partial, wraps
+import re
 
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 
@@ -7,11 +8,13 @@ __all__ = ['accumulate', 'callable', 'filter', 'many']
 decorators = []
 
 
-def decorator(*names, doc=None):
+def decorator(*names, doc=None, takes_string=False):
     def wrapperer(_spy_decorator):
         @wraps(_spy_decorator)
         def wrapper(fn):
-            if _accepts_context(fn):
+            if takes_string:
+                xfn = fn
+            elif _accepts_context(fn):
                 xfn = partial(_call_fragment_body, fn)
             else:
                 xfn = partial(_drop_context, fn)
@@ -25,6 +28,7 @@ def decorator(*names, doc=None):
 
         wrapper.decorator_names = names
         wrapper.decorator_help = doc
+        wrapper.takes_string = takes_string
         decorators.append(wrapper)
         return wrapper
     return wrapperer
@@ -55,3 +59,15 @@ def filter(fn, v, context):
 def many(fn, v, context):
     result = fn(v, context)
     return _many(result)
+
+
+@decorator('--format', '-i', doc='Interpolate this as a format string', takes_string=True)
+def format(fn, v, context):
+    env, x = fn()
+    return x.format(v, **env)
+
+
+@decorator('--regex', '--regexp', '-R', doc='Match this as a regexp', takes_string=True)
+def regex(fn, v, context):
+    env, x = fn()
+    return re.match(x, v)

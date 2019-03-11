@@ -104,10 +104,15 @@ class StepList:
 
 
 class _Decorated:
+    LITERAL = False
     def __init__(self, f, v, name):
         self.funcseq = f
         self.value = v
         self.name = name
+
+
+class _LiteralDecorated(_Decorated):
+    LITERAL = True
 
 
 class Decorator(NamedParameter):
@@ -115,6 +120,7 @@ class Decorator(NamedParameter):
         super().__init__(*a, **kw)
         self.description = description
         self.decfn = decfn
+        self.marker_class = _Decorated
 
     def prepare_help(self, helper):
         helper.sections.setdefault("Decorators", {})
@@ -132,12 +138,19 @@ class Decorator(NamedParameter):
         except KeyError as e:
             raise UnknownOption(e.args[0])
 
+    def coalesce(self, dec, decseq, funcseq, names):
+        funcseq.append(dec.decfn)
+        names.append(dec.display_name)
+        return dec.marker_class
+
     def read_argument(self, ba, i):
         src = None
         io = i
         funcseq = [self.decfn]
         names = [self.display_name]
         arg = ba.in_args[i]
+        decseq = [self]
+        cls = self.marker_class
         if arg[1] == '-':
             i += 1
             try:
@@ -159,8 +172,7 @@ class Decorator(NamedParameter):
                 for dec in narg:
                     if not isinstance(dec, Decorator):
                         raise MissingValue
-                    funcseq.append(dec.decfn)
-                    names.append(dec.display_name)
+                    cls = decseq[-1].coalesce(dec, decseq, funcseq, names)
             else:
                 i, src = StepList._read(ba, i)
                 break
@@ -170,7 +182,16 @@ class Decorator(NamedParameter):
             arg = ba.in_args[i]
         ba.skip = i - io
         funcseq.reverse()
-        ba.args.append(_Decorated(funcseq, src, ' '.join(names)))
+        ba.args.append(cls(funcseq, src, ' '.join(names)))
+
+
+class LiteralDecorator(Decorator):
+    def __init__(self, *a, **kw):
+        super().__init__(*a, **kw)
+        self.marker_class = _LiteralDecorated
+
+    def coalesce(self, dec, decseq, funcseq, names):
+        raise MissingValue
 
 
 def _main(*steps: use_mixin(StepList),
@@ -205,20 +226,25 @@ def _main(*steps: use_mixin(StepList),
     for i, code in enumerate(step_src):
         fragment_name = 'Fragment {}'.format(i + 1)
         source = code
+        literal = False
         if isinstance(code, _Decorated):
             source = '{} {!r}'.format(code.name, code.value)
+            literal = code.LITERAL
             code, funcseq = code.value, code.funcseq
         else:
             funcseq = ()
-        try:
-            co, is_expr = compile_(code, filename=fragment_name)
-        except SyntaxError as e:
-            pretty_syntax_error(code, e)
-            if break_:  # pragma: no cover
-                debugger()
-            sys.exit(1)
-        debuginfo = (fragment_name, source)
-        ca = make_callable(co, is_expr, context, pipe_name, debuginfo)
+        if literal:
+            ca = lambda *_, _code=code: (context.view(), _code)
+        else:
+            try:
+                co, is_expr = compile_(code, filename=fragment_name)
+            except SyntaxError as e:
+                pretty_syntax_error(code, e)
+                if break_:  # pragma: no cover
+                    debugger()
+                sys.exit(1)
+            debuginfo = (fragment_name, source)
+            ca = make_callable(co, is_expr, context, pipe_name, debuginfo)
         for fn in funcseq:
             try:
                 ca = fn(ca, debuginfo=debuginfo)
@@ -257,10 +283,20 @@ def _main(*steps: use_mixin(StepList),
         chain.run_to_exhaustion(data)
 
 
-_main = Clize(_main, extra=tuple(Decorator(aliases=fn.decorator_names,
-                                           description=fn.decorator_help,
-                                           decfn=fn)
-                                 for fn in decorators))
+def _prepare_decorators():
+    rv = []
+    for fn in decorators:
+        if fn.takes_string:
+            cls = LiteralDecorator
+        else:
+            cls = Decorator
+        rv.append(cls(aliases=fn.decorator_names,
+                      description=fn.decorator_help,
+                      decfn=fn))
+    return tuple(rv)
+
+
+_main = Clize(_main, extra=_prepare_decorators())
 
 
 def main():
