@@ -1,10 +1,11 @@
 import pytest
 
+import builtins
 import io
 from io import StringIO, UnsupportedOperation
 
 import spy, spy.core
-from spy.objects import Context, SpyFile, _ModuleProxy
+from spy.objects import Context, SpyFile, _ModuleProxy, _FunctionWrapper
 
 TEST_INPUT = '''this is a test input
 for use by a SpyFile
@@ -44,7 +45,9 @@ def test_module_proxy():
 
 @pytest.fixture
 def context():
-    return Context(_pipe_name='pipe')
+    c = Context(_pipe_name='pipe')
+    c.update(builtins.__dict__)
+    return c
 
 
 class TestContext:
@@ -82,6 +85,38 @@ class TestContext:
     def test_auto_import(self, context):
         spy._test_ = []
         assert context['spy']._test_ is spy._test_
+
+
+class TestFunctionWrapping:
+    def test_builtins_are_wrapped(self, context):
+        c = context.view()
+        (c['max'] + 1)([1, 2, 3])
+
+    def test_wrapped_left_op(self):
+        f = _FunctionWrapper(len)
+        two = lambda _: 2
+        ftwo = _FunctionWrapper(two)
+        assert (f//2)([1,1,1,1]) == 2
+        assert (f//two)([1,1,1,1]) == 2
+        assert (f//ftwo)([1,1,1,1]) == 2
+
+    def test_wrapped_right_op(self):
+        f = _FunctionWrapper(len)
+        eight = lambda _: 8
+        assert (8//f)([1,1,1,1]) == 2
+        assert (eight//f)([1,1,1,1]) == 2
+
+    def test_wrapped_unary_op(self):
+        def id(x): return x
+        f = _FunctionWrapper(id)
+        assert (-f)(7) == -7
+
+    def test_wrapper_repr(self):
+        def f(x): pass
+        assert repr(f) == repr(_FunctionWrapper(f))
+        f = _FunctionWrapper(f)
+        assert repr(f+2) == 'add(f,2)'
+        assert repr(f*3+2) == 'add(mul(f,3),2)'
 
 
 @pytest.fixture
