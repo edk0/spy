@@ -7,7 +7,7 @@ from clize.errors import MissingValue, UnknownOption
 from clize.parameters import multi
 from clize.parser import use_mixin, Parameter, NamedParameter
 
-from . import catcher, fragments
+from . import catcher, fragments, prelude
 from .decorators import decorators
 from .objects import Context, _ContextInjector
 
@@ -77,6 +77,7 @@ def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
 def make_context():
     context = Context()
     context.update(builtins.__dict__)
+    context.update(prelude.__dict__)
     return context
 
 

@@ -8,3 +8,4 @@ Detailed documentation for spy's API.
 
    spy
    spy.decorators
+   spy.prelude

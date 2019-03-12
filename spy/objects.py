@@ -5,6 +5,8 @@ import io
 from io import TextIOBase, UnsupportedOperation
 from reprlib import recursive_repr
 from types import ModuleType
+import operator
+import math
 
 
 class _ModuleProxy:
@@ -41,6 +43,103 @@ class _ModuleProxy:
 
     def __repr__(self):
         return repr(self.__module)
+
+
+class _FunctionWrapper:
+    __slots__ = ('_function', 'name')
+
+    def _proxy_unop(op):
+        name = op.__name__ + '(%s)'
+        def fn(self):
+            f = self._function
+            try:
+                return op(f)
+            except TypeError:
+                pass
+            return _FunctionWrapper(lambda x: op(f(x)), name % f.__name__)
+        return fn
+
+    def _proxy_binop(op):
+        name = op.__name__ + '(%s,%s)'
+        def fn(self, other):
+            f = self._function
+            call_other = False
+            if isinstance(other, _FunctionWrapper):
+                other = other._function
+                call_other = True
+            elif hasattr(other, '__call__'):
+                call_other = True
+            try:
+                return op(f, other)
+            except TypeError:
+                pass
+            if call_other:
+                return _FunctionWrapper(lambda x: op(f(x), other(x)), name % (f.__name__, other.__name__))
+            else:
+                return _FunctionWrapper(lambda x: op(f(x), other), name % (f.__name__, repr(other)))
+        def rfn(self, other):
+            f = self._function
+            call_other = False
+            if isinstance(other, _FunctionWrapper):
+                other = other._function
+                call_other = True
+            else:
+                if hasattr(other, '__call__'):
+                    call_other = True
+            try:
+                return op(other, f)
+            except TypeError:
+                pass
+            if call_other:
+                return _FunctionWrapper(lambda x: op(other(x), fn(x)), name % (other.__name__, f.__name__))
+            else:
+                return _FunctionWrapper(lambda x: op(other, fn(x)), name % (repr(other), f.__name__))
+        return fn, rfn
+
+    def __init__(self, function, name=None):
+        self._function = function
+        self.name = name
+
+    @property
+    def __name__(self):
+        return self.name
+
+    def __call__(self, *a, **kw):
+        return self._function(*a, **kw)
+
+    def __repr__(self):
+        if self.name is not None:
+            return self.name
+        return repr(self._function)
+
+    __add__, __radd__ = _proxy_binop(operator.add)
+    __sub__, __rsub__ = _proxy_binop(operator.sub)
+    __mul__, __rmul__ = _proxy_binop(operator.mul)
+    if hasattr(operator, 'matmul'):
+        __matmul__, __rmatmul__ = _proxy_binop(operator.matmul)
+    __truediv__, __rtruediv__ = _proxy_binop(operator.truediv)
+    __floordiv__, __rfloordiv__ = _proxy_binop(operator.floordiv)
+    __mod__, __rmod__ = _proxy_binop(operator.mod)
+    __divmod__, __rdivmod__ = _proxy_binop(divmod)
+    __pow__, __rpow__ = _proxy_binop(operator.pow)
+    __lshift__, __rlshift__ = _proxy_binop(operator.lshift)
+    __rshift__, __rrshift__ = _proxy_binop(operator.rshift)
+    __and__, __rand__ = _proxy_binop(operator.and_)
+    __xor__, __rxor__ = _proxy_binop(operator.xor)
+    __or__, __ror__ = _proxy_binop(operator.or_)
+
+    __neg__ = _proxy_unop(operator.neg)
+    __pos__ = _proxy_unop(operator.pos)
+    __abs__ = _proxy_unop(abs)
+    __invert__ = _proxy_unop(operator.invert)
+    __complex__ = _proxy_unop(complex)
+    __int__ = _proxy_unop(int)
+    __float__ = _proxy_unop(float)
+    __index__ = _proxy_unop(operator.index)
+    __trunc__ = _proxy_unop(math.trunc)
+    __floor__ = _proxy_unop(math.floor)
+    __ceil__ = _proxy_unop(math.ceil)
+    __len__ = _proxy_unop(len)
 
 
 class _ContextInjector(_ModuleProxy):
@@ -92,13 +191,18 @@ class _ContextView:
         self.context = context
         self.overlay = {}
 
+    def _adjust(self, x):
+        if hasattr(x, '__call__'):
+            return _FunctionWrapper(x)
+        return x
+
     def __contains__(self, k):
         return k in self.overlay or k in self.context
 
     def __getitem__(self, k):
         if k in self.overlay:
-            return self.overlay[k]
-        return self.context[k]
+            return self._adjust(self.overlay[k])
+        return self._adjust(self.context[k])
 
     def __setitem__(self, k, v):
         if k in self.overlay:
