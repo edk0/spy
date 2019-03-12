@@ -52,3 +52,24 @@ def test_many():
 
     l = spy.chain([test]).apply([None])
     assert list(l) == [1, 2, 3, 4, 5]
+
+
+def test_format():
+    @spy.fragment
+    @decorators.format
+    def test():
+        return {'test': 1}, '{test}23'
+
+    l = spy.chain([test]).apply([None])
+    assert list(l) == ['123']
+
+
+def test_regex():
+    @spy.fragment
+    @decorators.regex
+    def test():
+        return {}, '1(2)3'
+
+    l = list(spy.chain([test]).apply(['123']))
+    assert len(l) == 1
+    assert l[0].group(1) == '2'
