@@ -63,6 +63,7 @@ class _FunctionWrapper:
         name = op.__name__ + '(%s,%s)'
         def fn(self, other):
             f = self._function
+            o = other
             call_other = False
             if isinstance(other, _FunctionWrapper):
                 other = other._function
@@ -74,26 +75,23 @@ class _FunctionWrapper:
             except TypeError:
                 pass
             if call_other:
-                return _FunctionWrapper(lambda x: op(f(x), other(x)), name % (f.__name__, other.__name__))
+                return _FunctionWrapper(lambda x: op(f(x), other(x)), name % (self.__name__, o.__name__))
             else:
-                return _FunctionWrapper(lambda x: op(f(x), other), name % (f.__name__, repr(other)))
+                return _FunctionWrapper(lambda x: op(f(x), other), name % (self.__name__, repr(other)))
         def rfn(self, other):
             f = self._function
+            o = other
             call_other = False
-            if isinstance(other, _FunctionWrapper):
-                other = other._function
+            if hasattr(other, '__call__'):
                 call_other = True
-            else:
-                if hasattr(other, '__call__'):
-                    call_other = True
             try:
                 return op(other, f)
             except TypeError:
                 pass
             if call_other:
-                return _FunctionWrapper(lambda x: op(other(x), fn(x)), name % (other.__name__, f.__name__))
+                return _FunctionWrapper(lambda x: op(other(x), f(x)), name % (o.__name__, self.__name__))
             else:
-                return _FunctionWrapper(lambda x: op(other, fn(x)), name % (repr(other), f.__name__))
+                return _FunctionWrapper(lambda x: op(other, f(x)), name % (repr(other), self.__name__))
         return fn, rfn
 
     def __init__(self, function, name=None):
@@ -102,7 +100,9 @@ class _FunctionWrapper:
 
     @property
     def __name__(self):
-        return self.name
+        if self.name is not None:
+            return self.name
+        return self._function.__name__
 
     def __call__(self, *a, **kw):
         return self._function(*a, **kw)
