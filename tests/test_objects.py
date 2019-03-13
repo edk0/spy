@@ -118,6 +118,11 @@ class TestFunctionWrapping:
         assert repr(f+2) == 'add(f,2)'
         assert repr(f*3+2) == 'add(mul(f,3),2)'
 
+    def test_wrapper_eq(self):
+        def f(x): return x + 2
+        f = _FunctionWrapper(f)
+        assert (f == 11)(9) is True
+
 
 @pytest.fixture
 def spyfile():

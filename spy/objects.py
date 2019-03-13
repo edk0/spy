@@ -65,7 +65,7 @@ class _FunctionWrapper:
             return _FunctionWrapper(lambda x: op(f(x)), name % f.__name__)
         return fn
 
-    def _proxy_binop(op):
+    def _proxy_binop(op, only_missing=True):
         name = op.__name__ + '(%s,%s)'
         def fn(self, other):
             f = self._function
@@ -76,10 +76,11 @@ class _FunctionWrapper:
                 call_other = True
             elif hasattr(other, '__call__'):
                 call_other = True
-            try:
-                return op(f, other)
-            except TypeError:
-                pass
+            if only_missing:
+                try:
+                    return op(f, other)
+                except TypeError:
+                    pass
             if call_other:
                 return _FunctionWrapper(lambda x: op(f(x), other(x)), name % (self.__name__, o.__name__))
             else:
@@ -121,6 +122,13 @@ class _FunctionWrapper:
             return self.name
         return repr(self._function)
 
+    __eq__, _ = _proxy_binop(operator.eq, only_missing=False)
+    __ne__, _ = _proxy_binop(operator.ne, only_missing=False)
+    __lt__, _ = _proxy_binop(operator.lt)
+    __le__, _ = _proxy_binop(operator.le)
+    __gt__, _ = _proxy_binop(operator.gt)
+    __ge__, _ = _proxy_binop(operator.ge)
+    del _
     __add__, __radd__ = _proxy_binop(operator.add)
     __sub__, __rsub__ = _proxy_binop(operator.sub)
     __mul__, __rmul__ = _proxy_binop(operator.mul)
