@@ -159,6 +159,23 @@ the CLI:
    be :term:`iterable`).
 
 
+Deferred application
+====================
+
+spy overloads callable objects (when they're builtins or autoimported) to add
+implementations of most Python operators. These return a function that calls the
+original function and then applies the specified operation. They take a single
+argument only, and are essentially just a shortcut that lets you avoid typing
+``(pipe)`` in some cases:
+
+.. code-block:: console
+
+   $ spy '[1,2,3]' -c 'sum/2'
+   3.0
+   $ spy '[1,2,3]' -c 'sum/len'
+   2.0
+
+
 Doing stuff
 ===========
 
