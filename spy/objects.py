@@ -9,6 +9,12 @@ import operator
 import math
 
 
+def _wrap(x):
+    if hasattr(x, '__call__'):
+        return _FunctionWrapper(x)
+    return x
+
+
 class _ModuleProxy:
     __slots__ = ('_ModuleProxy__module',)
 
@@ -27,7 +33,7 @@ class _ModuleProxy:
         if isinstance(v, ModuleType):
             return self.__class__(v)
         else:
-            return v
+            return _wrap(v)
 
     def __setattr__(self, k, v):
         if '__' in k and k.split('__', 1)[0].startswith('_'):
@@ -103,6 +109,9 @@ class _FunctionWrapper:
         if self.name is not None:
             return self.name
         return self._function.__name__
+
+    def __getattr__(self, k):
+        return getattr(self._function, k)
 
     def __call__(self, *a, **kw):
         return self._function(*a, **kw)
@@ -191,18 +200,14 @@ class _ContextView:
         self.context = context
         self.overlay = {}
 
-    def _adjust(self, x):
-        if hasattr(x, '__call__'):
-            return _FunctionWrapper(x)
-        return x
 
     def __contains__(self, k):
         return k in self.overlay or k in self.context
 
     def __getitem__(self, k):
         if k in self.overlay:
-            return self._adjust(self.overlay[k])
-        return self._adjust(self.context[k])
+            return _wrap(self.overlay[k])
+        return _wrap(self.context[k])
 
     def __setitem__(self, k, v):
         if k in self.overlay:
