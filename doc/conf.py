@@ -64,7 +64,7 @@ release = 'unknown'
 try:
     git_command = ['git', 'describe', '--tags', '--abbrev=0']
     release = subprocess.check_output(git_command).decode('utf8').strip()
-    version = release.split('a')[0].split('b')[0]
+    version = release.split('a')[0].split('b')[0].lstrip('v')
 except:
     pass
 
