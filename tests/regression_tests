@@ -120,9 +120,9 @@ spy 3 -f 'None + 2' 2>&1 | sed '1d;$d;s/^ *//'
 > input to fragment was 3
 
 # format()
-spy 3 -i 'x{}y'
+spy 3 -i 'x{pipe}y'
 > x3y
-spy '"ll"' -i 'he{}o'
+spy '"ll"' -i 'he{pipe}o'
 > hello
 
 # literals + autojoining

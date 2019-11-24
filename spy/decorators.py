@@ -65,7 +65,7 @@ _formatter = string.Formatter()
 @decorator('--format', '-i', doc='Interpolate argument as a format string', takes_string=True)
 def format(fn, v, context):
     env, x = fn(v, context)
-    return _formatter.vformat(x, (v,), env)
+    return _formatter.vformat(x, v, env)
 
 
 @decorator('--regex', '--regexp', '-R', doc='Match argument as a regexp', takes_string=True)
