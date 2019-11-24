@@ -233,6 +233,7 @@ def _main(*steps: use_mixin(StepList),
             code, funcseq = code.value, code.funcseq
         else:
             funcseq = ()
+        debuginfo = (fragment_name, source)
         if literal:
             ca = lambda *_, _code=code: (context.view(), _code)
         else:
@@ -243,7 +244,6 @@ def _main(*steps: use_mixin(StepList),
                 if break_:  # pragma: no cover
                     debugger()
                 sys.exit(1)
-            debuginfo = (fragment_name, source)
             ca = make_callable(co, is_expr, context, pipe_name, debuginfo)
         for fn in funcseq:
             try:
