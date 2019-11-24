@@ -64,13 +64,13 @@ def many(fn, v, context):
 
 _formatter = string.Formatter()
 
-@decorator('--format', '-i', doc='Interpolate this as a format string', takes_string=True)
+@decorator('--format', '-i', doc='Interpolate argument as a format string', takes_string=True)
 def format(fn, v, context):
     env, x = fn()
     return _formatter.vformat(x, (v,), env)
 
 
-@decorator('--regex', '--regexp', '-R', doc='Match this as a regexp', takes_string=True)
+@decorator('--regex', '--regexp', '-R', doc='Match argument as a regexp', takes_string=True)
 def regex(fn, v, context):
     env, x = fn()
     return re.match(x, v)
