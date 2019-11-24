@@ -1,11 +1,9 @@
 language: python
 sudo: false
 python:
-  - "3.4"
   - "3.5"
   - "3.6"
   - "pypy3"
-  - "pypy3.5-5.8.0"
 env:
   - PYTEST_SELECTION=test
 matrix:
