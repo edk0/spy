@@ -13,9 +13,7 @@ def decorator(*names, doc=None, takes_string=False):
     def wrapperer(_spy_decorator):
         @wraps(_spy_decorator)
         def wrapper(fn):
-            if takes_string:
-                xfn = fn
-            elif _accepts_context(fn):
+            if _accepts_context(fn):
                 xfn = partial(_call_fragment_body, fn)
             else:
                 xfn = partial(_drop_context, fn)
@@ -66,11 +64,11 @@ _formatter = string.Formatter()
 
 @decorator('--format', '-i', doc='Interpolate argument as a format string', takes_string=True)
 def format(fn, v, context):
-    env, x = fn()
+    env, x = fn(v, context)
     return _formatter.vformat(x, (v,), env)
 
 
 @decorator('--regex', '--regexp', '-R', doc='Match argument as a regexp', takes_string=True)
 def regex(fn, v, context):
-    env, x = fn()
+    env, x = fn(v, context)
     return re.match(x, v)

@@ -57,7 +57,7 @@ def test_many():
 def test_format():
     @spy.fragment
     @decorators.format
-    def test():
+    def test(v):
         return {'test': 1}, '{test}23'
 
     l = spy.chain([test]).apply([None])
@@ -67,7 +67,7 @@ def test_format():
 def test_regex():
     @spy.fragment
     @decorators.regex
-    def test():
+    def test(v):
         return {}, '1(2)3'
 
     l = list(spy.chain([test]).apply(['123']))

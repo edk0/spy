@@ -243,7 +243,10 @@ def _main(*steps: use_mixin(StepList),
             funcseq = ()
         debuginfo = (fragment_name, source)
         if literal:
-            ca = lambda *_, _code=code: (context.view(), _code)
+            view = context.view()
+            def ca(value, *_, _code=code, _view=view, _overlay=view.overlay):
+                _overlay[pipe_name] = value
+                return (_view, _code)
         else:
             try:
                 co, is_expr = compile_(code, filename=fragment_name)
