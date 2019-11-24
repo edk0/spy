@@ -1,5 +1,6 @@
 from functools import partial, wraps
 import re
+import string
 
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 
@@ -61,10 +62,12 @@ def many(fn, v, context):
     return _many(result)
 
 
+_formatter = string.Formatter()
+
 @decorator('--format', '-i', doc='Interpolate this as a format string', takes_string=True)
 def format(fn, v, context):
     env, x = fn()
-    return x.format(v, **env)
+    return _formatter.vformat(x, (v,), env)
 
 
 @decorator('--regex', '--regexp', '-R', doc='Match this as a regexp', takes_string=True)

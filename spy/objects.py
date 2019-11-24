@@ -208,7 +208,6 @@ class _ContextView:
         self.context = context
         self.overlay = {}
 
-
     def __contains__(self, k):
         return k in self.overlay or k in self.context
 

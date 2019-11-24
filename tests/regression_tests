@@ -118,3 +118,9 @@ spy 3 -f 'None + 2' 2>&1 | sed '1d;$d;s/^ *//'
 > Fragment 2
 > --filter 'None + 2'
 > input to fragment was 3
+
+# format()
+spy 3 -i 'x{}y'
+> x3y
+spy '"ll"' -i 'he{}o'
+> hello
