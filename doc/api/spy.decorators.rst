@@ -36,3 +36,27 @@ This module contains various function decorators for use in spy fragments.
    .. option:: --many, -m
 
    Call :func:`spy.many` with the result of the fragment.
+
+
+Literal decorators
+==================
+
+On the CLI, these decorators take a literal string rather than Python code.
+In Python-land, they expect to decorate a function that
+returns ``(scope, string)``. They're especially pointless for non-CLI uses,
+and this documentation is written with CLI usage in mind.
+
+.. decorator:: interpolate
+
+   .. option:: --interpolate, -i
+
+   Interpolate the literal argument as a :meth:`str.format` format string.
+
+   Keyword substitutions (``{foo}``) look up variable names. Positional
+   substitutions (``{2}``) are indexes into the value being processed.
+
+.. decorator:: regex
+
+   .. option:: --regex, --regexp, -R
+
+   Match a regexp against the input using :func:`re.match`.
