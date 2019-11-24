@@ -124,3 +124,7 @@ spy 3 -i 'x{}y'
 > x3y
 spy '"ll"' -i 'he{}o'
 > hello
+
+# literals + autojoining
+spy -i 1+ 2
+> 2

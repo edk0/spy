@@ -105,6 +105,7 @@ class StepList:
 
 class _Decorated:
     LITERAL = False
+
     def __init__(self, f, v, name):
         self.funcseq = f
         self.value = v
@@ -116,6 +117,8 @@ class _LiteralDecorated(_Decorated):
 
 
 class Decorator(NamedParameter):
+    LITERAL = False
+
     def __init__(self, *a, description, decfn, **kw):
         super().__init__(*a, **kw)
         self.description = description
@@ -173,8 +176,11 @@ class Decorator(NamedParameter):
                     if not isinstance(dec, Decorator):
                         raise MissingValue
                     cls = decseq[-1].coalesce(dec, decseq, funcseq, names)
-            else:
+            elif not decseq[-1].LITERAL:
                 i, src = StepList._read(ba, i)
+                break
+            else:
+                src = ba.in_args[i]
                 break
             i += 1
             if i >= len(ba.in_args):
@@ -186,6 +192,8 @@ class Decorator(NamedParameter):
 
 
 class LiteralDecorator(Decorator):
+    LITERAL = True
+
     def __init__(self, *a, **kw):
         super().__init__(*a, **kw)
         self.marker_class = _LiteralDecorated
