@@ -159,6 +159,24 @@ the CLI:
    be :term:`iterable`).
 
 
+Literal decorators
+------------------
+
+Literal decorators are a kind of decorator that accept string arguments rather
+than Python code.
+
+.. option:: --interpolate <string>, -i <string>
+
+   uses ``<string>`` as a :meth:`str.format` format string on the input.
+   Positional parameters like ``{0}`` index into the input value, and named
+   ones access the scope the fragment is executing, so the full input value is
+   available as ``{pipe}}``.
+
+.. option:: --regex <string>, --regexp <string>, -R <string>
+
+   matches the input against ``<string>`` as a regexp using :meth:`re.match`.
+
+
 Deferred application
 ====================
 
