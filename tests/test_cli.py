@@ -2,6 +2,8 @@ import io
 import subprocess
 import sys
 
+import clize.errors
+
 import pytest
 
 import spy.cli
@@ -184,3 +186,22 @@ def test_show_fragments(capsys, monkeypatch):
     spy.cli._main(*argv)
     out, err = capsys.readouterr()
     assert expected in out
+
+
+def test_literal(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    argv = sys.argv[0:1] + [
+            '--no-exception-handling',
+            '"foo"',
+            '-fi', '{1}']
+    spy.cli._main(*argv)
+    out, err = capsys.readouterr()
+    assert out == 'foo\n'
+    assert not err
+
+    argv = sys.argv[0:1] + [
+            '--no-exception-handling',
+            '-m', '"foo"',
+            '-ia', '{0} {1} {2}']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._main(*argv)
