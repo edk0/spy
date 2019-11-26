@@ -1,3 +1,5 @@
+import pytest
+
 import spy
 from spy import decorators
 
@@ -73,3 +75,25 @@ def test_regex():
     l = list(spy.chain([test]).apply(['123']))
     assert len(l) == 1
     assert l[0].group(1) == '2'
+
+
+def test_keywords():
+    # keywords only works with base functions that have _spy_setenv, so pure
+    # python API won't work
+    with pytest.raises(ValueError):
+        @spy.fragment
+        @decorators.keywords
+        def test(v):
+            pass
+    def build():
+        env = {}
+        def test(v):
+            return env['a']
+        def setenv(env_):
+            nonlocal env
+            env = env_
+        test._spy_setenv = setenv
+        return test
+    test = spy.fragment(decorators.keywords(build()))
+    l = list(spy.chain([test]).apply([{'a': 'xyz'}]))
+    assert l[0] == 'xyz'
