@@ -13,6 +13,7 @@ Contents
    intro
    cli-reference
    from-python
+   extending
    api/index
    examples
    glossary
