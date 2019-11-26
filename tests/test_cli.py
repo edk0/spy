@@ -6,6 +6,7 @@ import clize.errors
 
 import pytest
 
+import spy
 import spy.cli
 from spy.objects import Context
 
@@ -154,7 +155,6 @@ def test_run(capsys, monkeypatch):
             'pipe.upper()',
             'list(itertools.islice(spy.collect(), 3))',
             '" ".join(reversed(pipe))'])
-    import spy
     spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
         from spy import __main__
@@ -168,7 +168,6 @@ def test_raw(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(input))
     monkeypatch.setattr(sys, 'argv',
         sys.argv[0:1] + ['--raw', '--each-line', '-c', 'sys.stdout.write', 'None'])
-    import spy
     spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
         from spy import __main__
@@ -184,7 +183,6 @@ def test_no_defaults(capsys, monkeypatch):
             '--no-default-fragments',
             '"abcdef"',
             '--callable', 'print'])
-    import spy
     spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
         from spy import __main__
