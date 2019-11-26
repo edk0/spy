@@ -153,6 +153,12 @@ the CLI:
    any true value, the data passes through, but if it returns a false value
    :const:`spy.DROP` is returned instead.
 
+.. option:: --keywords <fragment>, -m <fragment>
+
+   executes the fragment using its own input value as the local scope, which
+   must be a :term:`mapping`. Names from the global scope (but not ``pipe``)
+   are still available unless shadowed by keys in the input mapping.
+
 .. option:: --many <fragment>, -m <fragment>
 
    calls :func:`spy.many` with the return value of the fragment (which must
