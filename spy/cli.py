@@ -74,6 +74,15 @@ def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
     return fragment_fn
 
 
+def make_literal(code, env, pipe_name, debuginfo):
+    local = env.view()
+    def fragment_fn(value):
+        local[pipe_name] = value
+        return (local, code)
+    fragment_fn._spy_debuginfo = debuginfo
+    return fragment_fn
+
+
 def make_context():
     context = Context()
     context.update(builtins.__dict__)
@@ -243,10 +252,7 @@ def _main(*steps: use_mixin(StepList),
             funcseq = ()
         debuginfo = (fragment_name, source)
         if literal:
-            view = context.view()
-            def ca(value, *_, _code=code, _view=view, _overlay=view.overlay):
-                _overlay[pipe_name] = value
-                return (_view, _code)
+            ca = make_literal(code, context, pipe_name, debuginfo)
         else:
             try:
                 co, is_expr = compile_(code, filename=fragment_name)
