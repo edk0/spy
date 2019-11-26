@@ -109,6 +109,25 @@ def test_excepthook(capsys, monkeypatch):
         spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
 
 
+def test_decorator_exceptions(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    try:
+        spy.cli._main(sys.argv[0], '-c', 'a_b_c_d_e_f')
+        pytest.fail("didn't raise an exception")
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+    out, err = capsys.readouterr()
+    assert 'a_b_c_d_e_f' in err
+
+    try:
+        spy.cli._main(sys.argv[0], '-k', 'u_v_w_x_y_z')
+        pytest.fail("didn't raise an exception")
+    except Exception:
+        sys.excepthook(*sys.exc_info())
+    out, err = capsys.readouterr()
+    assert 'u_v_w_x_y_z' in err
+
+
 def test_collect_context(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     try:
