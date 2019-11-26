@@ -4,6 +4,7 @@ import sys
 import traceback
 
 from . import core
+from .objects import Context
 
 
 class CaughtException(Exception):
@@ -77,6 +78,10 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             if delete_in is not None:
                 del entries[delete_in:]
             fragment_debuginfo = local._spy_debuginfo
+            frame_kind = 'synthetic_callable'
+        elif fragment_debuginfo and isinstance(tb.tb_frame.f_globals, Context):
+            if delete_in is not None:
+                del entries[delete_in:]
             frame_kind = 'synthetic_callable'
 
         if fragment_debuginfo:
