@@ -6,7 +6,7 @@ from clize import Clize, run
 from clize.errors import MissingValue, UnknownOption
 from clize.parameters import multi
 from clize.parser import use_mixin, Parameter, NamedParameter
-import pkg_resources
+from pkg_resources import iter_entry_points
 
 from . import catcher, fragments, prelude
 from .decorators import decorators
@@ -328,6 +328,6 @@ def _cli():
 
 def main():
     if not spy._dont_load_plugins:
-        for entry_point in pkg_resources.iter_entry_points('spy.init'):
+        for entry_point in iter_entry_points('spy.init'):
             entry_point.load()()
     run(_cli())
