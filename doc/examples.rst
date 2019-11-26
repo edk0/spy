@@ -31,7 +31,7 @@ Filter
 
 .. code-block:: console
 
-   $ spy -l -f 'len(pipe) == 4' < test.txt
+   $ spy -l -fc 'len == 4' < test.txt
    this
    file
    five
@@ -55,7 +55,7 @@ Taking advantage of spy piping:
 
 .. code-block:: console
 
-   $ spy -m 'enumerate(pipe, 1)' "'{}: {}'.format(*pipe)" < test.txt
+   $ spy -m 'enumerate(pipe, 1)' -i '{}: {}' < test.txt
    1: this
    2: file
    3: has

@@ -91,6 +91,10 @@ spy -l -f 'len(pipe) == 4' < test.txt
 > this
 > file
 > five
+spy -l -fc 'len == 4' < test.txt
+> this
+> file
+> five
 spy -m "['{}: {}'.format(n, v) for n, v in enumerate(pipe, 1)]" < test.txt
 > 1: this
 > 2: file
@@ -98,6 +102,12 @@ spy -m "['{}: {}'.format(n, v) for n, v in enumerate(pipe, 1)]" < test.txt
 > 4: five
 > 5: lines
 spy -m 'enumerate(pipe, 1)' "'{}: {}'.format(*pipe)" < test.txt
+> 1: this
+> 2: file
+> 3: has
+> 4: five
+> 5: lines
+spy -m 'enumerate(pipe, 1)' -i '{}: {}' < test.txt
 > 1: this
 > 2: file
 > 3: has

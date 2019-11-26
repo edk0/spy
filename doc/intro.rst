@@ -178,6 +178,15 @@ than Python code.
    ones access the scope the fragment is executing, so the full input value is
    available as ``{pipe}}``.
 
+   .. code-block:: console
+
+      $ spy -li '-{pipe}-' < test.txt
+      -this-
+      -file-
+      -has-
+      -five-
+      -lines-
+
 .. option:: --regex <string>, --regexp <string>, -R <string>
 
    matches the input against ``<string>`` as a regexp using :meth:`re.match`.
@@ -208,17 +217,17 @@ pretending we're ``jq``:
 
 .. code-block:: console
 
-   $ spy -lc json.loads -f 'pipe["state"] == "Outbreak"' 'pipe["name"]' -e 10 < stations.jsonl
-   Burbank Gateway
-   Stefanyshyn-Piper Port
-   Cheli Station
-   Buckell Ring
-   Bolotov Port
-   Schumacher Hub
-   Huss Station
-   Wilhelm von Struve Port
-   Wedge Terminal
-   Orsini Mining Platform
+   $ spy -lc json.loads -fk '"Rutile" in export_commodities' -k name -e 10 < stations.jsonl
+   Hieb Orbital
+   Hahn Terminal
+   Anderson Colony
+   So-yeon Mines
+   Williamson Enterprise
+   Julian Hub
+   Fancher Enterprise
+   Neville Vision
+   Raleigh Terminal
+   Arrhenius Beacon
 
 Note how :option:`-l` trivially gives us newline-delimited JSON, a job which was
 previously so hard it required its own top-2000 PyPI package!
