@@ -128,3 +128,9 @@ spy '"ll"' -i 'he{pipe}o'
 # literals + autojoining
 spy -i 1+ 2
 > 2
+
+# -k
+spy '{"a": 1, "b": 2}' -ki '{a}'
+> 1
+spy '{"a": 1, "b": 2}' -k 'c = 3' 'sorted(pipe.keys())'
+> ['a', 'b', 'c']
