@@ -55,7 +55,7 @@ def pretty_syntax_error(line, err):
 
 
 def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
-    local = env.view()
+    local = orig_local = env.view()
     local._spy_debuginfo = debuginfo
     overlay = local.overlay
     proxy = overlay['spy'] = _ContextInjector(spy)
@@ -69,8 +69,12 @@ def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
             overlay[pipe_name] = value
             proxy._ContextInjector__context = context
             eval(code, env, local)
-            return local[pipe_name]
+            return orig_local[pipe_name]
+    def setenv(m):
+        nonlocal env, local
+        local = m
     fragment_fn._spy_debuginfo = debuginfo
+    fragment_fn._spy_setenv = setenv
     return fragment_fn
 
 
@@ -79,7 +83,11 @@ def make_literal(code, env, pipe_name, debuginfo):
     def fragment_fn(value):
         local[pipe_name] = value
         return (local, code)
+    def setenv(m):
+        nonlocal env, local
+        local = m
     fragment_fn._spy_debuginfo = debuginfo
+    fragment_fn._spy_setenv = setenv
     return fragment_fn
 
 

@@ -79,3 +79,18 @@ def format(fn, v, context):
 def regex(fn, v, context):
     env, x = fn(v, context)
     return re.match(x, v)
+
+
+def _kw_prep(fn):
+    base = fn
+    while hasattr(base, '__wrapped__'):
+        base = base.__wrapped__
+    if not hasattr(base, '_spy_setenv'):
+        raise ValueError("inappropriate function")
+    return base._spy_setenv
+
+
+@decorator('--keywords', '-k', doc='Execute with the input value as the scope', prep=_kw_prep)
+def keywords(fn, v, context, setenv):
+    setenv(v)
+    return fn(v, context)
