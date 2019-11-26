@@ -227,6 +227,12 @@ class _ContextView:
             raise TypeError("can't delete: {!r}".format(k))
         del self.context[k]
 
+    def get(self, k, default):
+        try:
+            return self[k]
+        except LookupError:
+            return default
+
     @recursive_repr()
     def __repr__(self):
         return '{}(context={}, overlay={})'.format(
