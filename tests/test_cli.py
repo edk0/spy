@@ -51,22 +51,22 @@ def test_argument_errors(monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     for input_ in test_inputs:
         try:
-            spy.cli._main(sys.argv[0], *input_)
+            spy.cli._cli()(sys.argv[0], *input_)
         except ValueError as e:
             assert 'No value found after --accumulate' in str(e)
 
 
 def test_argument_chain(monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
-    spy.cli._main(sys.argv[0], '1+', '2+', '3')
+    spy.cli._cli()(sys.argv[0], '1+', '2+', '3')
     with pytest.raises(SystemExit):
-        spy.cli._main(sys.argv[0], '1+', '2+')
+        spy.cli._cli()(sys.argv[0], '1+', '2+')
 
 
 def test_syntax_error(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     with pytest.raises(SystemExit):
-        spy.cli._main(sys.argv[0], 'x = * 1')
+        spy.cli._cli()(sys.argv[0], 'x = * 1')
     out, err = capsys.readouterr()
     lines = iter(err.splitlines())
     for line in lines:
@@ -80,7 +80,7 @@ def test_syntax_error(capsys, monkeypatch):
 
 def test_prelude(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
-    spy.cli._main(sys.argv[0], '--prelude', 'x = 123', 'x')
+    spy.cli._cli()(sys.argv[0], '--prelude', 'x = 123', 'x')
     out, err = capsys.readouterr()
     assert out.strip() == '123'
 
@@ -88,7 +88,7 @@ def test_prelude(capsys, monkeypatch):
 def test_unknown_option(monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     try:
-        spy.cli._main(sys.argv[0], '-a!')
+        spy.cli._cli()(sys.argv[0], '-a!')
     except ValueError as e:
         assert 'Unknown option' in str(e)
 
@@ -96,7 +96,7 @@ def test_unknown_option(monkeypatch):
 def test_excepthook(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     try:
-        spy.cli._main(sys.argv[0], '-f', 'this_name_does_not_exist_either')
+        spy.cli._cli()(sys.argv[0], '-f', 'this_name_does_not_exist_either')
         pytest.fail("didn't raise an exception")
     except Exception:
         sys.excepthook(*sys.exc_info())
@@ -106,13 +106,13 @@ def test_excepthook(capsys, monkeypatch):
     assert "  Fragment 1" in err.splitlines()
     assert "    --filter 'this_name_does_not_exist_either'" in err.splitlines()
     with pytest.raises(NameError):
-        spy.cli._main(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
+        spy.cli._cli()(sys.argv[0], '--no-exception-handling', 'still_broken_i_hope')
 
 
 def test_decorator_exceptions(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     try:
-        spy.cli._main(sys.argv[0], '-c', 'a_b_c_d_e_f')
+        spy.cli._cli()(sys.argv[0], '-c', 'a_b_c_d_e_f')
         pytest.fail("didn't raise an exception")
     except Exception:
         sys.excepthook(*sys.exc_info())
@@ -120,7 +120,7 @@ def test_decorator_exceptions(capsys, monkeypatch):
     assert 'a_b_c_d_e_f' in err
 
     try:
-        spy.cli._main(sys.argv[0], '-k', 'u_v_w_x_y_z')
+        spy.cli._cli()(sys.argv[0], '-k', 'u_v_w_x_y_z')
         pytest.fail("didn't raise an exception")
     except Exception:
         sys.excepthook(*sys.exc_info())
@@ -131,7 +131,7 @@ def test_decorator_exceptions(capsys, monkeypatch):
 def test_collect_context(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     try:
-        spy.cli._main(sys.argv[0], 'spy.collect(context=None)')
+        spy.cli._cli()(sys.argv[0], 'spy.collect(context=None)')
         pytest.fail("didn't raise an exception")
     except Exception:
         sys.excepthook(*sys.exc_info())
@@ -154,6 +154,8 @@ def test_run(capsys, monkeypatch):
             'pipe.upper()',
             'list(itertools.islice(spy.collect(), 3))',
             '" ".join(reversed(pipe))'])
+    import spy
+    spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
         from spy import __main__
     out, err = capsys.readouterr()
@@ -166,6 +168,8 @@ def test_raw(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(input))
     monkeypatch.setattr(sys, 'argv',
         sys.argv[0:1] + ['--raw', '--each-line', '-c', 'sys.stdout.write', 'None'])
+    import spy
+    spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
         from spy import __main__
     out, err = capsys.readouterr()
@@ -180,6 +184,8 @@ def test_no_defaults(capsys, monkeypatch):
             '--no-default-fragments',
             '"abcdef"',
             '--callable', 'print'])
+    import spy
+    spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
         from spy import __main__
     out, err = capsys.readouterr()
@@ -202,7 +208,7 @@ def test_show_fragments(capsys, monkeypatch):
             '--accumulate', '-a', 'asdfgfa',
             '-m', 'test',
             '-m', '--many', 'baz']
-    spy.cli._main(*argv)
+    spy.cli._cli()(*argv)
     out, err = capsys.readouterr()
     assert expected in out
 
@@ -213,7 +219,7 @@ def test_literal(capsys, monkeypatch):
             '--no-exception-handling',
             '"foo"',
             '-fi', '{1}']
-    spy.cli._main(*argv)
+    spy.cli._cli()(*argv)
     out, err = capsys.readouterr()
     assert out == 'foo\n'
     assert not err
@@ -223,4 +229,4 @@ def test_literal(capsys, monkeypatch):
             '-m', '"foo"',
             '-ia', '{0} {1} {2}']
     with pytest.raises(clize.errors.MissingValue):
-        spy.cli._main(*argv)
+        spy.cli._cli()(*argv)

@@ -6,6 +6,7 @@ from clize import Clize, run
 from clize.errors import MissingValue, UnknownOption
 from clize.parameters import multi
 from clize.parser import use_mixin, Parameter, NamedParameter
+import pkg_resources
 
 from . import catcher, fragments, prelude
 from .decorators import decorators
@@ -322,8 +323,11 @@ def _prepare_decorators():
     return tuple(rv)
 
 
-_main = Clize(_main, extra=_prepare_decorators())
-
+def _cli():
+    return Clize(_main, extra=_prepare_decorators())
 
 def main():
-    run(_main)
+    if not spy._dont_load_plugins:
+        for entry_point in pkg_resources.iter_entry_points('spy.init'):
+            entry_point.load()()
+    run(_cli())
