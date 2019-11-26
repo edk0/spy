@@ -1,4 +1,4 @@
-from functools import partial, wraps
+from functools import partial, wraps, update_wrapper
 import re
 import string
 
@@ -9,7 +9,7 @@ __all__ = ['accumulate', 'callable', 'filter', 'many']
 decorators = []
 
 
-def decorator(*names, doc=None, takes_string=False):
+def decorator(*names, doc=None, takes_string=False, prep=None):
     def wrapperer(_spy_decorator):
         @wraps(_spy_decorator)
         def wrapper(fn):
@@ -18,11 +18,18 @@ def decorator(*names, doc=None, takes_string=False):
             else:
                 xfn = partial(_drop_context, fn)
 
-            @wraps(fn)
-            def wrapped(v, context=None):
-                _spy_callable = fn  # noqa: F841
-                _spy_value = v  # noqa: F841
-                return _spy_decorator(xfn, v, context)
+            if prep:
+                opaque = prep(fn)
+                def wrapped(v, context=None):
+                    _spy_callable = fn  # noqa: F841
+                    _spy_value = v  # noqa: F841
+                    return _spy_decorator(xfn, v, context, opaque)
+            else:
+                def wrapped(v, context=None):
+                    _spy_callable = fn  # noqa: F841
+                    _spy_value = v  # noqa: F841
+                    return _spy_decorator(xfn, v, context)
+            update_wrapper(wrapped, fn)
             return wrapped
 
         wrapper.decorator_names = names
