@@ -80,6 +80,7 @@ def make_callable(code, is_expr, env, pipe_name, debuginfo=(None, None)):
 
 def make_literal(code, env, pipe_name, debuginfo):
     local = env.view()
+    local._spy_debuginfo = debuginfo
     def fragment_fn(value):
         local[pipe_name] = value
         return (local, code)
