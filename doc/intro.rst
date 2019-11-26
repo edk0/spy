@@ -176,7 +176,7 @@ than Python code.
    uses ``<string>`` as a :meth:`str.format` format string on the input.
    Positional parameters like ``{0}`` index into the input value, and named
    ones access the local scope of the fragment, so the full input value is
-   available as ``{pipe}}``.
+   available as ``{pipe}``.
 
    .. code-block:: console
 
