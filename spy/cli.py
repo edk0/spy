@@ -44,14 +44,15 @@ def compile_(code, filename='<input>'):
     return compile(code, filename, 'exec', 0, True, 0), False
 
 
-def pretty_syntax_error(line, err):
+def pretty_syntax_error(source, err):
     print('Error compiling %s' % err.filename, file=sys.stderr)
-    print('  %s' % line, file=sys.stderr)
-    if err.lineno > 0 and err.offset > 0:
-        off = err.offset - 1
-        if err.text is None and sys.version_info < (3, 8):  # pragma: no cover
-            off += 1
-        print('  %s^' % (' ' * off), file=sys.stderr)
+    for lineno, line in enumerate(source.splitlines(), start=1):
+        print('  %s' % line, file=sys.stderr)
+        if err.lineno == lineno and err.offset > 0:
+            off = err.offset - 1
+            if err.text is None and sys.version_info < (3, 8):  # pragma: no cover
+                off += 1
+            print('  %s^' % (' ' * off), file=sys.stderr)
     print('%s: %s' % (type(err).__name__, err.msg), file=sys.stderr)
 
 
