@@ -132,8 +132,7 @@ class _FunctionWrapper:
     __add__, __radd__ = _proxy_binop(operator.add)
     __sub__, __rsub__ = _proxy_binop(operator.sub)
     __mul__, __rmul__ = _proxy_binop(operator.mul)
-    if hasattr(operator, 'matmul'):
-        __matmul__, __rmatmul__ = _proxy_binop(operator.matmul)
+    __matmul__, __rmatmul__ = _proxy_binop(operator.matmul)
     __truediv__, __rtruediv__ = _proxy_binop(operator.truediv)
     __floordiv__, __rfloordiv__ = _proxy_binop(operator.floordiv)
     __mod__, __rmod__ = _proxy_binop(operator.mod)
