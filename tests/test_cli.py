@@ -230,6 +230,18 @@ def test_literal(capsys, monkeypatch):
         spy.cli._cli()(*argv)
 
 
+def test_literal_and_autojoin(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    argv = sys.argv[0:1] + [
+            '--no-exception-handling',
+            '-i', '1+',
+            '2']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == '2\n'
+    assert not err
+
+
 def test_setenv(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     argv = sys.argv[0:1] + [
