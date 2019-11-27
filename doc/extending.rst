@@ -10,6 +10,8 @@ anything.
 There are two primary means of extending spy: adding fragment decorators, and
 adding functions to :mod:`~spy.prelude`.
 
+.. _entry points: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
+
 
 Extending the prelude
 =====================
