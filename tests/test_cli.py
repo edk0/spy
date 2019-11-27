@@ -78,6 +78,18 @@ def test_syntax_error(capsys, monkeypatch):
         assert False, "missing error source output"
     assert line.find('*') == pointer.find('^')
 
+    with pytest.raises(SystemExit):
+        spy.cli._cli()(sys.argv[0], 'pass\nx = * 1')
+    out, err = capsys.readouterr()
+    lines = iter(err.splitlines())
+    for line in lines:
+        if 'x = * 1' in line:
+            pointer = next(lines)
+            break
+    else:
+        assert False, "missing error source output"
+    assert line.find('*') == pointer.find('^')
+
 
 def test_prelude(capsys, monkeypatch):
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
