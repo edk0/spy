@@ -68,3 +68,34 @@ and this documentation is written with CLI usage in mind.
    .. option:: --regex, --regexp, -R
 
    Match a regexp against the input using :func:`re.match`.
+
+
+Defining decorators
+===================
+
+For integration with spy's CLI and exception handling, decorators should be
+created using :func:`decorator`.
+
+.. decorator:: decorator(name, \*aliases[, doc=None][, prep=None][, takes_string=False])
+
+   Turns a wrapper function into a spy decorator.
+
+   ``name`` and ``aliases`` are the CLI options that should refer to this
+   decorator; ``doc`` is the help output to be printed next to it by
+   ``--help``.
+
+   If ``prep`` is passed, it must be a callable taking one argument, the
+   callable we are about to decorate, and the wrapper will be called as:
+
+   .. code-block:: python
+
+      wrapper(fn, v, context, opaque)
+
+   where *opaque* is whatever ``prep`` returns. Otherwise, the wrapper will
+   be called with the first three arguments only.
+
+   If ``takes_string`` is True, the command-line option will consume a literal
+   string instead of Python code, and ``fn`` will return a tuple of its local
+   scope and the literal string value.
+
+   For usage examples, see :ref:`adding-decorators`.

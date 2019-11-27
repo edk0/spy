@@ -30,6 +30,8 @@ put things in it.
    HELLO
 
 
+.. _adding-decorators:
+
 Adding decorators
 =================
 
