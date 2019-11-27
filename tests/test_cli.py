@@ -228,3 +228,24 @@ def test_literal(capsys, monkeypatch):
             '-ia', '{0} {1} {2}']
     with pytest.raises(clize.errors.MissingValue):
         spy.cli._cli()(*argv)
+
+
+def test_setenv(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    argv = sys.argv[0:1] + [
+            '--no-exception-handling',
+            '{"foo": "bar"}',
+            '-ki', '{foo}']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == 'bar\n'
+    assert not err
+
+    argv = sys.argv[0:1] + [
+            '--no-exception-handling',
+            '{"foo": "bar"}',
+            '-k', 'foo']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == 'bar\n'
+    assert not err
