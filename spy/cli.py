@@ -48,7 +48,7 @@ def pretty_syntax_error(line, err):
     print('Error compiling %s' % err.filename, file=sys.stderr)
     print('  %s' % line, file=sys.stderr)
     if err.lineno > 0 and err.offset > 0:
-        if err.text is None:
+        if err.text is None and sys.version_info < (3, 8, 0):
             print('  %s^' % (' ' * err.offset), file=sys.stderr)
         else:
             print('  %s^' % (' ' * (err.offset - 1)), file=sys.stderr)
