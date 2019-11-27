@@ -3,6 +3,8 @@ sudo: false
 python:
   - "3.5"
   - "3.6"
+  - "3.7"
+  - "3.8"
   - "pypy3"
 env:
   - PYTEST_SELECTION=test
@@ -11,9 +13,6 @@ matrix:
     - name: "Python 3.6 without regression tests"
       python: "3.6"
       env: PYTEST_SELECTION="not regression"
-    - python: "3.7"
-      dist: xenial
-      sudo: true
 install:
   - "pip install --upgrade pip setuptools coveralls"
   - "pip install -e .[test]"
