@@ -76,6 +76,12 @@ class TestContext:
 
         assert c[PIPE_NAME] == 'foo'
 
+    def test_view_get(self, context):
+        v = context.view()
+        assert v.get('foo', 'bar') == 'bar'
+        v['foo'] = 'qux'
+        assert v.get('foo', 'bar') == 'qux'
+
     def test_repr(self, context):
         c = context
         repr(c)
