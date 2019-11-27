@@ -45,21 +45,21 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
 
         # top level of a spy.fragment()
         if '_spy_fragment_index' in local:
-            if delete_in is not None or delete_all:
+            if delete_in is not None or delete_all:  # pragma: no branch
                 del entries[0 if delete_all else delete_in:]
             delete_in = len(entries)
             fragment_index = local['_spy_fragment_index']
-            if '_spy_value' in local:
+            if '_spy_value' in local:  # pragma: no branch
                 fragment_value = (local['_spy_value'],)
             frame_kind = 'fragment'
 
         # decorator
         if '_spy_decorator' in local:
-            if delete_in is not None:
+            if delete_in is not None:  # pragma: no branch
                 del entries[delete_in:]
             delete_in = len(entries)
             fragment_decorator = local['_spy_decorator']
-            if '_spy_callable' in local:
+            if '_spy_callable' in local:  # pragma: no branch
                 callable_ = local['_spy_callable']
                 if hasattr(callable_, '_spy_debuginfo'):
                     fragment_debuginfo = callable_._spy_debuginfo
@@ -68,19 +68,19 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
 
         # the next frame is the fragment body
         if tb.tb_frame.f_code is core._call_fragment_body.__code__:
-            if delete_in is not None:
+            if delete_in is not None:  # pragma: no branch
                 del entries[delete_in:]
             delete_in = len(entries)
             frame_kind = 'callable'
 
         # cli make_callable
         if hasattr(local, '_spy_debuginfo'):
-            if delete_in is not None:
+            if delete_in is not None:  # pragma: no branch
                 del entries[delete_in:]
             fragment_debuginfo = local._spy_debuginfo
             frame_kind = 'synthetic_callable'
         elif fragment_debuginfo and isinstance(tb.tb_frame.f_globals, Context):
-            if delete_in is not None:
+            if delete_in is not None:  # pragma: no branch
                 del entries[delete_in:]
             frame_kind = 'synthetic_callable'
 
@@ -94,7 +94,7 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
         elif frame_kind == 'decorator':
             decname = getattr(fragment_decorator, '__qualname__', fragment_decorator.__name__)
             decmod = inspect.getmodule(fragment_decorator)
-            if decmod:
+            if decmod:  # pragma: no branch
                 decname = '{}.{}'.format(decmod.__name__, decname)
             lines.append('  {}, in decorator {}'.format(fragment_name, decname))
             if fragment_debuginfo:
@@ -104,7 +104,7 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             lines.append('  ' + fragment_name)
             lines.append('    ' + fragment_debuginfo[1])
         if frame_kind != 'normal':
-            if fragment_value:
+            if fragment_value:  # pragma: no branch
                 lines.append('    input to fragment was {!r}'.format(fragment_value[0]))
             entries.append(list(l + '\n' for l in lines))
             delete_from = len(entries)
