@@ -4,7 +4,7 @@ import string
 
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 
-__all__ = ['accumulate', 'callable', 'filter', 'many']
+__all__ = ['accumulate', 'callable', 'filter', 'many', 'format', 'regex', 'keywords']
 
 decorators = []
 
