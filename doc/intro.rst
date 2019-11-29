@@ -191,6 +191,12 @@ than Python code.
 
    matches the input against ``<string>`` as a regexp using :meth:`re.match`.
 
+   .. code-block:: console
+
+      $ spy -lR 'f.*' -fc id -i '{0}' < test.txt
+      file
+      five
+
 
 Deferred application
 ====================
