@@ -148,13 +148,10 @@ class _FunctionWrapper:
     __pos__ = _proxy_unop(operator.pos)
     __abs__ = _proxy_unop(abs)
     __invert__ = _proxy_unop(operator.invert)
-    __complex__ = _proxy_unop(complex)
     __int__ = _proxy_unop(int)
-    __float__ = _proxy_unop(float)
     __trunc__ = _proxy_unop(math.trunc)
     __floor__ = _proxy_unop(math.floor)
     __ceil__ = _proxy_unop(math.ceil)
-    __len__ = _proxy_unop(len)
 
 
 class _ContextInjector(_ModuleProxy):
