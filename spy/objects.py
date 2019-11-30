@@ -151,7 +151,6 @@ class _FunctionWrapper:
     __complex__ = _proxy_unop(complex)
     __int__ = _proxy_unop(int)
     __float__ = _proxy_unop(float)
-    __index__ = _proxy_unop(operator.index)
     __trunc__ = _proxy_unop(math.trunc)
     __floor__ = _proxy_unop(math.floor)
     __ceil__ = _proxy_unop(math.ceil)
