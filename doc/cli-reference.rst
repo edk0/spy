@@ -8,6 +8,11 @@ CLI reference
 Regular options
 ===============
 
+.. option:: --break
+
+   Start a post-mortem debugging session with :mod:`pdb` if an exception occurs
+   during execution.
+
 .. option:: --each-line, -l
 
    Process each line as its own string (rather than stdin as a file at once).
