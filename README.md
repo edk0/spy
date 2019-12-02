@@ -10,8 +10,7 @@ pip install spy-cli
 `spy` stands for “<b>s</b>tream <b>py</b>thon”. It's a CLI for python that
 chains fragments of code together. It's inspired by
 [pyped](https://github.com/ksamuel/Pyped) and
-[pythonpy](https://github.com/Russell91/pythonpy), and is intended to fill a
-similar role to that of `sed`.
+[pythonpy](https://github.com/Russell91/pythonpy).
 
 I built spy primarily because I wanted a more pure interface than either of the
 above offer; I'd like to think I succeeded, but I'm sure it can be improved
