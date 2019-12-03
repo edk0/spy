@@ -274,10 +274,7 @@ def _main(*steps: use_mixin(StepList),
                 sys.exit(1)
             ca = make_callable(co, is_expr, context, pipe_name, debuginfo)
         for fn in funcseq:
-            try:
-                ca = fn(ca, debuginfo=debuginfo)
-            except TypeError:
-                ca = fn(ca)
+            ca = fn(ca)
         steps.append(spy.fragment(ca))
 
     index_offset = 0
