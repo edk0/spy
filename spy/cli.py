@@ -233,7 +233,7 @@ def _main(*steps: use_mixin(StepList),
           no_exception_handling: Parameter.UNDOCUMENTED = False,
           show_fragments: Parameter.UNDOCUMENTED = False,
           break_: Parameter.UNDOCUMENTED = False):
-    """Run Python code.
+    """Feed data through a sequence of Python expressions.
 
     :param steps: At least one Python expression (or suite) to execute
     :param each_line: If specified, process lines as strings rather than all of stdin as a file
