@@ -19,6 +19,7 @@ setup(
             'spy = spy.cli:main'
         ]
     },
+    python_requires='>=3.4',
     install_requires=[
         'clize>=3.0',
     ],
@@ -48,6 +49,7 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Topic :: Utilities'
     ]
 )
