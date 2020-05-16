@@ -96,7 +96,7 @@ class chain:
             if i < 1:
                 i = ''
             if hasattr(step, 'fragment_fn') and hasattr(step.fragment_fn, '_spy_debuginfo'):
-                desc = '<cli> ' + step.fragment_fn._spy_debuginfo[1]
+                desc = step.fragment_fn._spy_debuginfo[1]
             else:
                 if hasattr(step, 'fragment_fn'):
                     step = step.fragment_fn
