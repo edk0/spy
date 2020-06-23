@@ -129,6 +129,22 @@ class TestFunctionWrapping:
         f = _FunctionWrapper(f)
         assert (f == 11)(9) is True
 
+    def test_only_missing(self):
+        f = _FunctionWrapper(lambda x: x * 2)
+        assert f(5) == 10
+        assert (f + 2)(5) == 12
+        class CallableWithAddition:
+            def __init__(self, a):
+                self.a = a
+            def __call__(self, x):
+                return self.a * x
+            def __add__(self, other):
+                return self.__class__(self.a + other)
+        c = CallableWithAddition(2)
+        f = _FunctionWrapper(c)
+        assert f(5) == 10
+        assert (f + 2)(5) == 20
+
 
 @pytest.fixture
 def spyfile():
@@ -150,6 +166,11 @@ class TestSpyFile:
         assert spyfile.readline(8) == 'for use '
         assert spyfile.read() == TEST_INPUT[29:]
         assert spyfile.readline() == ''
+
+    def test_readline_finishes(self, spyfile):
+        for _ in range(TEST_INPUT.count('\n') + 2):
+            a = spyfile.readline()
+        assert a == ''
 
     def test_iter(self, spyfile):
         for spy, line in zip(iter(spyfile), TEST_INPUT.splitlines()):
