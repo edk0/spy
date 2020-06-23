@@ -205,10 +205,10 @@ def test_no_defaults(capsys, monkeypatch):
 
 def test_show_fragments(capsys, monkeypatch):
     expected = '''
-  1 | <cli> --filter --callable 'int'
-  2 | <cli> --accumulate --accumulate 'asdfgfa'
-  3 | <cli> --many 'test'
-  4 | <cli> --many --many 'baz'
+  1 | --filter --callable 'int'
+  2 | --accumulate --accumulate 'asdfgfa'
+  3 | --many 'test'
+  4 | --many --many 'baz'
 '''
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     argv = sys.argv[0:1] + [
