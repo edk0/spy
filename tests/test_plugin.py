@@ -20,6 +20,7 @@ class FakeEntryPoint:
 
 def init_test_plugin():
     prelude.xyz = 'abc123'
+    prelude.__all__ += ['xyz']
 
     @decorator('--_test_plugin_uppercase', doc='Make the result uppercase')
     def uppercase(fn, v, context):

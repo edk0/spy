@@ -95,9 +95,10 @@ def make_literal(code, env, pipe_name, debuginfo):
 
 
 def make_context():
+    prelude_things = {k: getattr(prelude, k) for k in prelude.__all__}
     context = Context()
     context.update(builtins.__dict__)
-    context.update(prelude.__dict__)
+    context.update(prelude_things)
     return context
 
 
