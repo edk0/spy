@@ -128,6 +128,9 @@ spy 3 -f 'None + 2' 2>&1 | sed '1d;$d;s/^ *//'
 > Fragment 2
 > --filter 'None + 2'
 > input to fragment was 3
+! spy -lf
+> spy: No value found after --filter
+> Usage: spy [OPTIONS] [steps...]
 
 # format()
 spy 3 -i 'x{pipe}y'

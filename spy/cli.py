@@ -3,7 +3,7 @@ import sys
 from contextlib import ExitStack
 
 from clize import Clize, run
-from clize.errors import MissingValue, UnknownOption
+from clize.errors import MissingValue, UnknownOption, SetArgumentErrorContext
 from clize.parameters import multi
 from clize.parser import use_mixin, Parameter, NamedParameter
 from pkg_resources import iter_entry_points
@@ -168,6 +168,10 @@ class Decorator(NamedParameter):
         return dec.marker_class
 
     def read_argument(self, ba, i):
+        with SetArgumentErrorContext(param=self):
+            self._read_argument(ba, i)
+
+    def _read_argument(self, ba, i):
         src = None
         io = i
         funcseq = [self.decfn]
