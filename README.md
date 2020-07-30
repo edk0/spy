@@ -27,7 +27,7 @@ on `irc.freenode.net`.
 # Example ([more here](https://spy.readthedocs.org/en/stable/examples.html))
 
 ```console
-$ spy -l -f 'len(pipe) == 4' < /usr/share/dict/words
+$ spy -lfc 'len == 4' < /usr/share/dict/words
 Aani
 Aaru
 abac
