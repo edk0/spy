@@ -9,10 +9,19 @@ import operator
 import math
 
 
-def _wrap(x):
-    if hasattr(x, '__call__'):
-        return _FunctionWrapper(x)
-    return x
+class _Wrapper(dict):
+    def __missing__(self, x):
+        if hasattr(x, '__call__'):
+            self[x] = w = _FunctionWrapper(x)
+            return w
+        self[x] = x
+        return x
+
+def _wrap(x, _wrapper=_Wrapper()):
+    try:
+        return _wrapper[x]
+    except TypeError:
+        return x
 
 
 class _ModuleProxy:
