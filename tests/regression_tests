@@ -147,3 +147,14 @@ spy '{"a": 1, "b": 2}' -ki '{a}'
 > 1
 spy '{"a": 1, "b": 2}' -k 'c = 3' 'sorted(pipe.keys())'
 > ['a', 'b', 'c']
+
+# focuses / decorator args
+! spy -OO 0 pipe
+> spy: No value found after --magnify
+> Usage: spy [OPTIONS] [steps...]
+spy -lO 2 pipe -ac "''.join" < test.txt
+> ilsvn
+spy -mc csv.DictReader -o 'Another Header' -c str.upper "pipe['Another Header']" < test.csv
+> BAR
+spy '[[1, 2, 3], [4, 5, 6], [7, 8, 9]]' -o 2 -o 0 'pipe *= 3'
+> [[1, 2, 3], [4, 5, 6], [21, 8, 9]]
