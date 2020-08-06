@@ -166,8 +166,6 @@ class Decorator(NamedParameter):
             raise UnknownOption(e.args[0])
 
     def coalesce(self, dec, decseq, funcseq, names):
-        if self.dec_args:
-            raise MissingValue
         decseq.append(dec)
         funcseq.append(dec.decfn)
         names.append(dec.display_name)
