@@ -163,6 +163,7 @@ class Decorator(NamedParameter):
             raise UnknownOption(e.args[0])
 
     def coalesce(self, dec, decseq, funcseq, names):
+        decseq.append(dec)
         funcseq.append(dec.decfn)
         names.append(dec.display_name)
         return dec.marker_class
@@ -198,9 +199,10 @@ class Decorator(NamedParameter):
             narg = self.parse_one_arg(ba, arg)
             if isinstance(narg, list):
                 for dec in narg:
-                    if not isinstance(dec, Decorator):
-                        raise MissingValue
-                    cls = decseq[-1].coalesce(dec, decseq, funcseq, names)
+                    with SetArgumentErrorContext(param=decseq[-1]):
+                        if not isinstance(dec, Decorator):
+                            raise MissingValue
+                        cls = decseq[-1].coalesce(dec, decseq, funcseq, names)
             elif not decseq[-1].LITERAL:
                 i, src = StepList._read(ba, i)
                 break
