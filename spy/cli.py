@@ -157,11 +157,12 @@ class Decorator(NamedParameter):
     def parse_one_arg(self, ba, arg):
         try:
             if arg[0:2] == '--':
-                return [ba.sig.aliases[arg]]
+                arg, _, val = arg.partition('=')
+                return [ba.sig.aliases[arg]], val
             elif arg[0] == '-':
-                return [ba.sig.aliases['-' + c] for c in arg[1:]]
+                return [ba.sig.aliases['-' + c] for c in arg[1:]], None
             else:
-                return arg
+                return arg, None
         except KeyError as e:
             raise UnknownOption(e.args[0])
 
@@ -175,6 +176,22 @@ class Decorator(NamedParameter):
         with SetArgumentErrorContext(param=self):
             self._read_argument(ba, i)
 
+    @staticmethod
+    def arg_iterator(start):
+        iterators = [iter(x) for x in start]
+        def iterate():
+            while iterators:
+                while iterators:
+                    try:
+                        v = next(iterators[0])
+                        yield v
+                        break
+                    except StopIteration:
+                        iterators.pop(0)
+        def pushback(x):
+            iterators.insert(0, iter(x))
+        return iterate(), pushback
+
     def _read_argument(self, ba, i):
         src = None
         io = i
@@ -184,23 +201,26 @@ class Decorator(NamedParameter):
         decseq = [self]
         cls = self.marker_class
         stacked = -1
+        leader = []
         if arg[1] == '-':
-            i += 1
+            if '=' in arg[2:]:
+                leader.append((i, arg[2:].split('=', 1)[1]))
             try:
-                arg = ba.in_args[i]
+                i += 1
+                leader.append((i, ba.in_args[i]))
             except LookupError:
                 raise MissingValue
         else:
             if len(arg) >= 3:
-                arg = '-' + arg[2:]
+                leader.append((i, '-' + arg[2:]))
                 stacked = i
             else:
-                i += 1
                 try:
-                    arg = ba.in_args[i]
+                    i += 1
+                    leader.append((i, ba.in_args[i]))
                 except LookupError:
                     raise MissingValue
-        ita = iter(enumerate(chain((arg,), ba.in_args[i+1:]), start=i))
+        ita, pushback = self.arg_iterator([leader, enumerate(ba.in_args[i + 1:], start=i + 1)])
         for i, arg in ita:
             if decseq[-1].dec_args and not isinstance(funcseq[-1], partial):
                 with SetArgumentErrorContext(param=decseq[-1]):
@@ -213,7 +233,9 @@ class Decorator(NamedParameter):
                     da = self._read_dec_args(ita_, decseq[-1], names)
                     funcseq[-1] = partial(funcseq[-1], dec_args=da)
                 continue
-            narg = self.parse_one_arg(ba, arg)
+            narg, trail = self.parse_one_arg(ba, arg)
+            if trail:
+                pushback([(i, trail)])
             if isinstance(narg, list):
                 for ind, dec in enumerate(narg):
                     with SetArgumentErrorContext(param=decseq[-1]):
@@ -248,7 +270,6 @@ class Decorator(NamedParameter):
         else:  # pragma: no cover
             raise MissingValue
         return a
-
 
 
 class LiteralDecorator(Decorator):
