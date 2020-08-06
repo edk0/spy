@@ -2,6 +2,7 @@ import builtins
 import sys
 from contextlib import ExitStack
 from functools import partial
+from itertools import chain
 
 from clize import Clize, run
 from clize.errors import MissingValue, UnknownOption, SetArgumentErrorContext
@@ -184,6 +185,7 @@ class Decorator(NamedParameter):
         arg = ba.in_args[i]
         decseq = [self]
         cls = self.marker_class
+        stacked = -1
         if arg[1] == '-':
             i += 1
             try:
@@ -193,23 +195,35 @@ class Decorator(NamedParameter):
         else:
             if len(arg) >= 3:
                 arg = '-' + arg[2:]
+                stacked = i
             else:
                 i += 1
                 try:
                     arg = ba.in_args[i]
                 except LookupError:
                     raise MissingValue
-        while True:
-            if decseq[-1].dec_args:
+        for i, arg in enumerate(chain((arg,), ba.in_args[i+1:]), start=i):
+            if decseq[-1].dec_args and not isinstance(funcseq[-1], partial):
                 with SetArgumentErrorContext(param=decseq[-1]):
+                    # if this is a reconstructed next option, we must have
+                    # left-composed a short option that takes args, which is
+                    # definitely wrong
+                    if i == stacked:
+                        raise MissingValue
                     i, da = self._read_dec_args(ba, i, decseq[-1])
                     funcseq[-1] = partial(funcseq[-1], dec_args=da)
-                    arg = ba.in_args[i]
+                    try:
+                        arg = ba.in_args[i]
+                    except:
+                        raise MissingValue
+                continue
             narg = self.parse_one_arg(ba, arg)
             if isinstance(narg, list):
-                for dec in narg:
+                for ind, dec in enumerate(narg):
                     with SetArgumentErrorContext(param=decseq[-1]):
                         if not isinstance(dec, Decorator):
+                            raise MissingValue
+                        if ind > 0 and decseq[-1].dec_args:
                             raise MissingValue
                         cls = decseq[-1].coalesce(dec, decseq, funcseq, names)
             elif not decseq[-1].LITERAL:
@@ -218,10 +232,8 @@ class Decorator(NamedParameter):
             else:
                 src = ba.in_args[i]
                 break
-            i += 1
-            if i >= len(ba.in_args):
-                raise MissingValue
-            arg = ba.in_args[i]
+        else:
+            raise MissingValue
         ba.skip = i - io
         funcseq.reverse()
         ba.args.append(cls(funcseq, src, ' '.join(names)))
