@@ -273,3 +273,31 @@ def test_setenv(capsys, monkeypatch):
     out, err = capsys.readouterr()
     assert out == 'bar\n'
     assert not err
+
+
+def test_focus(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    argv = sys.argv[0:1] + ['-Ok', 'pipe']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._cli()(*argv)
+    argv = sys.argv[0:1] + ['-O', '1']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._cli()(*argv)
+    argv = sys.argv[0:1] + ['-O']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._cli()(*argv)
+    argv = sys.argv[0:1] + ['-fO']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._cli()(*argv)
+    argv = sys.argv[0:1] + ['-fof', 'True']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._cli()(*argv)
+
+    argv = sys.argv[0:1] + [
+            '--no-exception-handling',
+            '-m', '[[1,2,3],[4,5,6],[7,8,9]]',
+            '-o', '1', '7']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == '[1, 7, 3]\n[4, 7, 6]\n[7, 7, 9]\n'
+    assert not err
