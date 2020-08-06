@@ -200,7 +200,8 @@ class Decorator(NamedParameter):
                     arg = ba.in_args[i]
                 except LookupError:
                     raise MissingValue
-        for i, arg in enumerate(chain((arg,), ba.in_args[i+1:]), start=i):
+        ita = iter(enumerate(chain((arg,), ba.in_args[i+1:]), start=i))
+        for i, arg in ita:
             if decseq[-1].dec_args and not isinstance(funcseq[-1], partial):
                 with SetArgumentErrorContext(param=decseq[-1]):
                     # if this is a reconstructed next option, we must have
@@ -208,12 +209,9 @@ class Decorator(NamedParameter):
                     # definitely wrong
                     if i == stacked:
                         raise MissingValue
-                    i, da = self._read_dec_args(ba, i, decseq[-1])
+                    ita_ = chain(((i, arg),), ita)
+                    da = self._read_dec_args(ita_, decseq[-1])
                     funcseq[-1] = partial(funcseq[-1], dec_args=da)
-                    try:
-                        arg = ba.in_args[i]
-                    except:
-                        raise MissingValue
                 continue
             narg = self.parse_one_arg(ba, arg)
             if isinstance(narg, list):
@@ -236,16 +234,16 @@ class Decorator(NamedParameter):
         funcseq.reverse()
         ba.args.append(cls(funcseq, src, ' '.join(names)))
 
-    def _read_dec_args(self, ba, i, dec):
+    def _read_dec_args(self, ita, dec):
         a = []
-        for converter in dec.dec_args:
-            try:
-                arg = ba.in_args[i]
-            except LookupError:
-                raise MissingValue
+        for elem, converter in zip(ita, dec.dec_args):
+            i, arg = elem
             a.append(converter(arg))
-            i += 1
-        return i, a
+            if len(a) >= len(dec.dec_args):
+                break
+        else:  # pragma: no cover
+            raise MissingValue
+        return a
 
 
 
