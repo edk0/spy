@@ -11,6 +11,12 @@ def test_ft():
     assert prelude.ft(f, f, f)(1) == (2, 2, 2)
 
 
+def test_mt():
+    def f(x):
+        return x * 7
+    assert prelude.mt(f, f, f)((1, 2, 3)) == (7, 14, 21)
+
+
 def test_sum():
     l = [1,2,3]
     assert prelude.sum(l) == 6
