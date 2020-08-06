@@ -210,7 +210,7 @@ class Decorator(NamedParameter):
                     if i == stacked:
                         raise MissingValue
                     ita_ = chain(((i, arg),), ita)
-                    da = self._read_dec_args(ita_, decseq[-1])
+                    da = self._read_dec_args(ita_, decseq[-1], names)
                     funcseq[-1] = partial(funcseq[-1], dec_args=da)
                 continue
             narg = self.parse_one_arg(ba, arg)
@@ -234,10 +234,14 @@ class Decorator(NamedParameter):
         funcseq.reverse()
         ba.args.append(cls(funcseq, src, ' '.join(names)))
 
-    def _read_dec_args(self, ita, dec):
+    def _read_dec_args(self, ita, dec, names):
         a = []
         for elem, converter in zip(ita, dec.dec_args):
             i, arg = elem
+            name = arg
+            if not name.isdigit():
+                name = repr(name)
+            names.append(name)
             a.append(converter(arg))
             if len(a) >= len(dec.dec_args):
                 break
