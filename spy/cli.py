@@ -1,6 +1,7 @@
 import builtins
 import sys
 from contextlib import ExitStack
+from functools import partial
 
 from clize import Clize, run
 from clize.errors import MissingValue, UnknownOption, SetArgumentErrorContext
@@ -140,9 +141,10 @@ class _LiteralDecorated(_Decorated):
 class Decorator(NamedParameter):
     LITERAL = False
 
-    def __init__(self, *a, description, decfn, **kw):
+    def __init__(self, *a, description, dec_args, decfn, **kw):
         super().__init__(*a, **kw)
         self.description = description
+        self.dec_args = dec_args
         self.decfn = decfn
         self.marker_class = _Decorated
 
@@ -163,6 +165,8 @@ class Decorator(NamedParameter):
             raise UnknownOption(e.args[0])
 
     def coalesce(self, dec, decseq, funcseq, names):
+        if self.dec_args:
+            raise MissingValue
         decseq.append(dec)
         funcseq.append(dec.decfn)
         names.append(dec.display_name)
@@ -196,6 +200,11 @@ class Decorator(NamedParameter):
                 except LookupError:
                     raise MissingValue
         while True:
+            if decseq[-1].dec_args:
+                with SetArgumentErrorContext(param=decseq[-1]):
+                    i, da = self._read_dec_args(ba, i, decseq[-1])
+                    funcseq[-1] = partial(funcseq[-1], dec_args=da)
+                    arg = ba.in_args[i]
             narg = self.parse_one_arg(ba, arg)
             if isinstance(narg, list):
                 for dec in narg:
@@ -216,6 +225,18 @@ class Decorator(NamedParameter):
         ba.skip = i - io
         funcseq.reverse()
         ba.args.append(cls(funcseq, src, ' '.join(names)))
+
+    def _read_dec_args(self, ba, i, dec):
+        a = []
+        for converter in dec.dec_args:
+            try:
+                arg = ba.in_args[i]
+            except LookupError:
+                raise MissingValue
+            a.append(converter(arg))
+            i += 1
+        return i, a
+
 
 
 class LiteralDecorator(Decorator):
@@ -324,7 +345,8 @@ def _prepare_decorators():
             cls = Decorator
         rv.append(cls(aliases=fn.decorator_names,
                       description=fn.decorator_help,
-                      decfn=fn))
+                      decfn=fn,
+                      dec_args=fn.dec_args))
     return tuple(rv)
 
 

@@ -1,4 +1,5 @@
 from functools import partial, wraps, update_wrapper
+import copy
 import re
 import string
 
@@ -9,17 +10,23 @@ __all__ = ['accumulate', 'callable', 'filter', 'many', 'format', 'regex', 'keywo
 decorators = []
 
 
-def decorator(*names, doc=None, takes_string=False, prep=None):
+def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
+    if prep is None:
+        if len(dec_args) == 1:
+            prep = lambda _, a: a
+        elif len(dec_args) > 1:
+            prep = lambda _, *a: a
+
     def wrapperer(_spy_decorator):
         @wraps(_spy_decorator)
-        def wrapper(fn):
+        def wrapper(fn, dec_args=()):
             if _accepts_context(fn):
                 xfn = partial(_call_fragment_body, fn)
             else:
                 xfn = partial(_drop_context, fn)
 
             if prep:
-                opaque = prep(fn)
+                opaque = prep(fn, *dec_args)
                 def wrapped(v, context=None):
                     _spy_callable = fn  # noqa: F841
                     _spy_value = v  # noqa: F841
@@ -35,6 +42,7 @@ def decorator(*names, doc=None, takes_string=False, prep=None):
         wrapper.decorator_names = names
         wrapper.decorator_help = doc
         wrapper.takes_string = takes_string
+        wrapper.dec_args = dec_args
         decorators.append(wrapper)
         return wrapper
     return wrapperer
@@ -94,3 +102,22 @@ def _kw_prep(fn):
 def keywords(fn, v, context, setenv):
     setenv(v)
     return fn(v, context)
+
+
+def _convert_focus(s):
+    if s[:1] in '0123456789-' and (len(s) == 1 or s[1:].isdigit()):
+        return int(s)
+    return s
+
+
+@decorator('--magnify', '-O', doc='Operate on and return an item of the input', dec_args=[_convert_focus])
+def magnify(fn, v, context, item):
+    return fn(v[item], context)
+
+
+@decorator('--focus', '-o', doc='Operate on an item of the input in-place', dec_args=[_convert_focus])
+def focus(fn, v, context, item):
+    v_ = fn(v[item], context)
+    v = copy.copy(v)
+    v[item] = v_
+    return v
