@@ -97,3 +97,19 @@ def test_keywords():
     test = spy.fragment(decorators.keywords(build()))
     l = list(spy.chain([test]).apply([{'a': 'xyz'}]))
     assert l[0] == 'xyz'
+
+
+def test_focus():
+    def test(v):
+        return v * 3
+    test = spy.fragment(decorators.focus(test, (1,)))
+    l = list(spy.chain([test]).apply([[1,2,3], [4,5,6]]))
+    assert l == [[1,6,3], [4,15,6]]
+
+
+def test_magnify():
+    def test(v):
+        return v * 3
+    test = spy.fragment(decorators.magnify(test, (1,)))
+    l = list(spy.chain([test]).apply([[1,2,3], [4,5,6]]))
+    assert l == [6, 15]
