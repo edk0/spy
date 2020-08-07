@@ -5,7 +5,7 @@ from functools import partial
 from itertools import chain
 
 from clize import Clize, run
-from clize.errors import MissingValue, UnknownOption, SetArgumentErrorContext
+from clize.errors import ArgumentError, MissingValue, UnknownOption, SetArgumentErrorContext
 from clize.parameters import multi
 from clize.parser import use_mixin, Parameter, NamedParameter
 from pkg_resources import iter_entry_points
@@ -201,10 +201,12 @@ class Decorator(NamedParameter):
         decseq = [self]
         cls = self.marker_class
         stacked = -1
+        eq = -1
         leader = []
         if arg[1] == '-':
             if '=' in arg[2:]:
                 leader.append((i, arg[2:].split('=', 1)[1]))
+                eq = i
             try:
                 i += 1
                 leader.append((i, ba.in_args[i]))
@@ -233,9 +235,13 @@ class Decorator(NamedParameter):
                     da = self._read_dec_args(ita_, decseq[-1], names)
                     funcseq[-1] = partial(funcseq[-1], dec_args=da)
                 continue
+            if i == eq:
+                raise ArgumentError("{} does not take a value".format(
+                    decseq[-1].display_name))
             narg, trail = self.parse_one_arg(ba, arg)
             if trail:
                 pushback([(i, trail)])
+                eq = i
             if isinstance(narg, list):
                 for ind, dec in enumerate(narg):
                     with SetArgumentErrorContext(param=decseq[-1]):
