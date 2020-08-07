@@ -301,3 +301,10 @@ def test_focus(capsys, monkeypatch):
     out, err = capsys.readouterr()
     assert out == '[1, 7, 3]\n[4, 7, 6]\n[7, 7, 9]\n'
     assert not err
+
+
+def test_unwanted_arg(monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    argv = sys.argv[0:1] + ['--filter=1', 'True']
+    with pytest.raises(clize.errors.ArgumentError):
+        spy.cli._cli()(*argv)
