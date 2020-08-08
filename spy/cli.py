@@ -162,7 +162,7 @@ class Decorator(NamedParameter):
 
     def get_all_names(self):
         names = super().get_all_names()
-        long_alias = any(alias.startswith('--') for alias in self.aliases)
+        long_alias = any(alias.startswith('--') for alias in self.aliases)  # pragma: no branch
         return names + self.format_argument(long_alias)
 
     def parse_one_arg(self, ba, arg):
