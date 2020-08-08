@@ -154,6 +154,17 @@ class Decorator(NamedParameter):
         helper.sections["Decorators"][self.display_name] = (self, '')
         del helper.sections["Options"][self.display_name]
 
+    def format_argument(self, long_alias):
+        if not self.dec_args:
+            return ''
+        return ('=' if long_alias else ' ') + ' '.join(
+            conv.usage_name for conv in self.dec_args)
+
+    def get_all_names(self):
+        names = super().get_all_names()
+        long_alias = any(alias.startswith('--') for alias in self.aliases)
+        return names + self.format_argument(long_alias)
+
     def parse_one_arg(self, ba, arg):
         try:
             if arg[0:2] == '--':

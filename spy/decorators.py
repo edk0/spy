@@ -108,6 +108,7 @@ def _convert_focus(s):
     if s[:1] in '0123456789-' and (len(s) == 1 or s[1:].isdigit()):
         return int(s)
     return s
+_convert_focus.usage_name = 'ITEM'
 
 
 @decorator('--magnify', '-O', doc='Operate on and return an item of the input', dec_args=[_convert_focus])
