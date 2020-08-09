@@ -303,9 +303,9 @@ class LiteralDecorator(Decorator):
 def _main(*steps: use_mixin(StepList),
           each_line: 'l' = False,  # noqa: F821
           raw: 'r' = False,  # noqa: F821
-          start: (int, 's') = 0,
-          end: (int, 'e') = None,
-          prelude: (multi(), 'p') = 'pass',
+          start: (int, 's') = 0,  # noqa: F821
+          end: (int, 'e') = None,  # noqa: F821
+          prelude: (multi(), 'p') = 'pass',  # noqa: F821
           pipe_name: Parameter.UNDOCUMENTED = PIPE_NAME,
           no_default_fragments: Parameter.UNDOCUMENTED = False,
           no_exception_handling: Parameter.UNDOCUMENTED = False,
@@ -402,6 +402,7 @@ def _prepare_decorators():
 
 def _cli():
     return Clize(_main, extra=_prepare_decorators())
+
 
 def main():
     if not spy._dont_load_plugins:

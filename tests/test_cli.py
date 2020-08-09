@@ -1,5 +1,4 @@
 import io
-import subprocess
 import sys
 
 import clize.errors
@@ -169,7 +168,7 @@ def test_run(capsys, monkeypatch):
             '" ".join(reversed(pipe))'])
     spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
-        from spy import __main__
+        from spy import __main__  # noqa: F401
     out, err = capsys.readouterr()
     assert err == ''
     assert out == expected
@@ -182,7 +181,7 @@ def test_raw(capsys, monkeypatch):
         sys.argv[0:1] + ['--raw', '--each-line', '-c', 'sys.stdout.write', 'None'])
     spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
-        from spy import __main__
+        from spy import __main__  # noqa: F401
     out, err = capsys.readouterr()
     assert err == ''
     assert out == input
@@ -197,7 +196,7 @@ def test_no_defaults(capsys, monkeypatch):
             '--callable', 'print'])
     spy._dont_load_plugins = True
     with pytest.raises(SystemExit):
-        from spy import __main__
+        from spy import __main__  # noqa: F401
     out, err = capsys.readouterr()
     assert err == ''
     assert out == 'abcdef\n'
