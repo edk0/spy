@@ -39,6 +39,11 @@ def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
             update_wrapper(wrapped, fn)
             return wrapped
 
+        if dec_args:
+            orig_wrapper = wrapper
+            def wrapper(*a):
+                return partial(orig_wrapper, dec_args=a)
+
         wrapper.decorator_names = names
         wrapper.decorator_help = doc
         wrapper.takes_string = takes_string

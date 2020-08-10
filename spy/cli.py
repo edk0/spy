@@ -235,7 +235,7 @@ class Decorator(NamedParameter):
                     raise MissingValue
         ita, pushback = self.arg_iterator([leader, enumerate(ba.in_args[i + 1:], start=i + 1)])
         for i, arg in ita:
-            if decseq[-1].dec_args and not isinstance(funcseq[-1], partial):
+            if getattr(funcseq[-1], 'dec_args', None):
                 with SetArgumentErrorContext(param=decseq[-1]):
                     # if this is a reconstructed next option, we must have
                     # left-composed a short option that takes args, which is
@@ -244,7 +244,7 @@ class Decorator(NamedParameter):
                         raise MissingValue
                     ita_ = chain(((i, arg),), ita)
                     da = self._read_dec_args(ita_, decseq[-1], names)
-                    funcseq[-1] = partial(funcseq[-1], dec_args=da)
+                    funcseq[-1] = funcseq[-1](*da)
                 continue
             if i == eq:
                 raise ArgumentError("{} does not take a value".format(
