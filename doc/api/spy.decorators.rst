@@ -46,6 +46,28 @@ This module contains various function decorators for use in spy fragments.
    Call :func:`spy.many` with the result of the fragment.
 
 
+.. decorator:: focus(ITEM)
+
+   .. option:: --focus=ITEM, -o ITEM
+
+   Operate on ``pipe[ITEM]``. The result will be assigned to the same position
+   in a :func:`shallow copy <copy.copy>` of the input, which will need to be
+   mutable despite not normally being modified.
+
+   On the CLI, if ``ITEM`` is a decimal integer, it will be interpreted as an
+   integer index. If instead if starts with a dot ``.``, everything *after*
+   the dot will be taken as a literal string key.
+
+
+.. decorator:: magnify(ITEM)
+
+   .. option:: --magnify=ITEM, -O ITEM
+
+   As :func:`focus`, except that the result is returned as-is, rather than
+   spliced into a copy of the input. The portion of the input that was not
+   magnified is thus discarded.
+
+
 Literal decorators
 ==================
 
