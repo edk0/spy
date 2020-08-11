@@ -4,10 +4,17 @@ import re
 import string
 
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
+from .objects import Context
 
 __all__ = ['accumulate', 'callable', 'filter', 'many', 'format', 'regex', 'keywords']
 
 decorators = []
+
+
+try:
+    import lenses
+except ImportError:
+    lenses = None
 
 
 def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
@@ -110,20 +117,64 @@ def keywords(fn, v, context, setenv):
 
 
 def _convert_focus(s):
+    if s.startswith('_'):
+        context = Context()
+        context['_'] = lenses.lens
+        return eval(s, context, {})
+    if s.startswith('.'):
+        return s[1:]
     if s[:1] in '0123456789-' and (len(s) == 1 or s[1:].isdigit()):
         return int(s)
+    if ':' in s:
+        if lenses is None:
+            raise ArgumentError("slice focusing requires `lenses`")
+        sbits = s.split(':')
+        bits = []
+        for x in sbits:
+            if x == '':
+                bits.append(None)
+            elif x.isdigit() or x[:1] == '-' and x[1:].isdigit():
+                bits.append(int(x))
+            else:
+                break
+        else:
+            if len(bits) in (2,3):
+                return lenses.lens[slice(*bits)].Each()
     return s
 _convert_focus.usage_name = 'ITEM'
 
 
-@decorator('--magnify', '-O', doc='Operate on and return an item of the input', dec_args=[_convert_focus])
-def magnify(fn, v, context, item):
-    return fn(v[item], context)
+def _focus_prep(fn, focus):
+    if lenses is None:
+        def apply(f, v):
+            v_ = copy.copy(v)
+            v_[focus] = f(v_[focus])
+            return v_
+        return apply
+    if not isinstance(focus, lenses.UnboundLens):
+        focus = lenses.lens[focus]
+    return lambda f, v: focus.modify(f)(v)
 
 
-@decorator('--focus', '-o', doc='Operate on an item of the input in-place', dec_args=[_convert_focus])
-def focus(fn, v, context, item):
-    v_ = fn(v[item], context)
-    v = copy.copy(v)
-    v[item] = v_
-    return v
+@decorator('--focus', '-o', doc='Operate on an item of the input in-place',
+           prep=_focus_prep, dec_args=[_convert_focus])
+def focus(fn, v, context, f):
+    fn = partial(fn, context=context)
+    return f(fn, v)
+
+
+def _magnify_prep(fn, focus):
+    if lenses is None:
+        def apply(f, v):
+            return f(v[focus])
+        return apply
+    if not isinstance(focus, lenses.UnboundLens):
+        focus = lenses.lens[focus]
+    return lambda f, v: f(focus.get()(v))
+
+
+@decorator('--magnify', '-O', doc='Operate on and return an item of the input',
+           prep=_magnify_prep, dec_args=[_convert_focus])
+def magnify(fn, v, context, f):
+    fn = partial(fn, context=context)
+    return f(fn, v)
