@@ -200,5 +200,8 @@ man_pages = [
      ['Ed Kellett'], 1)
 ]
 #man_show_urls = False
-# Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'http://docs.python.org/3.8/': None}
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/3.8/', None),
+    'lenses': ('https://python-lenses.readthedocs.io/en/v0.5.0/', None),
+}

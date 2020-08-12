@@ -51,12 +51,33 @@ This module contains various function decorators for use in spy fragments.
    .. option:: --focus=ITEM, -o ITEM
 
    Operate on ``pipe[ITEM]``. The result will be assigned to the same position
-   in a :func:`shallow copy <copy.copy>` of the input, which will need to be
-   mutable despite not normally being modified.
+   in a shallow copy of the input, which will need to be mutable despite not
+   normally being modified.
 
    On the CLI, if ``ITEM`` is a decimal integer, it will be interpreted as an
    integer index. If instead if starts with a dot ``.``, everything *after*
    the dot will be taken as a literal string key.
+
+   If you have :doc:`lenses <lenses:index>` installed, some more forms are
+   available. Two or three decimal integers separated by ``:`` will focus on
+   each element of a slice of the input:
+
+   .. code-block:: console
+
+      $ spy '[1,2,3,4,5,6]' -o 1::2 'pipe * 7'
+      [1, 14, 3, 28, 5, 42]
+
+   And a string starting with ``_`` will be evaluated as a Python expression
+   with ``_`` bound to :mod:`lens <lenses:lenses>`, allowing you to focus with
+   arbitrary lenses:
+
+   .. code-block:: console
+
+      $ spy '["abc", "def"]' -o '_.Each()[1]' -c str.upper
+      ['aBc', 'dEf']
+
+   Natively-understood focuses will be turned into lenses too, allowing them to
+   operate on any immutable object that lenses can handle.
 
 
 .. decorator:: magnify(ITEM)
@@ -66,6 +87,9 @@ This module contains various function decorators for use in spy fragments.
    As :func:`focus`, except that the result is returned as-is, rather than
    spliced into a copy of the input. The portion of the input that was not
    magnified is thus discarded.
+
+   Magnifying with a lens that has multiple foci will simply use the first one.
+   Further work on this area is aspired to.
 
 
 Literal decorators
