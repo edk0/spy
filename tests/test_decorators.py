@@ -1,3 +1,5 @@
+import clize.errors
+import lenses
 import pytest
 
 import spy
@@ -99,6 +101,26 @@ def test_keywords():
     assert l[0] == 'xyz'
 
 
+def test_convert_focus():
+    assert decorators._convert_focus('_.Each()[2]') == lenses.lens.Each()[2]
+    assert decorators._convert_focus('1::2') == lenses.lens[1::2]
+    assert decorators._convert_focus('1:-1') == lenses.lens[1:-1]
+    assert decorators._convert_focus('1:2:3:4') == '1:2:3:4'
+    assert decorators._convert_focus('1:abc') == '1:abc'
+    assert decorators._convert_focus('1') == 1
+    assert decorators._convert_focus('.abc') == 'abc'
+
+
+def test_convert_focus_without_lenses(monkeypatch):
+    monkeypatch.setattr(decorators, 'lenses', None)
+    assert decorators._convert_focus('_1') == '_1'
+    assert decorators._convert_focus('1') == 1
+    assert decorators._convert_focus('.abc') == 'abc'
+
+    with pytest.raises(clize.errors.UserError):
+        decorators._convert_focus('1::2')
+
+
 def test_focus():
     @spy.fragment
     @decorators.focus(1)
@@ -108,6 +130,11 @@ def test_focus():
     assert l == [[1,6,3], [4,15,6]]
 
 
+def test_focus_without_lenses(monkeypatch):
+    monkeypatch.setattr(decorators, 'lenses', None)
+    test_focus()
+
+
 def test_magnify():
     @spy.fragment
     @decorators.magnify(1)
@@ -115,3 +142,8 @@ def test_magnify():
         return v * 3
     l = list(spy.chain([test]).apply([[1,2,3], [4,5,6]]))
     assert l == [6, 15]
+
+
+def test_magnify_without_lenses(monkeypatch):
+    monkeypatch.setattr(decorators, 'lenses', None)
+    test_magnify()

@@ -28,6 +28,7 @@ setup(
             'pytest>=5.0',
             'pytest-cov',
             'coverage',
+            'lenses',
         ]
     },
     author='Ed Kellett',
