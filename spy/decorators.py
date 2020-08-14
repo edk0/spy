@@ -3,6 +3,8 @@ import copy
 import re
 import string
 
+import clize.errors
+
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 from .objects import Context
 
@@ -127,7 +129,7 @@ def _convert_focus(s):
         return int(s)
     if ':' in s:
         if lenses is None:
-            raise ArgumentError("slice focusing requires `lenses`")
+            raise clize.errors.ArgumentError("slice focusing requires `lenses`")
         sbits = s.split(':')
         bits = []
         for x in sbits:
