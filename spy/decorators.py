@@ -117,7 +117,7 @@ def keywords(fn, v, context, setenv):
 
 
 def _convert_focus(s):
-    if s.startswith('_'):
+    if lenses is not None and s.startswith('_'):
         context = Context()
         context['_'] = lenses.lens
         return eval(s, context, {})
