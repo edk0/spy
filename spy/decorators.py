@@ -15,7 +15,7 @@ decorators = []
 
 try:
     import lenses
-except ImportError:
+except ImportError:  # pragma: no cover
     lenses = None
 
 
