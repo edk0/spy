@@ -135,6 +135,15 @@ def test_focus_without_lenses(monkeypatch):
     test_focus()
 
 
+def test_focus_lens():
+    @spy.fragment
+    @decorators.focus(lenses.lens[1::2].Each())
+    def test(v):
+        return v * 3
+    l = list(spy.chain([test]).apply([[1,2,3,4,5,6]]))
+    assert l == [[1,6,3,12,5,18]]
+
+
 def test_magnify():
     @spy.fragment
     @decorators.magnify(1)
@@ -147,3 +156,12 @@ def test_magnify():
 def test_magnify_without_lenses(monkeypatch):
     monkeypatch.setattr(decorators, 'lenses', None)
     test_magnify()
+
+
+def test_magnify_lens():
+    @spy.fragment
+    @decorators.magnify(lenses.lens[2])
+    def test(v):
+        return v * 3
+    l = list(spy.chain([test]).apply([[1,2,3], [4,5,6]]))
+    assert l == [9, 18]
