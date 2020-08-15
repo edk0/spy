@@ -6,6 +6,39 @@ import spy
 from spy import decorators
 
 
+def test_decorator_decorator(monkeypatch):
+    # moderate hack: get pytest to clean up after us
+    monkeypatch.setattr(decorators, 'decorators', [])
+
+    def _use_decorator(d):
+        @spy.fragment
+        @d
+        def fragment(x):
+            return x * 7
+        return list(spy.chain([fragment]).apply([1, 2, 3, 4, 5, 6]))
+
+    @decorators.decorator('x')
+    def deco(fn, v, context):
+        return fn(v, context) - 1
+    assert _use_decorator(deco) == [6, 13, 20, 27, 34, 41]
+
+    @decorators.decorator('x', prep=lambda fn: 3)
+    def deco(fn, v, context, three):
+        return three
+    assert _use_decorator(deco) == [3, 3, 3, 3, 3, 3]
+
+    @decorators.decorator('x', dec_args=(lambda x: x,))
+    def deco(fn, v, context, x):
+        return fn(v, context) // x
+    assert _use_decorator(deco(7)) == [1, 2, 3, 4, 5, 6]
+
+    @decorators.decorator('x', dec_args=(lambda x: x, lambda x: x))
+    def deco(fn, v, context, xs):
+        x, y = xs
+        return fn(v, context) // x + y
+    assert _use_decorator(deco(7, 3)) == [4, 5, 6, 7, 8, 9]
+
+
 def test_accumulate(capsys):
     calls = 0
 
