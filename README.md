@@ -22,7 +22,7 @@ spy is compatible with, and thoroughly tested on, Python 3.5 and newer.
 [on ReadTheDocs](https://spy.readthedocs.org/en/stable/).**
 
 If you have any suggestions or feedback or anything, I'll probably be in `#spy`
-on `irc.freenode.net`.
+on `irc.libera.chat`.
 
 # Example ([more here](https://spy.readthedocs.org/en/stable/examples.html))
 
