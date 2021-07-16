@@ -3,7 +3,7 @@ name: CI
 on: [push, pull_request]
 
 jobs:
-  linux:
+  test:
     name: Python ${{ matrix.python-version }}
     runs-on: ubuntu-latest
     strategy:
@@ -15,6 +15,20 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
         architecture: x64
+    - run: 'pip install --upgrade pip setuptools coveralls'
     - run: 'pip install -e .[test]'
-    - run: 'py.test -v'
-
+    - run: 'py.test -v --cov-config .coveragerc --cov spy'
+    - run: 'coveralls --service=github'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        COVERALLS_FLAG_NAME: ${{ matrix.python-version }}
+        COVERALLS_PARALLEL: true
+  coveralls:
+    name: Poke Coveralls
+    needs: test
+    runs-on: ubuntu-latest
+    container: python:3-slim
+    steps:
+    - run: 'pip3 install --upgrade coveralls && coveralls --finish --service=github'
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
