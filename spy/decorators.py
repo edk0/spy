@@ -180,3 +180,12 @@ def _magnify_prep(fn, focus):
 def magnify(fn, v, context, f):
     fn = partial(fn, context=context)
     return f(fn, v)
+
+
+@decorator('--try', '-t', doc='Filter out input that causes the fragment to raise an exception')
+def try_except(fn, v, context):
+    try:
+        return fn(v, context)
+    except:
+        pass
+    return DROP

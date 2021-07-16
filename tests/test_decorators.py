@@ -198,3 +198,21 @@ def test_magnify_lens():
         return v * 3
     l = list(spy.chain([test]).apply([[1,2,3], [4,5,6]]))
     assert l == [9, 18]
+
+
+def test_try_except():
+    # make sure the testcase is correct
+    @spy.fragment
+    def test(v):
+        return v[1]
+
+    with pytest.raises(IndexError):
+        list(spy.chain([test]).apply(["a", "bc", "de"]))
+
+    @spy.fragment
+    @decorators.try_except
+    def test(v):
+        return v[1]
+
+    l = list(spy.chain([test]).apply(["a", "bc", "de"]))
+    assert l == ["c", "e"]
