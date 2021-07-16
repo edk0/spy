@@ -92,6 +92,14 @@ This module contains various function decorators for use in spy fragments.
    Further work on this area is aspired to.
 
 
+.. decorator:: try_except
+
+   .. option:: --try, -t
+
+   Filter out input that causes the fragment to raise an exception. This is the
+   equivalent of a ``try: except:``-block in the fragment.
+
+
 Literal decorators
 ==================
 
