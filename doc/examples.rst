@@ -62,9 +62,33 @@ Taking advantage of spy piping:
    4: five
    5: lines
 
+
 Convert CSV to JSON
 ===================
 
 .. code-block:: console
 
    $ spy -c csv.DictReader -c list -c json.dumps < thing.csv > thing.json
+
+
+Try Except
+==========
+
+If there is a lot of data with a few inconsistent records ``--try/-t`` will filter
+out these records.
+
+.. code-block:: console
+
+   $ cat > books.json <<EOF
+   [
+       {"title": "A book", "author": "Alfred Someone"},
+       {"title": "Something else", "author": "Writer"},
+       {"tilt": "No idea", "author": "Mike Other"}
+   ]
+   EOF
+   
+   $ cat books.json | spy -mc json.load -o author 'pipe.split()' \
+       -tk 'f"Firstname: {author[0]}\nLastname: {author[1]}\nTitle: {title}"'
+   Firstname: Alfred
+   Lastname: Someone
+   Title: A book
