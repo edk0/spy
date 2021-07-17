@@ -169,3 +169,5 @@ spy '[1,2,3,4,5,6]' -o 1::2 'pipe * 7'
 > [1, 14, 3, 28, 5, 42]
 spy '["abc", "def"]' -o '_.Each()[1]' -c str.upper
 > ['aBc', 'dEf']
+spy -lt "pipe[3]" "list(spy.collect())" < test.txt
+> ['s', 'e', 'e', 'e']
