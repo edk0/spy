@@ -130,7 +130,7 @@ Defining decorators
 For integration with spy's CLI and exception handling, decorators should be
 created using :func:`decorator`.
 
-.. decorator:: decorator(name, \*aliases[, doc=None][, prep=None][, takes_string=False])
+.. decorator:: decorator(name, \*aliases[, doc=None][, prep=None][, takes_string=False][, dec_args=()])
 
    Turns a wrapper function into a spy decorator.
 
@@ -151,5 +151,14 @@ created using :func:`decorator`.
    If ``takes_string`` is True, the command-line option will consume a literal
    string instead of Python code, and ``fn`` will return a tuple of its local
    scope and the literal string value.
+
+   If ``dec_args`` is nonempty, it must be a sequence of callables with
+   ``usage_name`` attributes. Each such callable consumes an extra argument
+   after the decorator's name, and its return value is passed as an additional
+   argument to ``prep``.
+
+   If you pass ``dec_args`` without ``prep``, one will be invented for you
+   that simply returns its argument (or its arguments as a tuple, if there are
+   more than one).
 
    For usage examples, see :ref:`adding-decorators`.
