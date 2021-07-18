@@ -8,6 +8,7 @@ import pytest
 import spy
 import spy.cli
 from spy.objects import Context
+from spy.decorators import decorator
 
 
 class TestCompile:
@@ -307,3 +308,61 @@ def test_unwanted_arg(monkeypatch):
     argv = sys.argv[0:1] + ['--filter=1', 'True']
     with pytest.raises(clize.errors.ArgumentError):
         spy.cli._cli()(*argv)
+
+
+def test_wanted_arg(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+    argv = sys.argv[0:1] + ['[1,2,3]', '--filter', '--focus=1', 'pipe+1']
+    spy.cli._cli()(*argv)
+
+    argv = sys.argv[0:1] + ['--end=1', 'True']
+    spy.cli._cli()(*argv)
+
+
+def test_dec_args(capsys, monkeypatch):
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
+
+    def _convert_str(s):
+        return str(s)
+    _convert_str.usage_name = 'STR'
+
+    @decorator('--one', dec_args=[_convert_str])
+    def one_arg(fn, v, context, param):
+        return fn(v) + param
+
+    @decorator('--two', dec_args=[_convert_str, _convert_str])
+    def two_args(fn, v, context, params):
+        first, second = params
+        return first + fn(v) + second
+
+    argv = sys.argv[0:1] + ['--one', '"!"']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._cli()(*argv)
+
+    argv = sys.argv[0:1] + ['--one', 'xyz', '"!"']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == '!xyz\n'
+    assert not err
+
+    argv = sys.argv[0:1] + ['--one=xyz', '"!"']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == '!xyz\n'
+    assert not err
+
+    argv = sys.argv[0:1] + ['--two', 'xyz', '"!"']
+    with pytest.raises(clize.errors.MissingValue):
+        spy.cli._cli()(*argv)
+
+    argv = sys.argv[0:1] + ['--two', 'abc', 'xyz', '"!"']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == 'abc!xyz\n'
+    assert not err
+
+    argv = sys.argv[0:1] + ['--two=abc', 'xyz', '"!"']
+    spy.cli._cli()(*argv)
+    out, err = capsys.readouterr()
+    assert out == 'abc!xyz\n'
+    assert not err
