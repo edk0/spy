@@ -8,7 +8,8 @@ import clize.errors
 from .core import _accepts_context, _call_fragment_body, collect, DROP, many as _many
 from .objects import Context
 
-__all__ = ['accumulate', 'callable', 'filter', 'many', 'format', 'regex', 'keywords']
+__all__ = ['accumulate', 'callable', 'filter', 'many', 'format', 'regex', 'keywords',
+           'focus', 'magnify', 'try_except']
 
 decorators = []
 
