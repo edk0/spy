@@ -23,6 +23,7 @@ put things in it.
 
    from spy import prelude
    prelude.uc = lambda s: str(s).upper()
+   prelude.__all__ += ['uc']
 
 .. code-block:: console
 
