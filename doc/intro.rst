@@ -164,6 +164,26 @@ the CLI:
    calls :func:`spy.many` with the return value of the fragment (which must
    be :term:`iterable`).
 
+.. option:: --focus=<focus> <fragment>, -o <focus> <fragment>
+
+   applies the fragment to ``pipe[<focus>]``, substituting the result in at
+   the position it was taken from.
+
+   .. code-block:: console
+
+      $ spy [1,2,3] -o 1 pipe*7
+      [1, 14, 3]
+
+.. option:: --magnify=<focus> <fragment>, -o <focus> <fragment>
+
+   applies the fragment to ``pipe[<focus>]``, using its result as-is and so
+   discarding the rest of the input.
+
+   .. code-block:: console
+
+      $ spy [1,2,3] -O 1 pipe*7
+      14
+
 
 Literal decorators
 ------------------
