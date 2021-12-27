@@ -11,6 +11,10 @@ use elsewhere.
 
    Return ``x``.
 
+.. function:: exhaust(iterable)
+
+   Iterate over ``iterable`` for its side effects, returning nothing.
+
 .. function:: ft(\*args)
 
    Return a tuple that, when called, calls all its members with the
