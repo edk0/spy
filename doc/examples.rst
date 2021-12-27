@@ -86,7 +86,7 @@ out these records.
        {"tilt": "No idea", "author": "Mike Other"}
    ]
    EOF
-   
+
    $ cat books.json | spy -mc json.load -o author 'pipe.split()' \
        -tk 'f"Firstname: {author[0]}\nLastname: {author[1]}\nTitle: {title}"'
    Firstname: Alfred
