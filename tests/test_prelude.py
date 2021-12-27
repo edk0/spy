@@ -30,3 +30,16 @@ def test_sum():
     l = [[1], [2, 3], [4, 5, 6]]
     assert prelude.sum(l, []) == [1, 2, 3, 4, 5, 6]
     assert l == [[1], [2, 3], [4, 5, 6]]
+
+
+def test_exhaust():
+    ita = iter('abcdef')
+    prelude.exhaust(ita)
+    assert list(ita) == []
+    calls = 0
+    def fn():
+        nonlocal calls
+        calls += 1
+    ita = (fn() for _ in range(3))
+    prelude.exhaust(ita)
+    assert calls == 3

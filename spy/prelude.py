@@ -4,7 +4,7 @@ from itertools import chain, islice, starmap
 from operator import iadd
 
 
-__all__ = ['id', 'ft', 'mt', 'sum']
+__all__ = ['id', 'ft', 'mt', 'sum', 'exhaust']
 
 
 def id(x):
@@ -23,6 +23,11 @@ class mt(tuple):
         return tuple.__new__(mt, funcs)
     def __call__(self, xs):
         return tuple(f(x) for f, x in zip(self, xs))
+
+
+def exhaust(ita):
+    for _ in ita:
+        pass
 
 
 _builtin_sum = builtins.sum
