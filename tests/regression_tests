@@ -165,6 +165,7 @@ spy -l --filter --magnify=1 "pipe == 'i'" < test.txt
 > file
 > five
 > lines
+spy -lR ''
 
 # examples from api docs
 spy '[1,2,3,4,5,6]' -o 1::2 'pipe * 7'
