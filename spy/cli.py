@@ -401,7 +401,7 @@ def _main(*steps: use_mixin(StepList),
 
 def _prepare_decorators():
     rv = []
-    for fn in decorators:
+    for fn in sorted(decorators, key=lambda fn: fn.decorator_names):
         if fn.takes_string:
             cls = LiteralDecorator
         else:
