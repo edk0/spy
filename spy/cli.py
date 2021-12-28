@@ -47,15 +47,26 @@ def compile_(code, filename='<input>'):
     return compile(code, filename, 'exec', 0, True, 0), False
 
 
+try:
+    eval('*1')
+except SyntaxError as e:
+    error_offset_text = e.offset
+try:
+    exec('*1')
+except SyntaxError as e:
+    error_offset_notext = e.offset
+
+
 def pretty_syntax_error(source, err):
     print('Error compiling %s' % err.filename, file=sys.stderr)
     for lineno, line in enumerate(source.splitlines(), start=1):
         print('  %s' % line, file=sys.stderr)
         if err.lineno == lineno and err.offset > 0:
-            off = err.offset - 1
-            if (err.text is None and sys.version_info < (3, 8)) or \
-                    platform.python_implementation() == 'PyPy':  # pragma: no cover
-                off += 1
+            off = err.offset
+            if err.text is None:
+                off -= error_offset_notext
+            else:
+                off -= error_offset_text
             print('  %s^' % (' ' * off), file=sys.stderr)
     print('%s: %s' % (type(err).__name__, err.msg), file=sys.stderr)
 
