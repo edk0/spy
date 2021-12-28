@@ -18,6 +18,13 @@ class CaughtException(Exception):
         return ''
 
 
+def _in(needle, haystack):
+    try:
+        return needle in haystack
+    except TypeError:
+        return False
+
+
 def _format_exc(typ, exc, tb, *, delete_all=False):
     hide_below_user = False
     if getattr(exc, '_forced_', False):
@@ -44,7 +51,7 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             delete_in = len(entries)
 
         # top level of a spy.fragment()
-        if '_spy_fragment_index' in local:
+        if _in('_spy_fragment_index', local):
             if delete_in is not None or delete_all:  # pragma: no branch
                 del entries[0 if delete_all else delete_in:]
             delete_in = len(entries)
@@ -54,7 +61,7 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
             frame_kind = 'fragment'
 
         # decorator
-        if '_spy_decorator' in local:
+        if _in('_spy_decorator', local):
             if delete_in is not None:  # pragma: no branch
                 del entries[delete_in:]
             delete_in = len(entries)
