@@ -131,6 +131,7 @@ spy 3 -f 'None + 2' 2>&1 | sed '1d;$d;s/^ *//'
 ! spy -lf
 > spy: No value found after --filter
 > Usage: spy [OPTIONS] [steps...]
+echo foo | spy -lR foo -k this_variable_does_not_exist 2>&1 | grep -q this_variable_does_not_exist
 
 # format()
 spy 3 -i 'x{pipe}y'
@@ -164,6 +165,7 @@ spy -l --filter --magnify=1 "pipe == 'i'" < test.txt
 > file
 > five
 > lines
+
 # examples from api docs
 spy '[1,2,3,4,5,6]' -o 1::2 'pipe * 7'
 > [1, 14, 3, 28, 5, 42]
