@@ -172,7 +172,7 @@ class Decorator(NamedParameter):
             if arg[0:2] == '--':
                 arg, _, val = arg.partition('=')
                 return [ba.sig.aliases[arg]], val
-            elif arg[0] == '-':
+            elif arg[0:1] == '-':
                 return [ba.sig.aliases['-' + c] for c in arg[1:]], None
             else:
                 return arg, None
