@@ -114,6 +114,10 @@ spy -m 'enumerate(pipe, 1)' -i '{}: {}' < test.txt
 > 4: five
 > 5: lines
 spy -c csv.DictReader -c list -c json.dumps < test.csv
+cat books.json | spy -mc json.load -o author 'pipe.split()' -tk 'f"Firstname: {author[0]}\nLastname: {author[1]}\nTitle: {title}"'
+> Firstname: Alfred
+> Lastname: Someone
+> Title: A book
 
 # error handling
 spy 3 -c None 2>&1 | sed '1d;$d;s/^ *//'
