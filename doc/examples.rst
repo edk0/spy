@@ -74,8 +74,8 @@ Convert CSV to JSON
 Try Except
 ==========
 
-If there is a lot of data with a few inconsistent records ``--try/-t`` will filter
-out these records.
+If there is a lot of data with a few inconsistent records ``--try/-t`` will
+filter out these records.
 
 .. code-block:: console
 
