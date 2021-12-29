@@ -29,6 +29,7 @@ def test_sum():
 
     l = [[1], [2, 3], [4, 5, 6]]
     assert prelude.sum(l, []) == [1, 2, 3, 4, 5, 6]
+    assert prelude.sum(l) == [1, 2, 3, 4, 5, 6]
     assert l == [[1], [2, 3], [4, 5, 6]]
 
 
