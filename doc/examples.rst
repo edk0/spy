@@ -92,3 +92,24 @@ out these records.
    Firstname: Alfred
    Lastname: Someone
    Title: A book
+
+
+Counting things
+===============
+
+Sometimes it's convenient to build up a result imperatively, and then print the
+result. A simple pattern for this involves using ``--ac exhaust`` to evaluate
+the preceding chain for its side effects, then run the following code once.
+
+.. code-block:: console
+
+   $ cat books.json | spy -p 'd = collections.defaultdict(int)' -mc json.load -t 'd[pipe["author"]] += 1' -ac exhaust 'dict(d)'
+   {'Alfred Someone': 1, 'Writer': 1, 'Mike Other': 1}
+
+But it's also possible, and sometimes neater, to find a way to do this using
+aggregation:
+
+.. code-block:: console
+
+   $ cat books.json | spy -mc json.load -k '[author]' -c collections.Counter -ac sum -c dict
+   {'Alfred Someone': 1, 'Writer': 1, 'Mike Other': 1}

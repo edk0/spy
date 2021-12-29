@@ -118,6 +118,10 @@ cat books.json | spy -mc json.load -o author 'pipe.split()' -tk 'f"Firstname: {a
 > Firstname: Alfred
 > Lastname: Someone
 > Title: A book
+cat books.json | spy -p 'd = collections.defaultdict(int)' -mc json.load -t 'd[pipe["author"]] += 1' -ac exhaust 'dict(d)' 'sorted(pipe.items())'
+> [('Alfred Someone', 1), ('Mike Other', 1), ('Writer', 1)]
+cat books.json | spy -mc json.load -k '[author]' -c collections.Counter -ac sum -c dict 'sorted(pipe.items())'
+> [('Alfred Someone', 1), ('Mike Other', 1), ('Writer', 1)]
 
 # error handling
 spy 3 -c None 2>&1 | sed '1d;$d;s/^ *//'
