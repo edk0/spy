@@ -137,6 +137,7 @@ class StepList:
         i, arg = self._read(ba, i)
         ba.skip = i - io
         ba.args.append(arg)
+        ba.unsatisfied.discard(self)
 
 
 class _Decorated:
@@ -285,6 +286,7 @@ class Decorator(NamedParameter):
         ba.skip = i - io
         funcseq.reverse()
         ba.args.append(cls(funcseq, src, ' '.join(names)))
+        ba.unsatisfied.discard(ba.sig.positional[-1])
 
     def _read_dec_args(self, ita, dec, names):
         a = []
@@ -313,7 +315,7 @@ class LiteralDecorator(Decorator):
         raise MissingValue
 
 
-def _main(*steps: use_mixin(StepList),
+def _main(*steps: (use_mixin(StepList), Parameter.REQUIRED),
           each_line: 'l' = False,  # noqa: F821
           raw: 'r' = False,  # noqa: F821
           start: (int, 's') = 0,  # noqa: F821
