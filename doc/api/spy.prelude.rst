@@ -35,3 +35,6 @@ use elsewhere.
    Exactly like the built-in sum, but written with generic usage in mind: this
    version accepts anything for which `+` is defined, and avoids quadratic
    behaviour where possible.
+
+   If ``start`` is not provided, spy's sum will use ``iterable``'s first
+   element, if it has one. Thus ``-ac sum`` will normally just work.

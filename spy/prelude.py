@@ -32,7 +32,15 @@ def exhaust(ita):
 
 _builtin_sum = builtins.sum
 
-def sum(iterable, start=0):
+_sentinel = object()
+
+def sum(iterable, start=_sentinel):
+    if start is _sentinel:
+        iterable = iter(iterable)
+        try:
+            start = next(iterable)
+        except StopIteration:
+            start = 0
     if isinstance(start, (int, float)):
         return _builtin_sum(iterable, start)
     if isinstance(start, (str, bytes, bytearray)):
