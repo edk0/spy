@@ -55,7 +55,7 @@ This module contains various function decorators for use in spy fragments.
    normally being modified.
 
    On the CLI, if ``ITEM`` is a decimal integer, it will be interpreted as an
-   integer index. If instead if starts with a dot ``.``, everything *after*
+   integer index. If instead it starts with a dot ``.``, everything *after*
    the dot will be taken as a literal string key.
 
    If you have :doc:`lenses <lenses:index>` installed, some more forms are
