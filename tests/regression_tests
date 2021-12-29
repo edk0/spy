@@ -27,8 +27,7 @@ spy -p x=3 x
 > 3
 spy --pipe-name=apple "'hello'" apple
 > hello
-echo 'x' | spy -l
-> x
+! spy -l
 printf '1\n2\n3\n' | spy -c list
 > ['1', '2', '3']
 printf '1\n2\n3\n' | spy -rc list
@@ -138,7 +137,7 @@ spy 3 -f 'None + 2' 2>&1 | sed '1d;$d;s/^ *//'
 > input to fragment was 3
 ! spy -lf
 > spy: No value found after --filter
-> Usage: spy [OPTIONS] [steps...]
+> Usage: spy [OPTIONS] steps...
 echo foo | spy -lR foo -k this_variable_does_not_exist 2>&1 | grep -q this_variable_does_not_exist
 
 # format()
@@ -160,7 +159,7 @@ spy '{"a": 1, "b": 2}' -k 'c = 3' 'sorted(pipe.keys())'
 # focuses / decorator args
 ! spy -OO 0 pipe
 > spy: No value found after --magnify
-> Usage: spy [OPTIONS] [steps...]
+> Usage: spy [OPTIONS] steps...
 spy -lO 2 pipe -ac "''.join" < test.txt
 > ilsvn
 spy -mc csv.DictReader -o 'Another Header' -c str.upper "pipe['Another Header']" < test.csv
