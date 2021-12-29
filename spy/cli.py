@@ -327,10 +327,10 @@ def _main(*steps: use_mixin(StepList),
     """Feed data through a sequence of Python expressions.
 
     :param steps: At least one Python expression (or suite) to execute
-    :param each_line: If specified, process lines as strings rather than all of stdin as a file
+    :param each_line: Process lines as strings rather than all of stdin as a file
     :param start: Don't print before this result (zero-based)
     :param end: Stop after getting this result (zero-based)
-    :param prelude: Execute this statement before running any steps. Can be specified more than once.
+    :param prelude: Execute a statement before running any steps. Can be specified more than once.
     :param raw: Don't add helper functionality to stdin
     """
     pipe_name = sys.intern(pipe_name)
