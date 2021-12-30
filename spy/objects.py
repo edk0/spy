@@ -11,7 +11,7 @@ import math
 
 class _Wrapper(dict):
     def __missing__(self, x):
-        if hasattr(x, '__call__'):
+        if hasattr(x, '__call__') and (not isinstance(x, type) or not issubclass(x, BaseException)):
             self[x] = w = _FunctionWrapper(x)
             return w
         self[x] = x
