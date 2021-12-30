@@ -31,16 +31,12 @@ def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
         @wraps(_spy_decorator)
         def wrapper(fn, dec_args=()):
             is_decorator = getattr(fn, '_spy_decorated', None)
-            if _accepts_context(fn):
-                if is_decorator:
-                    xfn = fn
-                else:
-                    xfn = partial(_call_fragment_body, fn)
+            if is_decorator:
+                xfn = fn
+            elif _accepts_context(fn):
+                xfn = partial(_call_fragment_body, fn)
             else:
-                if is_decorator:
-                    xfn = partial(_drop_context, fn)
-                else:
-                    xfn = partial(_drop_context_body, fn)
+                xfn = partial(_drop_context, fn)
 
             if prep:
                 opaque = prep(fn, *dec_args)
@@ -72,10 +68,6 @@ def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
 
 
 def _drop_context(fn, v, context):
-    return fn(v)
-
-
-def _drop_context_body(fn, v, context):
     return _call_fragment_body(fn, v)
 
 
