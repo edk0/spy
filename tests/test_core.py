@@ -2,6 +2,7 @@ import pytest
 import sys
 
 from io import StringIO
+from itertools import islice
 
 import spy
 
@@ -106,6 +107,20 @@ def test_collect():
 def test_collect_nocontext():
     with pytest.raises(ValueError):
         spy.collect(None)
+
+
+def test_multiple_collect():
+    @spy.fragment
+    def collect_twice(v, context):
+        return [*islice(spy.collect(context), 2), *spy.collect(context)]
+    chain = spy.chain([collect_twice])
+    assert next(chain.apply([0, 1, 2, 3, 4, 5])) == [0, 1, 2, 3, 4, 5]
+
+    @spy.fragment
+    def collect_nothing_then_something(v, context):
+        return [*islice(spy.collect(context), 0), *spy.collect(context)]
+    chain = spy.chain([collect_nothing_then_something])
+    assert next(chain.apply([0, 1, 2, 3, 4, 5])) == [0, 1, 2, 3, 4, 5]
 
 
 def test_drop():

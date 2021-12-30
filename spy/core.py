@@ -20,11 +20,12 @@ DROP = _Constant()
 
 
 class _Context:
-    __slots__ = ('iter_value', 'iter_iter')
+    __slots__ = ('iter_value', 'iter_iter', 'collect_iter')
 
     def __init__(self, iter_value, iter_iter):
         self.iter_value = iter_value
         self.iter_iter = iter_iter
+        self.collect_iter = None
 
 
 def fragment(fn):
@@ -118,10 +119,17 @@ class many:
         self.ita = ita
 
 
+_context_used = object()
+
+
 def collect(context):
     if context is None:
         raise ValueError("Can't collect without a valid context (got None)")
-    return itertools.chain([context.iter_value], context.iter_iter)
+    if context.iter_value is _context_used:
+        return context.collect_iter
+    r = context.collect_iter = itertools.chain([context.iter_value], context.iter_iter)
+    context.iter_value = _context_used
+    return r
 
 
 collect._spy_inject_context_ = True
