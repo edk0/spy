@@ -30,10 +30,17 @@ def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
     def wrapperer(_spy_decorator):
         @wraps(_spy_decorator)
         def wrapper(fn, dec_args=()):
+            is_decorator = getattr(fn, '_spy_decorated', None)
             if _accepts_context(fn):
-                xfn = partial(_call_fragment_body, fn)
+                if is_decorator:
+                    xfn = fn
+                else:
+                    xfn = partial(_call_fragment_body, fn)
             else:
-                xfn = partial(_drop_context, fn)
+                if is_decorator:
+                    xfn = partial(_drop_context, fn)
+                else:
+                    xfn = partial(_drop_context_body, fn)
 
             if prep:
                 opaque = prep(fn, *dec_args)
@@ -47,6 +54,7 @@ def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
                     _spy_value = v  # noqa: F841
                     return _spy_decorator(xfn, v, context)
             update_wrapper(wrapped, fn)
+            wrapped._spy_decorated = True
             return wrapped
 
         if dec_args:
@@ -64,6 +72,10 @@ def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
 
 
 def _drop_context(fn, v, context):
+    return fn(v)
+
+
+def _drop_context_body(fn, v, context):
     return _call_fragment_body(fn, v)
 
 
