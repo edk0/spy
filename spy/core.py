@@ -13,10 +13,14 @@ def _call_fragment_body(f, *a, **kw):
 
 
 class _Constant:
-    pass
+    def __init__(self, name):
+        self._name = name
+
+    def __repr__(self):
+        return self._name
 
 
-DROP = _Constant()
+DROP = _Constant('spy.DROP')
 
 
 class _Context:
