@@ -128,3 +128,7 @@ def test_drop():
     chain = spy.chain(seq)
     for item in chain.apply(['foo', 'bar', 'foo', 'test']):
         assert item.lower() != 'foo'
+
+def test_drop_has_repr():
+    assert repr(spy.DROP) != object.__repr__(spy.DROP)
+    assert 'DROP' in repr(spy.DROP)
