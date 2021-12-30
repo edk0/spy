@@ -13,7 +13,7 @@ from pkg_resources import iter_entry_points
 
 from . import catcher, fragments, prelude
 from .decorators import decorators
-from .objects import Context, _ContextInjector
+from .objects import Context, _ContextInjector, SpyFile
 
 import spy
 
@@ -380,14 +380,11 @@ def _main(*steps: (use_mixin(StepList), Parameter.REQUIRED),
             steps.insert(0, fragments.foreach)
             index_offset -= 1
 
-        if raw:
-            steps.insert(0, fragments.raw_stdin)
-        else:
-            steps.insert(0, fragments.stdin)
-        index_offset -= 1
-
     chain = spy.chain(steps, index_offset=index_offset)
-    data = [None]
+    if raw:
+        data = [sys.stdin]
+    else:
+        data = [SpyFile(sys.stdin)]
 
     if show_fragments:
         print(chain.format())

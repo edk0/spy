@@ -7,14 +7,6 @@ import sys
 from .objects import SpyFile
 
 
-def stdin(ita):
-    yield SpyFile(sys.stdin)
-
-
-def raw_stdin(ita):
-    yield sys.stdin
-
-
 def foreach(ita):
     for elem in ita:
         if isinstance(elem, SpyFile):
