@@ -1,7 +1,6 @@
 from functools import partial, wraps, update_wrapper
 import copy
 import re
-import string
 
 import clize.errors
 
@@ -14,10 +13,22 @@ __all__ = ['accumulate', 'callable', 'filter', 'many', 'format', 'regex', 'keywo
 decorators = []
 
 
-try:
-    import lenses
-except ImportError:  # pragma: no cover
-    lenses = None
+def _get_lenses():
+    global lenses, _get_lenses
+    try:
+        import lenses
+    except ImportError:  # pragma: no cover
+        lenses = None
+    _get_lenses = lambda: lenses
+    return lenses
+
+
+def _get_formatter():
+    global _get_formatter
+    import string
+    formatter = string.Formatter()
+    _get_string = lambda: formatter
+    return formatter
 
 
 def decorator(*names, doc=None, takes_string=False, prep=None, dec_args=()):
@@ -94,12 +105,10 @@ def many(fn, v, context):
     return _many(result)
 
 
-_formatter = string.Formatter()
-
-@decorator('--format', '-i', doc='Interpolate argument as a format string', takes_string=True)
-def format(fn, v, context):
+@decorator('--format', '-i', doc='Interpolate argument as a format string', takes_string=True, prep=lambda _: _get_formatter())
+def format(fn, v, context, formatter):
     env, x = fn(v, context)
-    return _formatter.vformat(x, v, env)
+    return formatter.vformat(x, v, env)
 
 
 @decorator('--regex', '--regexp', '-R', doc='Match argument as a regexp', takes_string=True)
@@ -124,6 +133,7 @@ def keywords(fn, v, context, setenv):
 
 
 def _convert_focus(s):
+    lenses = _get_lenses()
     if lenses is not None and s.startswith('_'):
         context = Context()
         context['_'] = lenses.lens
@@ -152,6 +162,7 @@ _convert_focus.usage_name = 'ITEM'
 
 
 def _focus_prep(fn, focus):
+    lenses = _get_lenses()
     if lenses is None:
         def apply(f, v):
             v_ = copy.copy(v)
@@ -171,6 +182,7 @@ def focus(fn, v, context, f):
 
 
 def _magnify_prep(fn, focus):
+    lenses = _get_lenses()
     if lenses is None:
         def apply(f, v):
             return f(v[focus])
