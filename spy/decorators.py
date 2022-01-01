@@ -27,7 +27,7 @@ def _get_formatter():
     global _get_formatter
     import string
     formatter = string.Formatter()
-    _get_string = lambda: formatter
+    _get_formatter = lambda: formatter
     return formatter
 
 
