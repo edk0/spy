@@ -32,6 +32,8 @@ def test_sum():
     assert prelude.sum(l) == [1, 2, 3, 4, 5, 6]
     assert l == [[1], [2, 3], [4, 5, 6]]
 
+    assert prelude.sum([]) == 0
+
 
 def test_exhaust():
     ita = iter('abcdef')
