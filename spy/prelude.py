@@ -31,7 +31,6 @@ def exhaust(ita):
 
 
 _builtin_sum = builtins.sum
-
 _sentinel = object()
 
 def sum(iterable, start=_sentinel):
@@ -48,5 +47,3 @@ def sum(iterable, start=_sentinel):
     iterable = iter(iterable)
     return reduce(iadd, iterable,
             _builtin_sum(islice(iterable, 1), start))
-
-builtins.sum = sum
