@@ -1,3 +1,4 @@
+import importlib
 import io
 import sys
 
@@ -9,15 +10,6 @@ from spy import prelude
 from spy.decorators import decorator
 
 
-class FakeEntryPoint:
-    def __init__(self, name, value):
-        self.name = name
-        self._value = value
-
-    def load(self):
-        return self._value
-
-
 def init_test_plugin():
     prelude.xyz = 'abc123'
     prelude.__all__ += ['xyz']
@@ -27,12 +19,21 @@ def init_test_plugin():
         return str(fn(v, context)).upper()
 
 
-def iter_entry_points(_):
-    yield FakeEntryPoint('test_plugin', init_test_plugin)
+def iter_modules(*a, **kw):
+    yield None, 'spy_test_plugin', True
+
+
+_import_module = importlib.import_module
+def import_module(name):
+    if name == 'spy_test_plugin':
+        sys.modules['spy_test_plugin'] = init_test_plugin()
+        return
+    return _import_module(name)
 
 
 def test_plugins(monkeypatch, capsys):
-    monkeypatch.setattr(spy.cli, 'iter_entry_points', iter_entry_points)
+    monkeypatch.setattr(spy.cli, 'iter_modules', iter_modules)
+    monkeypatch.setattr(spy.cli, 'import_module', import_module)
 
     monkeypatch.setattr(sys, 'stdin', io.StringIO(""))
     sys.argv = sys.argv[0:1] + ['-h']

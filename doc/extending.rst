@@ -2,15 +2,17 @@
 Extending spy
 *************
 
-spy supports a very simple extension mechanism using `entry points`_. A package
-wishing to extend its functionality should provide an entry point for the group
-``spy.init``. The entry point will be called with no arguments before spy does
-anything.
+When the ``spy`` command runs, it will import all submodules of the
+``spy_plugins`` namespace package. You can extend spy locally or from an
+installed package by installing a module there.
+
+Specifically, you should create a directory named ``spy_plugins`` somewhere on
+Python's module path (or ship one if you're distributing an installable
+package) *without an* ``__init__.py`` containing a Python module that
+implements your extension.
 
 There are two primary means of extending spy: adding fragment decorators, and
 adding functions to :mod:`~spy.prelude`.
-
-.. _entry points: https://setuptools.readthedocs.io/en/latest/setuptools.html#dynamic-discovery-of-services-and-plugins
 
 
 Extending the prelude

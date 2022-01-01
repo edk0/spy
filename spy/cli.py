@@ -3,19 +3,21 @@ import platform
 import sys
 from contextlib import ExitStack
 from functools import partial
+from importlib import import_module
 from itertools import chain
+from pkgutil import iter_modules
 
 from clize import Clize, run
 from clize.errors import ArgumentError, MissingValue, UnknownOption, SetArgumentErrorContext
 from clize.parameters import multi
 from clize.parser import use_mixin, Parameter, NamedParameter
-from pkg_resources import iter_entry_points
 
 from . import catcher, fragments, prelude
 from .decorators import decorators
 from .objects import Context, _ContextInjector, SpyFile
 
 import spy
+import spy_plugins
 
 
 PIPE_NAME = 'pipe'
@@ -418,6 +420,7 @@ def _cli():
 
 def main():
     if not spy._dont_load_plugins:
-        for entry_point in iter_entry_points('spy.init'):
-            entry_point.load()()
+        for finder, name, ispkg in iter_modules(spy_plugins.__path__,
+                spy_plugins.__name__ + '.'):
+            import_module(name)
     run(_cli())

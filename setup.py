@@ -12,7 +12,7 @@ setup(
     name='spy-cli',
     version='0.5.0',
     description='stream processing Python CLI',
-    packages=['spy'],
+    packages=['spy', 'spy_plugins'],
     zip_safe=True,
     entry_points={
         'console_scripts': [
