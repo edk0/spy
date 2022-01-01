@@ -29,8 +29,6 @@ def _format_exc(typ, exc, tb, *, delete_all=False):
     hide_below_user = False
     if getattr(exc, '_forced_', False):
         hide_below_user = True
-        exc = exc.__cause__
-        typ = exc.__class__
     entries = []
     delete_in = None
     delete_from = None

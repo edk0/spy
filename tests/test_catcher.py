@@ -55,6 +55,7 @@ def test_forced_exception(capsys):
     err = err.strip().split('\n')
     #  in other words, not the internal error
     assert 'input to fragment' in err[-2]
+    assert err[-1].startswith('AttributeError:')
 
 
 def test_caughtexception():
